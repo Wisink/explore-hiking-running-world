@@ -1,0 +1,9 @@
+{
+  "name": "correction",
+  "version": "1.0.0",
+  "description": "纠错相关云函数",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

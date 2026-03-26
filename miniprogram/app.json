@@ -1,0 +1,52 @@
+{
+  "pages": [
+    "pages/welcome/welcome",
+    "pages/home/home",
+    "pages/search/search",
+    "pages/detail/detail",
+    "pages/profile/profile",
+    "pages/messages/messages",
+    "pages/laws/laws",
+    "pages/safety/safety",
+    "pages/correction/correction",
+    "pages/comments/comments"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#2D5A27",
+    "navigationBarTitleText": "秦人户外集合",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#F8F6F0"
+  },
+  "tabBar": {
+    "color": "#6B7B8D",
+    "selectedColor": "#2D5A27",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/home/home",
+        "text": "首页",
+        "iconPath": "images/tabbar/home.png",
+        "selectedIconPath": "images/tabbar/home-active.png"
+      },
+      {
+        "pagePath": "pages/search/search",
+        "text": "搜索",
+        "iconPath": "images/tabbar/search.png",
+        "selectedIconPath": "images/tabbar/search-active.png"
+      },
+      {
+        "pagePath": "pages/profile/profile",
+        "text": "我的",
+        "iconPath": "images/tabbar/profile.png",
+        "selectedIconPath": "images/tabbar/profile-active.png"
+      }
+    ]
+  },
+  "sitemapLocation": "sitemap.json",
+  "useExtendedLib": {
+    "weui": true
+  },
+  "cloud": true
+}
