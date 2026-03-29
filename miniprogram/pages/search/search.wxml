@@ -1,0 +1,200 @@
+<!--pages/search/search.wxml-->
+<view class="search-page">
+  <!-- 顶部搜索框 -->
+  <view class="search-header">
+    <view class="search-box">
+      <input
+        class="search-input"
+        placeholder="搜索路线名称、地点或景色..."
+        value="{{keyword}}"
+        bindinput="onKeywordInput"
+        bindconfirm="onConfirm"
+        confirm-type="search"
+      />
+      <view class="search-btn" bindtap="onSearch">
+        <text class="search-btn-text">搜索</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 筛选条件区域 -->
+  <view class="filter-section">
+    <!-- 筛选标题栏 -->
+    <view class="filter-header" bindtap="toggleFilter">
+      <text class="filter-title">筛选条件</text>
+      <text class="filter-arrow {{filterExpanded ? 'expanded' : ''}}">▼</text>
+    </view>
+
+    <!-- 筛选内容（可折叠） -->
+    <view class="filter-body {{filterExpanded ? 'show' : ''}}">
+      <!-- 难度 -->
+      <view class="filter-group">
+        <text class="filter-label">难度</text>
+        <view class="filter-tags">
+          <block wx:for="{{difficultyOptions}}" wx:key="*this">
+            <view
+              class="filter-tag {{filters.difficulty.indexOf(item) > -1 ? 'active' : ''}}"
+              data-type="difficulty" data-value="{{item}}"
+              bindtap="onFilterSelect"
+            >{{item}}</view>
+          </block>
+        </view>
+      </view>
+
+      <!-- 地区 -->
+      <view class="filter-group">
+        <text class="filter-label">地区</text>
+        <view class="filter-tags">
+          <block wx:for="{{regionOptions}}" wx:key="*this">
+            <view
+              class="filter-tag {{filters.region.indexOf(item) > -1 ? 'active' : ''}}"
+              data-type="region" data-value="{{item}}"
+              bindtap="onFilterSelect"
+            >{{item}}</view>
+          </block>
+        </view>
+      </view>
+
+      <!-- 季节 -->
+      <view class="filter-group">
+        <text class="filter-label">季节</text>
+        <view class="filter-tags">
+          <block wx:for="{{seasonOptions}}" wx:key="*this">
+            <view
+              class="filter-tag {{filters.season.indexOf(item) > -1 ? 'active' : ''}}"
+              data-type="season" data-value="{{item}}"
+              bindtap="onFilterSelect"
+            >{{item}}</view>
+          </block>
+        </view>
+      </view>
+
+      <!-- 风景评分 -->
+      <view class="filter-group">
+        <text class="filter-label">风景评分</text>
+        <view class="filter-tags">
+          <block wx:for="{{[1,2,3,4,5]}}" wx:key="*this">
+            <view
+              class="filter-tag {{filters.score === item ? 'active' : ''}}"
+              data-type="score" data-value="{{item}}"
+              bindtap="onFilterSelect"
+            >{{item}}⭐</view>
+          </block>
+        </view>
+      </view>
+
+      <!-- 亲子友好 -->
+      <view class="filter-group">
+        <text class="filter-label">亲子友好</text>
+        <view class="filter-tags">
+          <block wx:for="{{familyOptions}}" wx:key="*this">
+            <view
+              class="filter-tag {{filters.familyFriendly === item ? 'active' : ''}}"
+              data-type="familyFriendly" data-value="{{item}}"
+              bindtap="onFilterSelect"
+            >{{item}}</view>
+          </block>
+        </view>
+      </view>
+
+      <!-- 费用区间 -->
+      <view class="filter-group">
+        <text class="filter-label">费用</text>
+        <view class="filter-tags">
+          <block wx:for="{{costOptions}}" wx:key="*this">
+            <view
+              class="filter-tag {{filters.cost === item ? 'active' : ''}}"
+              data-type="cost" data-value="{{item}}"
+              bindtap="onFilterSelect"
+            >{{item}}</view>
+          </block>
+        </view>
+      </view>
+
+      <!-- 景色特点标签 -->
+      <view class="filter-group">
+        <text class="filter-label">景色特点</text>
+        <view class="filter-tags">
+          <block wx:for="{{tagOptions}}" wx:key="*this">
+            <view
+              class="filter-tag {{filters.tags.indexOf(item) > -1 ? 'active' : ''}}"
+              data-type="tags" data-value="{{item}}"
+              bindtap="onFilterSelect"
+            >{{item}}</view>
+          </block>
+        </view>
+      </view>
+
+      <!-- 重置按钮 -->
+      <view class="filter-reset" bindtap="onResetFilters">
+        <text class="reset-text">重置筛选</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 搜索结果数量 -->
+  <view class="result-header">
+    <text class="result-count">共 {{results.length}} 条路线</text>
+  </view>
+
+  <!-- Loading 状态 -->
+  <view class="loading-wrapper" wx:if="{{loading}}">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">搜索中...</text>
+  </view>
+
+  <!-- 搜索结果列表 -->
+  <view class="route-list" wx:if="{{!loading && results.length > 0}}">
+    <block wx:for="{{results}}" wx:key="id">
+      <view class="route-card" data-id="{{item.id}}" bindtap="onRouteTap">
+        <!-- 路线名称和评分 -->
+        <view class="card-header">
+          <text class="route-name">{{item.name}}</text>
+          <view class="route-score">
+            <text class="score-value">{{item.score}}</text>
+            <text class="score-star">⭐</text>
+          </view>
+        </view>
+
+        <!-- 标签行 -->
+        <view class="card-tags">
+          <view class="tag-difficulty {{item.difficulty === '初级' ? 'easy' : 'medium'}}">
+            {{item.difficulty}}
+          </view>
+          <view class="tag-family" wx:if="{{item.familyFriendly}}">
+            👶 亲子友好
+          </view>
+          <block wx:for="{{item.tags}}" wx:for-item="tag" wx:for-index="tagIdx" wx:key="*this">
+            <view class="tag-scenic">{{tag}}</view>
+          </block>
+        </view>
+
+        <!-- 位置和距离 -->
+        <view class="card-info">
+          <text class="info-location">📍 {{item.location}}</text>
+          <text class="info-distance">{{item.distance}}km</text>
+        </view>
+
+        <!-- 点赞数 -->
+        <view class="card-footer">
+          <text class="likes">👍 {{item.likes}}</text>
+        </view>
+      </view>
+    </block>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{!loading && results.length === 0}}">
+    <text class="empty-icon">🔍</text>
+    <text class="empty-title">没有找到匹配的路线</text>
+    <text class="empty-desc">试试调整搜索关键词或筛选条件</text>
+    <view class="empty-reset" bindtap="onResetFilters">
+      <text class="reset-text">重置筛选条件</text>
+    </view>
+  </view>
+
+  <!-- 底部提示 -->
+  <view class="footer-tips">
+    <text class="tips-text">安全出行，文明徒步，带走垃圾，无痕山野</text>
+  </view>
+</view>

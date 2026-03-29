@@ -1,0 +1,135 @@
+<!--pages/etiquette/etiquette.wxml-->
+<view class="etiquette-page">
+  <!-- 头部 -->
+  <view class="page-header">
+    <text class="header-icon">🌿</text>
+    <text class="header-title">户外徒步倡议</text>
+    <text class="header-subtitle">与山同行，做一个有温度的户外人</text>
+  </view>
+
+  <!-- Tab 栏 -->
+  <view class="tab-bar">
+    <view
+      class="tab-item {{activeTab === index ? 'active' : ''}}"
+      wx:for="{{tabs}}"
+      wx:key="index"
+      data-index="{{index}}"
+      bindtap="onTabChange"
+    >
+      <text class="tab-icon">{{item.icon}}</text>
+      <text class="tab-name">{{item.name}}</text>
+    </view>
+  </view>
+
+  <!-- 内容区域 -->
+  <view class="content-area">
+    <!-- 社交礼仪 -->
+    <view class="content-section" wx:if="{{activeTab === 0}}">
+      <view class="section-intro">
+        <text class="intro-text">山野相遇是缘分，保持边界是尊重。我们倡导一种舒适、自在的社交方式。</text>
+      </view>
+      <view class="rule-list">
+        <view class="rule-card" wx:for="{{socialRules}}" wx:key="index">
+          <view class="rule-header">
+            <text class="rule-icon">{{item.icon}}</text>
+            <text class="rule-title">{{item.title}}</text>
+            <view class="rule-badge {{item.important ? 'important' : ''}}" wx:if="{{item.important}}">
+              <text class="badge-text">重要</text>
+            </view>
+          </view>
+          <text class="rule-content">{{item.content}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 环境保护 -->
+    <view class="content-section" wx:if="{{activeTab === 1}}">
+      <view class="section-intro">
+        <text class="intro-text">山林无言，却承载着万千生命。我们带走的只有照片，留下的只有脚印。</text>
+      </view>
+      <view class="rule-list">
+        <view class="rule-card" wx:for="{{envRules}}" wx:key="index">
+          <view class="rule-header">
+            <text class="rule-icon">{{item.icon}}</text>
+            <text class="rule-title">{{item.title}}</text>
+            <view class="rule-badge {{item.important ? 'important' : ''}}" wx:if="{{item.important}}">
+              <text class="badge-text">重要</text>
+            </view>
+          </view>
+          <text class="rule-content">{{item.content}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 安全意识 -->
+    <view class="content-section" wx:if="{{activeTab === 2}}">
+      <view class="section-intro">
+        <text class="intro-text">户外有风险，安全是底线。平安回家，才是最好的旅程。</text>
+      </view>
+      <view class="rule-list">
+        <view class="rule-card" wx:for="{{safetyRules}}" wx:key="index">
+          <view class="rule-header">
+            <text class="rule-icon">{{item.icon}}</text>
+            <text class="rule-title">{{item.title}}</text>
+            <view class="rule-badge {{item.important ? 'important' : ''}}" wx:if="{{item.important}}">
+              <text class="badge-text">重要</text>
+            </view>
+          </view>
+          <text class="rule-content">{{item.content}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 尊重生命 -->
+    <view class="content-section" wx:if="{{activeTab === 3}}">
+      <view class="section-intro">
+        <text class="intro-text">每一片叶子、每一只生灵，都是大自然的馈赠。我们是过客，不是主宰。</text>
+      </view>
+      <view class="rule-list">
+        <view class="rule-card" wx:for="{{natureRules}}" wx:key="index">
+          <view class="rule-header">
+            <text class="rule-icon">{{item.icon}}</text>
+            <text class="rule-title">{{item.title}}</text>
+            <view class="rule-badge {{item.important ? 'important' : ''}}" wx:if="{{item.important}}">
+              <text class="badge-text">重要</text>
+            </view>
+          </view>
+          <text class="rule-content">{{item.content}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 文明出行 -->
+    <view class="content-section" wx:if="{{activeTab === 4}}">
+      <view class="section-intro">
+        <text class="intro-text">户外是我们的精神家园，文明是我们的共同语言。</text>
+      </view>
+      <view class="rule-list">
+        <view class="rule-card" wx:for="{{civilRules}}" wx:key="index">
+          <view class="rule-header">
+            <text class="rule-icon">{{item.icon}}</text>
+            <text class="rule-title">{{item.title}}</text>
+            <view class="rule-badge {{item.important ? 'important' : ''}}" wx:if="{{item.important}}">
+              <text class="badge-text">重要</text>
+            </view>
+          </view>
+          <text class="rule-content">{{item.content}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部总结 -->
+  <view class="footer-section">
+    <view class="footer-card">
+      <text class="footer-quote">"山林是我们的课堂，户外是我们的修行。"</text>
+      <text class="footer-desc">让我们一起，做一个有温度、有边界、有敬畏的户外人。</text>
+      <view class="footer-tags">
+        <text class="tag">#无痕山野</text>
+        <text class="tag">#安全第一</text>
+        <text class="tag">#尊重生命</text>
+        <text class="tag">#文明出行</text>
+      </view>
+    </view>
+  </view>
+</view>

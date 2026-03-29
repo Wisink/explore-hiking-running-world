@@ -1,0 +1,6 @@
+{
+  "usingComponents": {
+    "login-popup": "/components/login-popup/login-popup"
+  },
+  "navigationBarTitleText": "路线详情"
+}

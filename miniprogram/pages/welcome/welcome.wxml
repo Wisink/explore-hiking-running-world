@@ -1,0 +1,50 @@
+<!--pages/welcome/welcome.wxml-->
+<view class="welcome-page">
+  <!-- 背景图 -->
+  <view class="bg-image">
+    <image src="/images/banners/welcome-bg.png" mode="aspectFill" class="bg"></image>
+    <view class="bg-overlay"></view>
+  </view>
+  
+  <!-- 内容区域 -->
+  <view class="content">
+    <!-- Logo区域 -->
+    <view class="logo-section">
+      <view class="logo-icon">
+        <text class="logo-text">秦</text>
+      </view>
+      <text class="app-name">秦人户外集合</text>
+      <text class="slogan">与山同行，安全第一</text>
+    </view>
+    
+    <!-- 功能亮点 -->
+    <view class="features">
+      <view class="feature-item">
+        <text class="feature-icon">700+</text>
+        <text class="feature-text">精选路线，覆盖秦地</text>
+      </view>
+      <view class="feature-item">
+        <text class="feature-icon">智能</text>
+        <text class="feature-text">推荐最适合你的路线</text>
+      </view>
+      <view class="feature-item">
+        <text class="feature-icon">共享</text>
+        <text class="feature-text">万千户外人的经验</text>
+      </view>
+      <view class="feature-item">
+        <text class="feature-icon">成长</text>
+        <text class="feature-text">从新手到大神，陪你探索</text>
+      </view>
+    </view>
+    
+    <!-- 安全承诺 -->
+    <view class="safety-promise">
+      <text class="promise-text">安全出行，快乐户外</text>
+    </view>
+    
+    <!-- 开始按钮 -->
+    <view class="btn-area">
+      <button class="start-btn" bindtap="onStart">开始探索</button>
+    </view>
+  </view>
+</view>

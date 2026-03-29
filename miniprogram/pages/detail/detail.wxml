@@ -1,0 +1,219 @@
+<!--pages/detail/detail.wxml-->
+<view class="detail-page">
+  <!-- Loading 状态 -->
+  <view class="loading-wrapper" wx:if="{{loading}}">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <!-- 路线图片 -->
+  <block wx:if="{{!loading}}">
+  <view class="trail-image">
+    <image src="{{trail.image || '/images/banners/welcome-bg.png'}}" mode="aspectFill" class="image"></image>
+    <view class="image-overlay">
+      <text class="trail-name">{{trail.name}}</text>
+      <view class="trail-badges">
+        <text class="badge badge-difficulty">{{trail.difficulty}}</text>
+        <text class="badge badge-family" wx:if="{{trail.family_friendly}}">👶 亲子</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 路线信息卡片 -->
+  <view class="info-card">
+    <!-- 基础信息 -->
+    <view class="basic-info">
+      <view class="info-row">
+        <view class="info-item">
+          <text class="item-label">风景评分</text>
+          <view class="item-value stars">
+            <text class="star-text">{{trail.scenery}}/5星</text>
+          </view>
+        </view>
+        <view class="info-item">
+          <text class="item-label">全程</text>
+          <text class="item-value">{{trail.distance}}</text>
+        </view>
+        <view class="info-item">
+          <text class="item-label">耗时</text>
+          <text class="item-value">{{trail.duration}}</text>
+        </view>
+      </view>
+      
+      <view class="info-row">
+        <view class="info-item">
+          <text class="item-label">位置</text>
+          <text class="item-value">📍 {{trail.location}}</text>
+        </view>
+      </view>
+
+      <view class="info-row" wx:if="{{trail.best_season}}">
+        <view class="info-item">
+          <text class="item-label">最佳季节</text>
+          <view class="season-tags">
+            <text class="season-tag" wx:for="{{trail.best_season}}" wx:key="*this">{{item}}</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="info-row" wx:if="{{trail.family_index}}">
+        <view class="info-item">
+          <text class="item-label">亲子指数</text>
+          <text class="item-value">{{trail.family_index}}星 | {{trail.suitable_age}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 景色特点 -->
+    <view class="features-section" wx:if="{{trail.features && trail.features.length > 0}}">
+      <text class="section-title">景色特点</text>
+      <view class="feature-tags">
+        <text class="feature-tag" wx:for="{{trail.features}}" wx:key="*this">{{item}}</text>
+      </view>
+    </view>
+
+    <!-- 路线亮点 -->
+    <view class="highlights-section" wx:if="{{trail.highlights}}">
+      <text class="section-title">路线亮点</text>
+      <text class="highlight-text">{{trail.highlights}}</text>
+    </view>
+
+    <!-- 经典线路 -->
+    <view class="route-section" wx:if="{{trail.classic_route}}">
+      <text class="section-title">经典线路</text>
+      <text class="route-text">{{trail.classic_route}}</text>
+    </view>
+
+    <!-- 费用信息 -->
+    <view class="cost-section" wx:if="{{trail.cost}}">
+      <text class="section-title">费用参考</text>
+      <text class="cost-text">{{trail.cost}}</text>
+    </view>
+
+    <!-- 交通指南 -->
+    <view class="traffic-section" wx:if="{{trail.traffic}}">
+      <text class="section-title">🚗 交通指南</text>
+      <text class="traffic-text">{{trail.traffic}}</text>
+    </view>
+
+    <!-- 门票信息 -->
+    <view class="ticket-section" wx:if="{{trail.ticket_info}}">
+      <text class="section-title">🎫 门票信息</text>
+      <text class="ticket-text">{{trail.ticket_info}}</text>
+    </view>
+
+    <!-- 路线描述 -->
+    <view class="desc-section" wx:if="{{trail.description}}">
+      <text class="section-title">📝 路线介绍</text>
+      <text class="desc-text">{{trail.description}}</text>
+    </view>
+
+    <!-- 最佳时间 -->
+    <view class="best-time-section" wx:if="{{trail.best_time}}">
+      <text class="section-title">📅 最佳时间</text>
+      <text class="best-time-text">{{trail.best_time}}</text>
+    </view>
+
+    <!-- 路线详情 -->
+    <view class="route-detail-section" wx:if="{{trail.route_detail}}">
+      <text class="section-title">🗺️ 路线详情</text>
+      <text class="route-detail-text">{{trail.route_detail}}</text>
+    </view>
+
+    <!-- 打卡点 -->
+    <view class="checkpoints-section" wx:if="{{trail.checkpoints}}">
+      <text class="section-title">📸 打卡点</text>
+      <text class="checkpoints-text">{{trail.checkpoints}}</text>
+    </view>
+
+    <!-- 餐饮推荐 -->
+    <view class="food-section" wx:if="{{trail.food}}">
+      <text class="section-title">🍜 餐饮推荐</text>
+      <text class="food-text">{{trail.food}}</text>
+    </view>
+
+    <!-- 避坑提示 -->
+    <view class="pitfall-section" wx:if="{{trail.pitfall}}">
+      <text class="section-title">⚠️ 避坑提示</text>
+      <text class="pitfall-text">{{trail.pitfall}}</text>
+    </view>
+
+    <!-- 小贴士 -->
+    <view class="tips-section" wx:if="{{trail.tips}}">
+      <text class="section-title">💡 小贴士</text>
+      <text class="tips-text">{{trail.tips}}</text>
+    </view>
+
+    <!-- 安全提示 -->
+    <view class="safety-section">
+      <text class="section-title">🚨 安全提示</text>
+      <view class="safety-list">
+        <text class="safety-item" wx:for="{{trail.safety_tips || defaultSafetyTips}}" wx:key="*this">{{item}}</text>
+      </view>
+    </view>
+
+    <!-- 法律法规提醒 -->
+    <view class="law-section">
+      <text class="section-title">📜 法律法规提醒</text>
+      <view class="law-list">
+        <text class="law-item" wx:for="{{trail.law_tips || defaultLawTips}}" wx:key="*this">{{item}}</text>
+      </view>
+    </view>
+
+    <!-- 环保提醒 -->
+    <view class="eco-section">
+      <text class="section-title">🌿 环保提醒</text>
+      <view class="eco-list">
+        <text class="eco-item" wx:for="{{trail.eco_tips || defaultEcoTips}}" wx:key="*this">{{item}}</text>
+      </view>
+    </view>
+
+    <!-- 统计信息 -->
+    <view class="stats-section">
+      <text class="section-title">📊 数据统计</text>
+      <view class="stats-row">
+        <view class="stat-item">
+          <text class="stat-num">{{trail.view_count || 0}}</text>
+          <text class="stat-label">浏览</text>
+        </view>
+        <view class="stat-item">
+          <text class="stat-num">{{trail.likes_count || 0}}</text>
+          <text class="stat-label">点赞</text>
+        </view>
+        <view class="stat-item">
+          <text class="stat-num">{{trail.favorites_count || 0}}</text>
+          <text class="stat-label">收藏</text>
+        </view>
+        <view class="stat-item">
+          <text class="stat-num">{{trail.comments_count || 0}}</text>
+          <text class="stat-label">评论</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部操作栏 -->
+  <view class="bottom-bar">
+    <view class="bar-left">
+      <view class="bar-item" bindtap="onLike">
+        <text class="bar-icon">{{isLiked ? '❤️' : '🤍'}}</text>
+        <text class="bar-text">{{trail.likes_count || 0}}</text>
+      </view>
+      <view class="bar-item" bindtap="onFavorite">
+        <text class="bar-icon">{{isFavorited ? '⭐' : '☆'}}</text>
+        <text class="bar-text">收藏</text>
+      </view>
+      <view class="bar-item" bindtap="onComment">
+        <text class="bar-icon">💬</text>
+        <text class="bar-text">评论</text>
+      </view>
+    </view>
+    <view class="bar-right">
+      <button class="correction-btn" bindtap="onCorrection">纠错</button>
+    </view>
+  </view>
+
+  <!-- 登录弹窗 -->
+  <login-popup show="{{showLoginPopup}}" desc="{{loginDesc}}" bind:close="onLoginClose" bind:success="onLoginSuccess"></login-popup>
+  </block>
+</view>

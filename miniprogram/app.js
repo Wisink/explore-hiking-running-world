@@ -6,19 +6,9 @@ App({
       console.error('请使用 2.2.3 或以上的基础库以使用云能力')
     } else {
       wx.cloud.init({
-        env: 'prod-xxx', // 云开发环境ID，需要替换
+        env: 'cloud1-1ghoxvn859e9d0df', // 云开发环境ID
         traceUser: true,
       })
-    }
-
-    // 检查是否首次打开
-    const hasLaunched = wx.getStorageSync('hasLaunched')
-    if (!hasLaunched) {
-      wx.setStorageSync('hasLaunched', true)
-      // 标记为首次打开，欢迎页会用到
-      this.globalData.isFirstLaunch = true
-    } else {
-      this.globalData.isFirstLaunch = false
     }
 
     // 获取系统信息
@@ -30,6 +20,20 @@ App({
 
     // 获取用户信息
     this.checkUserLogin()
+
+    // 检查是否首次打开，跳转欢迎页
+    const hasLaunched = wx.getStorageSync('hasLaunched')
+    if (!hasLaunched) {
+      this.globalData.isFirstLaunch = true
+      // 延迟跳转，确保页面加载完成
+      setTimeout(() => {
+        wx.redirectTo({
+          url: '/pages/welcome/welcome'
+        })
+      }, 100)
+    } else {
+      this.globalData.isFirstLaunch = false
+    }
   },
 
   // 检查用户登录状态
@@ -46,33 +50,28 @@ App({
   // 用户登录
   login: function () {
     return new Promise((resolve, reject) => {
-      wx.getUserProfile({
-        desc: '用于完善用户资料',
-        success: (res) => {
-          const userInfo = res.userInfo
-          // 调用云函数登录
-          wx.cloud.callFunction({
-            name: 'user',
-            data: {
-              action: 'login',
-              userInfo: userInfo
-            },
-            success: (result) => {
-              if (result.result && result.result.code === 0) {
-                this.globalData.userInfo = result.result.data
-                this.globalData.isLogin = true
-                wx.setStorageSync('userInfo', result.result.data)
-                resolve(result.result.data)
-              } else {
-                reject(result.result)
-              }
-            },
-            fail: (err) => {
-              reject(err)
-            }
-          })
+      wx.showLoading({ title: '登录中...' })
+      
+      // 直接调用云函数登录（云函数会自动获取openid）
+      wx.cloud.callFunction({
+        name: 'user',
+        data: {
+          action: 'login',
+          userInfo: null
+        },
+        success: (result) => {
+          wx.hideLoading()
+          if (result.result && result.result.code === 0) {
+            this.globalData.userInfo = result.result.data
+            this.globalData.isLogin = true
+            wx.setStorageSync('userInfo', result.result.data)
+            resolve(result.result.data)
+          } else {
+            reject(result.result)
+          }
         },
         fail: (err) => {
+          wx.hideLoading()
           reject(err)
         }
       })

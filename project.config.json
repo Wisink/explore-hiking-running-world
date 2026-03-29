@@ -1,44 +1,30 @@
 {
+  "miniprogramRoot": "miniprogram/",
+  "cloudfunctionRoot": "cloudfunctions/",
   "description": "秦人户外集合 - 陕西户外徒步路线查询小程序",
   "packOptions": {
-    "ignore": [
-      {
-        "value": ".eslintrc.js",
-        "type": "file"
-      }
-    ],
+    "ignore": [],
     "include": []
   },
   "setting": {
     "bundle": false,
     "userConfirmedBundleSwitch": false,
     "urlCheck": true,
-    "scopeDataCheck": false,
-    "coverView": true,
     "es6": true,
     "postcss": true,
-    "compileHotReLoad": false,
-    "lazyloadPlaceholderEnable": false,
-    "preloadBackgroundData": false,
     "minified": true,
-    "autoAudits": false,
-    "newFeature": false,
+    "newFeature": true,
+    "compileWorklet": false,
     "uglifyFileName": false,
     "uploadWithSourceMap": true,
-    "useIsolateContext": false,
-    "nodeModules": false,
-    "enhance": true,
-    "showShadowRootInWxmlPanel": true,
+    "enhance": false,
     "packNpmManually": false,
     "packNpmRelationList": [],
     "minifyWXSS": true,
-    "disableUseStrict": false,
-    "showES6CompileOption": false,
-    "useCompilerPlugins": false,
-    "ignoreUploadUnusedFiles": true,
-    "compileWorklet": false,
     "minifyWXML": true,
     "localPlugins": false,
+    "disableUseStrict": false,
+    "useCompilerPlugins": false,
     "condition": false,
     "swc": false,
     "disableSWC": true,
@@ -49,11 +35,10 @@
     }
   },
   "compileType": "miniprogram",
-  "libVersion": "2.25.4",
+  "libVersion": "3.15.1",
   "appid": "wx45a27eae361c8cb5",
   "projectname": "qinren-outdoor",
   "condition": {},
-  "cloudfunctionRoot": "cloudfunctions/",
   "editorSetting": {
     "tabIndent": "insertSpaces",
     "tabSize": 2

@@ -1,0 +1,156 @@
+<!--pages/comments/comments.wxml-->
+<view class="page-container">
+  <!-- ========== 评论统计区域 ========== -->
+  <view class="stats-bar">
+    <view class="stat-item">
+      <text class="stat-label">评论</text>
+      <text class="stat-value">{{comments.length}}</text>
+    </view>
+    <view class="stat-item">
+      <text class="stat-label">平均评分</text>
+      <text class="stat-value avg-score">{{avgRating}}</text>
+    </view>
+  </view>
+
+  <!-- ========== 发表评论区域 ========== -->
+  <view class="comment-form">
+    <view class="form-title">发表评论</view>
+
+    <!-- 评分选择 -->
+    <view class="rating-row">
+      <text class="rating-label">评分</text>
+      <view class="star-list">
+        <view class="star-item" wx:for="{{5}}" wx:key="*this" data-index="{{index + 1}}" bindtap="onRatingTap">
+          <text class="star-icon {{index < rating ? 'active' : ''}}">{{index < rating ? '⭐' : '☆'}}</text>
+        </view>
+      </view>
+      <text class="rating-text" wx:if="{{rating}}">{{ratingTexts[rating - 1]}}</text>
+    </view>
+
+    <!-- 评论输入框 -->
+    <textarea
+      class="comment-textarea"
+      placeholder="分享你的体验和建议..."
+      maxlength="500"
+      value="{{commentText}}"
+      bindinput="onCommentInput"
+    />
+
+    <!-- 选项勾选 -->
+    <view class="option-row">
+      <view class="checkbox-custom" bindtap="toggleVisited">
+        <text class="check-icon {{hasVisited ? 'checked' : ''}}">{{hasVisited ? '✅' : '⬜'}}</text>
+        <text class="label">已去过</text>
+      </view>
+      <view class="checkbox-custom" bindtap="toggleEco">
+        <text class="check-icon {{hasEco ? 'checked' : ''}}">{{hasEco ? '✅' : '⬜'}}</text>
+        <text class="label">我带走了垃圾</text>
+      </view>
+    </view>
+
+    <!-- 上传图片 -->
+    <view class="upload-section">
+      <view class="upload-row">
+        <view class="upload-item" wx:for="{{uploadImages}}" wx:key="index">
+          <image src="{{item}}" mode="aspectFill" />
+          <view class="delete-btn" data-index="{{index}}" catchtap="deleteImage">×</view>
+        </view>
+        <view class="upload-btn" wx:if="{{uploadImages.length < 3}}" bindtap="chooseImage">
+          <text class="iconfont">+</text>
+          <text class="text">{{uploadImages.length}}/3</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 发布按钮 -->
+    <button class="submit-btn" bindtap="submitComment" loading="{{submitting}}">发布评论</button>
+  </view>
+
+  <!-- ========== 评论列表 ========== -->
+  <view class="comment-list" wx:if="{{comments.length > 0}}">
+    <view class="comment-card" wx:for="{{comments}}" wx:key="_id">
+      <!-- 用户信息 -->
+      <view class="user-row">
+        <image class="user-avatar" src="{{item.avatarUrl || '/images/avatar-male.jpg'}}" mode="aspectFill" />
+        <view class="user-info">
+          <view class="user-name">
+            {{item.nickName || '匿名用户'}}
+            <text class="level-badge" wx:if="{{item.levelBadge}}">{{item.levelBadge}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 评分星星 -->
+      <view class="comment-stars">
+        <text
+          class="star-icon {{si < item.rating ? 'active' : ''}}"
+          wx:for="{{5}}"
+          wx:for-item="si"
+          wx:key="si"
+        >{{si < item.rating ? '⭐' : '☆'}}</text>
+      </view>
+
+      <!-- 评论内容 -->
+      <view class="comment-content">{{item.content}}</view>
+
+      <!-- 评论图片 - 九宫格 -->
+      <view class="comment-images {{item.images.length === 2 ? 'col-2' : item.images.length === 1 ? 'col-1' : ''}}" wx:if="{{item.images && item.images.length > 0}}">
+        <view class="img-item" wx:for="{{item.images}}" wx:for-item="img" wx:key="index">
+          <image src="{{img}}" mode="aspectFill" bindtap="previewImage" data-src="{{img}}" data-list="{{item.images}}" />
+        </view>
+      </view>
+
+      <!-- 标记行 -->
+      <view class="tag-row">
+        <view class="tag-item tag-visited" wx:if="{{item.hasVisited}}">
+          <text class="iconfont">✓</text>已去过
+        </view>
+        <view class="tag-item tag-eco" wx:if="{{item.hasEco}}">
+          <text class="iconfont">🌿</text>带走垃圾
+        </view>
+      </view>
+
+      <!-- 底部操作栏 -->
+      <view class="action-row">
+        <text class="comment-time">{{item.timeAgo}}</text>
+        <view class="action-btns">
+          <view class="action-btn {{item.isLiked ? 'liked' : ''}}" data-id="{{item._id}}" bindtap="likeComment">
+            <text class="like-icon">{{item.isLiked ? '❤️' : '🤍'}}</text>
+            {{item.likeCount || 0}}
+          </view>
+          <view class="action-btn" data-comment="{{item}}" bindtap="replyComment">
+            <text class="reply-icon">💬</text>回复
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- ========== 空状态 ========== -->
+  <view class="empty-state" wx:if="{{comments.length === 0 && !loading}}">
+    <text class="iconfont">📝</text>
+    <text class="text">暂无评论，来写第一条吧~</text>
+  </view>
+
+  <!-- ========== 回复弹窗 ========== -->
+  <view class="reply-mask" wx:if="{{showReplyPanel}}" bindtap="closeReplyPanel">
+    <view class="reply-panel" catchtap="stopPropagation">
+      <view class="panel-header">
+        <text class="panel-title">回复 {{replyTarget.nickName || '匿名用户'}}</text>
+        <text class="close-btn" bindtap="closeReplyPanel">×</text>
+      </view>
+      <textarea
+        class="reply-textarea"
+        placeholder="写下你的回复..."
+        maxlength="200"
+        value="{{replyText}}"
+        bindinput="onReplyInput"
+        focus="{{showReplyPanel}}"
+      />
+      <button class="reply-submit-btn" bindtap="submitReply" loading="{{replySubmitting}}">发送</button>
+    </view>
+  </view>
+
+  <!-- 登录弹窗 -->
+  <login-popup show="{{showLoginPopup}}" desc="登录后可以发表评论" bind:close="onLoginClose" bind:success="onLoginSuccess"></login-popup>
+</view>

@@ -1,0 +1,525 @@
+/* pages/comments/comments.wxss */
+
+/* ========== 页面基础 ========== */
+.page-container {
+  min-height: 100vh;
+  background-color: #F8F6F0;
+  padding-bottom: 40rpx;
+}
+
+/* ========== 评论统计区域 ========== */
+.stats-bar {
+  display: flex;
+  align-items: center;
+  padding: 28rpx 32rpx;
+  background-color: #FFFFFF;
+  margin-bottom: 16rpx;
+}
+
+.stats-bar .stat-item {
+  display: flex;
+  align-items: center;
+  margin-right: 40rpx;
+}
+
+.stats-bar .stat-label {
+  font-size: 26rpx;
+  color: #6B7B8D;
+  margin-right: 12rpx;
+}
+
+.stats-bar .stat-value {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #2D5A27;
+}
+
+.stats-bar .avg-score {
+  color: #FF8C42;
+}
+
+/* ========== 发表评论区域 ========== */
+.comment-form {
+  background-color: #FFFFFF;
+  padding: 28rpx 32rpx;
+  margin-bottom: 16rpx;
+  border-radius: 16rpx;
+  margin: 0 16rpx 16rpx;
+}
+
+.form-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #333333;
+  margin-bottom: 24rpx;
+}
+
+/* 评分选择 */
+.rating-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 24rpx;
+}
+
+.rating-label {
+  font-size: 26rpx;
+  color: #6B7B8D;
+  margin-right: 16rpx;
+}
+
+.star-list {
+  display: flex;
+  align-items: center;
+}
+
+.star-item {
+  width: 48rpx;
+  height: 48rpx;
+  margin-right: 8rpx;
+  line-height: 48rpx;
+  text-align: center;
+}
+
+.star-item .iconfont {
+  font-size: 40rpx;
+  color: #DDDDDD;
+  transition: color 0.2s;
+}
+
+.star-item .iconfont.active {
+  color: #FF8C42;
+}
+
+.rating-text {
+  font-size: 24rpx;
+  color: #FF8C42;
+  margin-left: 16rpx;
+}
+
+/* 评论输入框 */
+.comment-textarea {
+  width: 100%;
+  min-height: 180rpx;
+  background-color: #F8F6F0;
+  border-radius: 16rpx;
+  padding: 20rpx;
+  font-size: 28rpx;
+  color: #333333;
+  box-sizing: border-box;
+  margin-bottom: 24rpx;
+}
+
+.comment-textarea::placeholder {
+  color: #BBBBBB;
+}
+
+/* 选项勾选行 */
+.option-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+.option-row:last-child {
+  margin-bottom: 24rpx;
+}
+
+.checkbox-custom {
+  display: flex;
+  align-items: center;
+  margin-right: 40rpx;
+}
+
+.checkbox-custom .iconfont {
+  font-size: 36rpx;
+  color: #CCCCCC;
+  margin-right: 8rpx;
+}
+
+.checkbox-custom .iconfont.checked {
+  color: #2D5A27;
+}
+
+.checkbox-custom .label {
+  font-size: 26rpx;
+  color: #333333;
+}
+
+/* 上传图片 */
+.upload-section {
+  margin-bottom: 24rpx;
+}
+
+.upload-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+}
+
+.upload-item {
+  position: relative;
+  width: 180rpx;
+  height: 180rpx;
+  border-radius: 16rpx;
+  overflow: hidden;
+}
+
+.upload-item image {
+  width: 100%;
+  height: 100%;
+  border-radius: 16rpx;
+}
+
+.upload-item .delete-btn {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 40rpx;
+  height: 40rpx;
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 0 0 0 16rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFFFFF;
+  font-size: 28rpx;
+}
+
+.upload-btn {
+  width: 180rpx;
+  height: 180rpx;
+  border: 2rpx dashed #CCCCCC;
+  border-radius: 16rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #F8F6F0;
+}
+
+.upload-btn .iconfont {
+  font-size: 48rpx;
+  color: #BBBBBB;
+  margin-bottom: 8rpx;
+}
+
+.upload-btn .text {
+  font-size: 22rpx;
+  color: #BBBBBB;
+}
+
+/* 发布按钮 */
+.submit-btn {
+  width: 100%;
+  height: 88rpx;
+  background-color: #2D5A27;
+  color: #FFFFFF;
+  font-size: 32rpx;
+  font-weight: 600;
+  border-radius: 16rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+}
+
+.submit-btn[disabled] {
+  background-color: #CCCCCC;
+  opacity: 0.7;
+}
+
+/* ========== 登录提示 ========== */
+.login-tip {
+  background-color: #FFFFFF;
+  padding: 40rpx 32rpx;
+  margin: 0 16rpx 16rpx;
+  border-radius: 16rpx;
+  text-align: center;
+}
+
+.login-tip .text {
+  font-size: 28rpx;
+  color: #6B7B8D;
+  margin-bottom: 24rpx;
+}
+
+.login-tip .login-btn {
+  display: inline-block;
+  padding: 16rpx 48rpx;
+  background-color: #2D5A27;
+  color: #FFFFFF;
+  font-size: 28rpx;
+  border-radius: 16rpx;
+  border: none;
+}
+
+/* ========== 评论列表 ========== */
+.comment-list {
+  padding: 0 16rpx;
+}
+
+.comment-card {
+  background-color: #FFFFFF;
+  border-radius: 16rpx;
+  padding: 28rpx;
+  margin-bottom: 16rpx;
+}
+
+/* 用户信息 */
+.user-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+.user-avatar {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 50%;
+  margin-right: 16rpx;
+  background-color: #F0F0F0;
+}
+
+.user-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.user-name {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #333333;
+  display: flex;
+  align-items: center;
+}
+
+.level-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2rpx 12rpx;
+  background-color: rgba(45, 90, 39, 0.1);
+  border-radius: 8rpx;
+  margin-left: 12rpx;
+  font-size: 20rpx;
+  color: #2D5A27;
+  font-weight: 400;
+}
+
+/* 评分星星 */
+.comment-stars {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12rpx;
+}
+
+.comment-stars .iconfont {
+  font-size: 28rpx;
+  color: #DDDDDD;
+  margin-right: 4rpx;
+}
+
+.comment-stars .iconfont.active {
+  color: #FF8C42;
+}
+
+/* 评论内容 */
+.comment-content {
+  font-size: 28rpx;
+  color: #333333;
+  line-height: 1.6;
+  margin-bottom: 16rpx;
+  word-break: break-all;
+}
+
+/* 评论图片 - 九宫格 */
+.comment-images {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8rpx;
+  margin-bottom: 16rpx;
+}
+
+.comment-images .img-item {
+  width: 200rpx;
+  height: 200rpx;
+  border-radius: 12rpx;
+  overflow: hidden;
+}
+
+.comment-images .img-item image {
+  width: 100%;
+  height: 100%;
+}
+
+.comment-images.col-2 .img-item {
+  width: calc(50% - 4rpx);
+  height: 240rpx;
+}
+
+.comment-images.col-1 .img-item {
+  width: 60%;
+  height: 320rpx;
+}
+
+/* 标记行 */
+.tag-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16rpx;
+  flex-wrap: wrap;
+  gap: 12rpx;
+}
+
+.tag-item {
+  display: inline-flex;
+  align-items: center;
+  padding: 4rpx 16rpx;
+  border-radius: 8rpx;
+  font-size: 22rpx;
+}
+
+.tag-visited {
+  background-color: rgba(45, 90, 39, 0.1);
+  color: #2D5A27;
+}
+
+.tag-eco {
+  background-color: rgba(255, 140, 66, 0.1);
+  color: #FF8C42;
+}
+
+.tag-item .iconfont {
+  font-size: 22rpx;
+  margin-right: 6rpx;
+}
+
+/* 底部操作栏 */
+.action-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 16rpx;
+  border-top: 1rpx solid #F0F0F0;
+}
+
+.comment-time {
+  font-size: 22rpx;
+  color: #BBBBBB;
+}
+
+.action-btns {
+  display: flex;
+  align-items: center;
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  padding: 8rpx 20rpx;
+  font-size: 24rpx;
+  color: #6B7B8D;
+  background: none;
+  border: none;
+  margin-left: 16rpx;
+}
+
+.action-btn .iconfont {
+  font-size: 28rpx;
+  margin-right: 8rpx;
+}
+
+.action-btn.liked {
+  color: #FF8C42;
+}
+
+/* ========== 空状态 ========== */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 120rpx 0;
+}
+
+.empty-state .iconfont {
+  font-size: 120rpx;
+  color: #DDDDDD;
+  margin-bottom: 24rpx;
+}
+
+.empty-state .text {
+  font-size: 28rpx;
+  color: #BBBBBB;
+}
+
+/* ========== 回复弹窗 ========== */
+.reply-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 100;
+  display: flex;
+  align-items: flex-end;
+}
+
+.reply-panel {
+  width: 100%;
+  background-color: #FFFFFF;
+  border-radius: 32rpx 32rpx 0 0;
+  padding: 32rpx;
+  box-sizing: border-box;
+}
+
+.reply-panel .panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24rpx;
+}
+
+.reply-panel .panel-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #333333;
+}
+
+.reply-panel .close-btn {
+  font-size: 40rpx;
+  color: #999999;
+  padding: 0 8rpx;
+}
+
+.reply-textarea {
+  width: 100%;
+  min-height: 160rpx;
+  background-color: #F8F6F0;
+  border-radius: 16rpx;
+  padding: 20rpx;
+  font-size: 28rpx;
+  color: #333333;
+  box-sizing: border-box;
+  margin-bottom: 24rpx;
+}
+
+.reply-submit-btn {
+  width: 100%;
+  height: 88rpx;
+  background-color: #2D5A27;
+  color: #FFFFFF;
+  font-size: 32rpx;
+  font-weight: 600;
+  border-radius: 16rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+}
+
+.reply-submit-btn[disabled] {
+  background-color: #CCCCCC;
+  opacity: 0.7;
+}

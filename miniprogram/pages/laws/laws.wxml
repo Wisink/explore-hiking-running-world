@@ -1,0 +1,78 @@
+<!--pages/laws/laws.wxml-->
+<view class="laws-page">
+  <!-- 顶部搜索栏 -->
+  <view class="search-bar">
+    <view class="search-input-wrap">
+      <text class="search-icon">🔍</text>
+      <input
+        class="search-input"
+        placeholder="搜索法律法规..."
+        value="{{keyword}}"
+        bindinput="onSearchInput"
+        confirm-type="search"
+      />
+      <text class="search-clear" wx:if="{{keyword}}" bindtap="onSearchClear">✕</text>
+    </view>
+  </view>
+
+  <!-- 分类Tab -->
+  <scroll-view scroll-x class="tab-scroll" show-scrollbar="{{false}}">
+    <view class="tab-bar">
+      <view
+        class="tab-item {{activeTab === index ? 'tab-active' : ''}}"
+        wx:for="{{tabs}}"
+        wx:key="*this"
+        data-index="{{index}}"
+        bindtap="onTabChange"
+      >
+        <text class="tab-text">{{item}}</text>
+        <view class="tab-line" wx:if="{{activeTab === index}}"></view>
+      </view>
+    </view>
+  </scroll-view>
+
+  <!-- 文章列表 -->
+  <view class="article-list">
+    <!-- 空状态 -->
+    <view class="empty-state" wx:if="{{articleList.length === 0}}">
+      <text class="empty-icon">📋</text>
+      <text class="empty-text">暂无相关法规内容</text>
+    </view>
+
+    <!-- 文章卡片 -->
+    <view
+      class="article-card {{item.important ? 'article-important' : ''}}"
+      wx:for="{{articleList}}"
+      wx:key="id"
+      data-id="{{item.id}}"
+      bindtap="onArticleTap"
+    >
+      <!-- 卡片头部 -->
+      <view class="article-header">
+        <view class="article-title-wrap">
+          <text class="important-badge" wx:if="{{item.important}}">重要</text>
+          <text class="article-title">{{item.title}}</text>
+        </view>
+        <text class="expand-icon">{{expandedId === item.id ? '▲' : '▼'}}</text>
+      </view>
+
+      <!-- 文章摘要 -->
+      <view class="article-meta">
+        <text class="article-date">📅 {{item.date}}</text>
+        <text class="article-category">{{item.category}}</text>
+      </view>
+      <text class="article-summary">{{item.summary}}</text>
+
+      <!-- 展开详情 -->
+      <view class="article-detail" wx:if="{{expandedId === item.id}}">
+        <view class="detail-divider"></view>
+        <text class="detail-content">{{item.content}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 返回顶部按钮 -->
+  <view class="back-top" wx:if="{{showBackTop}}" bindtap="onBackTop">
+    <text class="back-top-icon">↑</text>
+  </view>
+</view>

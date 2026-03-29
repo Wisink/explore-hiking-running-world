@@ -9,7 +9,9 @@
     "pages/laws/laws",
     "pages/safety/safety",
     "pages/correction/correction",
-    "pages/comments/comments"
+    "pages/comments/comments",
+    "pages/etiquette/etiquette",
+    "pages/equipment/equipment"
   ],
   "window": {
     "backgroundTextStyle": "light",

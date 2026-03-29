@@ -1,0 +1,267 @@
+/* pages/profile/profile.wxss */
+
+.profile-page {
+  min-height: 100vh;
+  background-color: #F8F6F0;
+  padding-bottom: 40rpx;
+}
+
+/* ===== 用户信息区域 ===== */
+.user-section {
+  background: linear-gradient(135deg, #2D5A27 0%, #3D7A37 100%);
+  padding: 40rpx 30rpx 50rpx;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+}
+
+.avatar {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 50%;
+  border: 4rpx solid rgba(255, 255, 255, 0.5);
+  flex-shrink: 0;
+}
+
+.avatar-placeholder {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.avatar-icon {
+  font-size: 56rpx;
+}
+
+.user-detail {
+  margin-left: 24rpx;
+  flex: 1;
+}
+
+.nickname {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #FFFFFF;
+  display: block;
+  margin-bottom: 8rpx;
+}
+
+.level-badge {
+  display: flex;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 20rpx;
+  padding: 4rpx 16rpx;
+  align-self: flex-start;
+}
+
+.level-icon {
+  font-size: 24rpx;
+  margin-right: 6rpx;
+}
+
+.level-text {
+  font-size: 22rpx;
+  color: #FFFFFF;
+}
+
+.login-tip {
+  margin-left: 24rpx;
+  flex: 1;
+}
+
+.login-text {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #FFFFFF;
+  display: block;
+  margin-bottom: 8rpx;
+}
+
+.login-desc {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.arrow {
+  font-size: 40rpx;
+  color: rgba(255, 255, 255, 0.6);
+  margin-left: 16rpx;
+}
+
+/* ===== 数据卡片 ===== */
+.stats-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  background-color: #FFFFFF;
+  margin: -30rpx 24rpx 24rpx;
+  padding: 30rpx 20rpx;
+  border-radius: 16rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.06);
+  position: relative;
+  z-index: 1;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+
+.stat-num {
+  font-size: 40rpx;
+  font-weight: bold;
+  color: #2D5A27;
+  margin-bottom: 8rpx;
+}
+
+.stat-label {
+  font-size: 24rpx;
+  color: #6B7B8D;
+}
+
+.stat-divider {
+  width: 1rpx;
+  height: 48rpx;
+  background-color: #EEEEEE;
+}
+
+/* ===== 菜单区域 ===== */
+.menu-section {
+  padding: 0 24rpx;
+}
+
+.menu-group {
+  background-color: #FFFFFF;
+  border-radius: 16rpx;
+  margin-bottom: 20rpx;
+  overflow: hidden;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.03);
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 28rpx 30rpx;
+  position: relative;
+}
+
+.menu-item::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 90rpx;
+  right: 30rpx;
+  height: 1rpx;
+  background-color: #F0F0F0;
+}
+
+.menu-item:last-child::after {
+  display: none;
+}
+
+.menu-left {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.menu-icon {
+  font-size: 36rpx;
+  margin-right: 20rpx;
+  width: 44rpx;
+  text-align: center;
+}
+
+.menu-name {
+  font-size: 30rpx;
+  color: #333333;
+}
+
+.menu-right {
+  display: flex;
+  align-items: center;
+}
+
+.menu-arrow {
+  font-size: 32rpx;
+  color: #CCCCCC;
+  margin-left: 12rpx;
+}
+
+/* 消息未读红点 */
+.badge {
+  background-color: #FF4D4F;
+  border-radius: 16rpx;
+  min-width: 32rpx;
+  height: 32rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 12rpx;
+  padding: 0 8rpx;
+}
+
+.badge-text {
+  font-size: 20rpx;
+  color: #FFFFFF;
+  font-weight: bold;
+}
+
+/* 等级进度条 */
+.level-progress {
+  display: flex;
+  align-items: center;
+  margin-right: 12rpx;
+}
+
+.progress-bar {
+  width: 120rpx;
+  height: 12rpx;
+  background-color: #F0F0F0;
+  border-radius: 6rpx;
+  overflow: hidden;
+  margin-right: 12rpx;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #2D5A27, #3D7A37);
+  border-radius: 6rpx;
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  font-size: 22rpx;
+  color: #6B7B8D;
+  white-space: nowrap;
+}
+
+/* ===== 底部安全提示 ===== */
+.footer-tip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 30rpx 24rpx;
+  margin: 10rpx 24rpx 0;
+}
+
+.tip-icon {
+  font-size: 28rpx;
+  margin-right: 10rpx;
+}
+
+.tip-text {
+  font-size: 24rpx;
+  color: #6B7B8D;
+}
