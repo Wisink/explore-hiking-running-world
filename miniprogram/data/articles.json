@@ -1,0 +1,82 @@
+[
+  {
+    "_id": "article_001",
+    "category": "装备选购",
+    "title": "徒步鞋怎么选",
+    "summary": "新手第一双鞋的选择指南，帮你挑到最合适的那双",
+    "content": "<div class=\"article-body\"><h2>为什么徒步鞋很重要？</h2><p>一双好的徒步鞋是户外活动的基础。不合适的鞋子不仅会让你的脚受苦，还可能导致扭伤、起泡等问题，严重影响徒步体验。</p><h2>选购要点</h2><p><strong>1. 鞋底硬度：</strong>新手建议选择中等硬度的鞋底，既能提供足够的支撑，又不会太硬影响舒适度。</p><p><strong>2. 防水性能：</strong>秦岭地区多溪流和露水，建议选择GORE-TEX防水面料的鞋款。</p><p><strong>3. 鞋帮高度：</strong>低帮轻便灵活，适合成熟路线；中帮提供脚踝支撑，适合复杂地形。</p><p><strong>4. 磨合期：</strong>新鞋一定要提前磨合！建议穿着走2-3次短途再上长线。</p><h2>推荐预算</h2><p>新手入门：300-500元即可满足大部分秦岭路线需求。不必追求顶级品牌，合脚最重要。</p></div>",
+    "coverImage": "",
+    "order": 1,
+    "createdAt": "2026-03-29"
+  },
+  {
+    "_id": "article_002",
+    "category": "装备选购",
+    "title": "登山杖入门指南",
+    "summary": "别小看这两根棍子，它们能救你的膝盖",
+    "content": "<div class=\"article-body\"><h2>登山杖的作用</h2><p>登山杖能分担约30%的腿部负重，下坡时尤其明显。长期徒步的人，膝盖是最需要保护的部位。</p><h2>如何选择</h2><p><strong>材质：</strong>铝合金性价比高，碳纤维更轻但价格较贵。新手推荐铝合金。</p><p><strong>节数：</strong>三节折叠最常见，收纳方便。两节更稳固，但携带稍占空间。</p><p><strong>握把：</strong>软木握把透气吸汗，塑料握把冬天不冰手但夏天闷热。</p><h2>使用技巧</h2><p>上坡时缩短5-10cm，下坡时伸长5-10cm。手腕穿过腕带后从下方握住握把，这样可以借助腕带承重，减少手掌握力。</p></div>",
+    "coverImage": "",
+    "order": 2,
+    "createdAt": "2026-03-29"
+  },
+  {
+    "_id": "article_003",
+    "category": "装备选购",
+    "title": "背包怎么选不踩坑",
+    "summary": "容量、背负系统、防水，三个关键点搞定",
+    "content": "<div class=\"article-body\"><h2>容量选择</h2><p><strong>一日徒步：</strong>20-30L足够，装水、食物、外套、急救包即可。</p><p><strong>两日露营：</strong>40-50L，需要额外带帐篷、睡袋等装备。</p><h2>背负系统</h2><p>好的背负系统能把60%以上的重量转移到髋部。试背包时一定要装东西试背，空包试不出效果。</p><h2>防水方案</h2><p>大多数背包本身不防水。建议购买配套防雨罩，或用大号垃圾袋做内衬，成本低效果好。</p></div>",
+    "coverImage": "",
+    "order": 3,
+    "createdAt": "2026-03-29"
+  },
+  {
+    "_id": "article_004",
+    "category": "安全自救",
+    "title": "迷路了怎么办",
+    "summary": "STOP原则让你冷静应对迷路困境",
+    "content": "<div class=\"article-body\"><h2>STOP原则</h2><p><strong>S - Stop（停下来）：</strong>发现自己迷路后，第一件事就是停下来，不要慌乱继续走。</p><p><strong>T - Think（思考）：</strong>回忆来时的路，观察周围环境特征。</p><p><strong>O - Observe（观察）：</strong>寻找明显地标，注意太阳方向判断方位。</p><p><strong>P - Plan（计划）：</strong>如果能原路返回最好；如果不能，待在原地等待救援。</p><h2>预防措施</h2><p>出发前下载离线地图，告诉家人你的路线和预计返回时间。随身携带充电宝保证手机有电。</p></div>",
+    "coverImage": "",
+    "order": 1,
+    "createdAt": "2026-03-29"
+  },
+  {
+    "_id": "article_005",
+    "category": "安全自救",
+    "title": "扭伤处理三步法",
+    "summary": "PRICE原则，户外扭伤的正确急救方式",
+    "content": "<div class=\"article-body\"><h2>PRICE急救法</h2><p><strong>P - Protect（保护）：</strong>立即停止活动，避免二次伤害。</p><p><strong>R - Rest（休息）：</strong>让受伤部位充分休息，不要逞强继续走。</p><p><strong>I - Ice（冰敷）：</strong>用溪水浸湿毛巾冷敷，每次15-20分钟。山里没有冰，冷水也有效。</p><p><strong>C - Compression（加压）：</strong>用弹性绷带适度包扎，减少肿胀。</p><p><strong>E - Elevation（抬高）：</strong>将受伤部位抬高到心脏以上。</p><h2>什么时候需要下撤？</h2><p>如果疼痛剧烈、无法承重、明显肿胀或畸形，必须立即下撤就医。</p></div>",
+    "coverImage": "",
+    "order": 2,
+    "createdAt": "2026-03-29"
+  },
+  {
+    "_id": "article_006",
+    "category": "安全自救",
+    "title": "中暑预防与处理",
+    "summary": "夏天徒步的头号杀手，学会识别和预防",
+    "content": "<div class=\"article-body\"><h2>中暑信号</h2><p>头痛、头晕、恶心、大量出汗或突然不出汗、体温升高、意识模糊。出现任何症状都要立即处理。</p><h2>预防措施</h2><p><strong>补水：</strong>少量多次，每15-20分钟喝一口。不要等渴了再喝。</p><p><strong>防晒：</strong>帽子、防晒霜、长袖速干衣。物理防晒比化学防晒更可靠。</p><p><strong>节奏：</strong>夏季尽量早出发（6-7点），避开中午11-14点的高温时段。</p><h2>紧急处理</h2><p>转移到阴凉处，解开衣物，用湿毛巾擦拭身体降温。补充含盐分的水（运动饮料或淡盐水）。严重者立即呼叫救援。</p></div>",
+    "coverImage": "",
+    "order": 3,
+    "createdAt": "2026-03-29"
+  },
+  {
+    "_id": "article_007",
+    "category": "户外礼仪",
+    "title": "LNT无痕山林七原则",
+    "summary": "Leave No Trace，做有素质的户外人",
+    "content": "<div class=\"article-body\"><h2>什么是LNT？</h2><p>Leave No Trace（无痕山林）是国际通用的户外伦理准则，核心理念是把对自然的影响降到最低。</p><h2>七项原则</h2><p><strong>1. 事先计划与准备：</strong>了解路线、天气，带足装备，避免临时产生垃圾。</p><p><strong>2. 在可耐受地面行走：</strong>走已有步道，不要抄近道踩出新路。</p><p><strong>3. 妥善处理废弃物：</strong>所有垃圾带下山，包括果皮和纸巾。</p><p><strong>4. 保持自然原貌：</strong>不采摘植物、不移动石头、不刻字留念。</p><p><strong>5. 减少用火影响：</strong>尽量使用炉头，不生篝火。</p><p><strong>6. 尊重野生动物：</strong>不投喂、不追逐、保持距离。</p><p><strong>7. 尊重其他访客：</strong>控制音量，礼让他人。</p></div>",
+    "coverImage": "",
+    "order": 1,
+    "createdAt": "2026-03-29"
+  },
+  {
+    "_id": "article_008",
+    "category": "户外礼仪",
+    "title": "团队徒步的规矩",
+    "summary": "AA约伴出行，这些潜规则要懂",
+    "content": "<div class=\"article-body\"><h2>基本规矩</h2><p><strong>准时：</strong>集合时间是底线，迟到超过15分钟可以被丢下。</p><p><strong>服从领队：</strong>领队有最终决定权，包括路线调整、下撤判断。有意见可以提，但要服从安排。</p><p><strong>不抛弃队友：</strong>队伍中体力最差的人决定了整体速度，快的人等慢的人。</p><h2>费用分摊</h2><p>AA制是最常见的方式。油费、过路费、餐费等按人头均摊。临时退出要提前说，产生的费用仍需承担。</p><h2>安全责任</h2><p>每个人对自己的安全负责。不要逞强，不舒服就说出来。团队活动中的意外伤害，原则上风险自担。</p></div>",
+    "coverImage": "",
+    "order": 2,
+    "createdAt": "2026-03-29"
+  }
+]

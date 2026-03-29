@@ -1,0 +1,48 @@
+/* 空状态组件样式 */
+
+.empty-state-comp {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 120rpx 60rpx;
+}
+
+.empty-state-comp__icon {
+  font-size: 120rpx;
+  margin-bottom: 24rpx;
+  line-height: 1;
+}
+
+.empty-state-comp__title {
+  font-size: 30rpx;
+  font-weight: 500;
+  color: #757575;
+  margin-bottom: 12rpx;
+}
+
+.empty-state-comp__desc {
+  font-size: 26rpx;
+  color: #9E9E9E;
+  text-align: center;
+  line-height: 1.6;
+  margin-bottom: 32rpx;
+}
+
+.empty-state-comp__btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16rpx 48rpx;
+  background-color: #2E7D32;
+  color: #FFFFFF;
+  font-size: 28rpx;
+  font-weight: 500;
+  border-radius: 8rpx;
+  transition: all 150ms ease;
+}
+
+.empty-state-comp__btn:active {
+  transform: scale(0.95);
+  background-color: #1B5E20;
+}

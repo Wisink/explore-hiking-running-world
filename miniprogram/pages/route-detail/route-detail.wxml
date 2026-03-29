@@ -1,0 +1,310 @@
+<!--pages/route-detail/route-detail.wxml-->
+<view class="detail-page">
+
+  <!-- Loading 状态 -->
+  <view class="loading-wrapper" wx:if="{{loading}}">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">加载路线详情...</text>
+  </view>
+
+  <block wx:if="{{!loading}}">
+
+  <!-- ===== 1. 图片轮播区 ===== -->
+  <view class="swiper-section">
+    <swiper
+      class="image-swiper"
+      autoplay
+      circular
+      interval="4000"
+      duration="300"
+      bindchange="onSwiperChange"
+    >
+      <swiper-item wx:for="{{trail.images}}" wx:key="index">
+        <image
+          class="swiper-image"
+          src="{{item}}"
+          mode="aspectFill"
+          bindtap="onPreviewImage"
+          data-src="{{item}}"
+        />
+      </swiper-item>
+    </swiper>
+    <!-- 轮播指示器 -->
+    <view class="swiper-indicators">
+      <view
+        class="indicator {{currentSwiperIndex === index ? 'active' : ''}}"
+        wx:for="{{trail.images}}"
+        wx:key="index"
+      ></view>
+    </view>
+    <!-- 图片计数 -->
+    <view class="swiper-counter">
+      <text>{{currentSwiperIndex + 1}}/{{trail.images.length}}</text>
+    </view>
+  </view>
+
+  <!-- ===== 2. 路线基本信息卡 ===== -->
+  <view class="info-card">
+    <view class="card-header">
+      <text class="trail-name">{{trail.name}}</text>
+      <text class="trail-desc">{{trail.description}}</text>
+    </view>
+
+    <!-- 难度星级 -->
+    <view class="difficulty-row">
+      <view class="diff-badge" style="background: {{trail.diffColor}}">
+        <text class="diff-icon">{{trail.diffIcon}}</text>
+        <text class="diff-text">{{trail.difficulty}}</text>
+      </view>
+      <view class="diff-stars">
+        <text
+          class="star {{index < trail.diffStars ? 'filled' : ''}}"
+          wx:for="{{5}}"
+          wx:key="index"
+        >{{index < trail.diffStars ? '★' : '☆'}}</text>
+      </view>
+      <text class="diff-desc">{{trail.diffText}}</text>
+    </view>
+
+    <!-- 核心数据 -->
+    <view class="data-row">
+      <view class="data-item" wx:if="{{trail.distance}}">
+        <text class="data-icon">📏</text>
+        <text class="data-label">距离</text>
+        <text class="data-value">{{trail.distance}}</text>
+      </view>
+      <view class="data-item" wx:if="{{trail.duration}}">
+        <text class="data-icon">⏱️</text>
+        <text class="data-label">耗时</text>
+        <text class="data-value">{{trail.duration}}</text>
+      </view>
+      <view class="data-item" wx:if="{{trail.elevation}}">
+        <text class="data-icon">📈</text>
+        <text class="data-label">爬升</text>
+        <text class="data-value">{{trail.elevation}}</text>
+      </view>
+    </view>
+
+    <!-- 费用 -->
+    <view class="cost-row" wx:if="{{trail.cost}}">
+      <text class="cost-icon">💰</text>
+      <text class="cost-label">费用</text>
+      <text class="cost-value">{{trail.cost}}</text>
+    </view>
+
+    <!-- 适合人群 -->
+    <view class="suitable-row" wx:if="{{trail.suitableFor.length > 0}}">
+      <text class="suitable-label">👥 适合人群</text>
+      <view class="suitable-tags">
+        <text class="suitable-tag" wx:for="{{trail.suitableFor}}" wx:key="*this">{{item}}</text>
+      </view>
+    </view>
+
+    <!-- 最佳季节 -->
+    <view class="season-row" wx:if="{{trail.bestSeason.length > 0}}">
+      <text class="season-label">📅 最佳季节</text>
+      <view class="season-tags">
+        <text class="season-tag" wx:for="{{trail.bestSeason}}" wx:key="*this">{{item}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- ===== 3. 操作按钮区 ===== -->
+  <view class="action-bar">
+    <view class="action-btn {{isFavorited ? 'active' : ''}}" bindtap="onFavorite">
+      <text class="action-icon">{{isFavorited ? '❤️' : '🤍'}}</text>
+      <text class="action-text">{{isFavorited ? '已收藏' : '收藏'}}</text>
+    </view>
+    <button class="action-btn share-btn" open-type="share">
+      <text class="action-icon">📤</text>
+      <text class="action-text">分享</text>
+    </button>
+    <view class="action-btn" bindtap="onGoChecklist">
+      <text class="action-icon">📋</text>
+      <text class="action-text">行前清单</text>
+    </view>
+    <view class="action-btn" bindtap="onCopyNavAddress">
+      <text class="action-icon">📍</text>
+      <text class="action-text">复制地址</text>
+    </view>
+  </view>
+
+  <!-- ===== 4. 分段路况（Accordion） ===== -->
+  <view class="section-card" wx:if="{{trail.sections && trail.sections.length > 0}}">
+    <view class="section-header" data-key="sections" bindtap="onToggleSection">
+      <text class="section-title">🗺️ 分段路况</text>
+      <text class="section-arrow {{sectionOpen.sections ? 'open' : ''}}">▼</text>
+    </view>
+    <view class="section-body {{sectionOpen.sections ? 'expanded' : ''}}">
+      <view class="section-item" wx:for="{{trail.sections}}" wx:key="index">
+        <view class="section-item-header">
+          <view class="section-dot"></view>
+          <text class="section-item-name">{{item.name}}</text>
+        </view>
+        <text class="section-item-desc">{{item.desc}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- ===== 5. 风景介绍 ===== -->
+  <view class="section-card" wx:if="{{trail.highlights}}">
+    <view class="section-header" data-key="scenery" bindtap="onToggleSection">
+      <text class="section-title">🌿 风景亮点</text>
+      <text class="section-arrow {{sectionOpen.scenery ? 'open' : ''}}">▼</text>
+    </view>
+    <view class="section-body {{sectionOpen.scenery ? 'expanded' : ''}}">
+      <text class="highlight-text">{{trail.highlights}}</text>
+      <view class="checkpoint-list" wx:if="{{trail.checkpoints}}">
+        <text class="checkpoint-title">📸 打卡点</text>
+        <text class="checkpoint-text">{{trail.checkpoints}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- ===== 6. 交通方案 ===== -->
+  <view class="section-card">
+    <view class="section-header" data-key="traffic" bindtap="onToggleSection">
+      <text class="section-title">🚗 交通方案</text>
+      <text class="section-arrow {{sectionOpen.traffic ? 'open' : ''}}">▼</text>
+    </view>
+    <view class="section-body {{sectionOpen.traffic ? 'expanded' : ''}}">
+      <!-- 自驾 -->
+      <view class="traffic-item">
+        <text class="traffic-type">🚘 自驾</text>
+        <text class="traffic-detail">{{trail.navAddress}}</text>
+        <view class="traffic-copy" bindtap="onCopyNavAddress">
+          <text>📋 复制导航地址</text>
+        </view>
+      </view>
+      <!-- 公交 -->
+      <view class="traffic-item" wx:if="{{trail.publicTransport}}">
+        <text class="traffic-type">🚌 公交</text>
+        <text class="traffic-detail">{{trail.publicTransport}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- ===== 7. 装备清单 ===== -->
+  <view class="section-card">
+    <view class="section-header" data-key="equipment" bindtap="onToggleSection">
+      <text class="section-title">🎒 装备清单</text>
+      <text class="section-arrow {{sectionOpen.equipment ? 'open' : ''}}">▼</text>
+    </view>
+    <view class="section-body {{sectionOpen.equipment ? 'expanded' : ''}}">
+      <!-- 必须带 -->
+      <view class="equip-group">
+        <view class="equip-group-header must">
+          <text class="equip-icon">🔴</text>
+          <text class="equip-title">必须带</text>
+        </view>
+        <view class="equip-list">
+          <text class="equip-item" wx:for="{{trail.equipment.must}}" wx:key="*this">• {{item}}</text>
+        </view>
+      </view>
+      <!-- 建议带 -->
+      <view class="equip-group">
+        <view class="equip-group-header suggest">
+          <text class="equip-icon">🟡</text>
+          <text class="equip-title">建议带</text>
+        </view>
+        <view class="equip-list">
+          <text class="equip-item" wx:for="{{trail.equipment.suggest}}" wx:key="*this">• {{item}}</text>
+        </view>
+      </view>
+      <!-- 不用带 -->
+      <view class="equip-group">
+        <view class="equip-group-header noneed">
+          <text class="equip-icon">🟢</text>
+          <text class="equip-title">不用带</text>
+        </view>
+        <view class="equip-list">
+          <text class="equip-item" wx:for="{{trail.equipment.noNeed}}" wx:key="*this">• {{item}}</text>
+        </view>
+      </view>
+      <view class="equip-more" bindtap="onGoChecklist">
+        <text>📋 查看完整行前清单 →</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- ===== 门票信息 ===== -->
+  <view class="info-section" wx:if="{{trail.ticket_info}}">
+    <text class="info-title">🎫 门票信息</text>
+    <text class="info-content">{{trail.ticket_info}}</text>
+  </view>
+
+  <!-- ===== 餐饮推荐 ===== -->
+  <view class="info-section" wx:if="{{trail.food}}">
+    <text class="info-title">🍜 餐饮推荐</text>
+    <text class="info-content">{{trail.food}}</text>
+  </view>
+
+  <!-- ===== 避坑提示 ===== -->
+  <view class="info-section warn" wx:if="{{trail.pitfall}}">
+    <text class="info-title">⚠️ 避坑提示</text>
+    <text class="info-content">{{trail.pitfall}}</text>
+  </view>
+
+  <!-- ===== 小贴士 ===== -->
+  <view class="info-section tip" wx:if="{{trail.tips}}">
+    <text class="info-title">💡 小贴士</text>
+    <text class="info-content">{{trail.tips}}</text>
+  </view>
+
+  <!-- ===== 8. 安全提醒 ===== -->
+  <view class="safety-card" wx:if="{{trail.safety_tips && trail.safety_tips.length > 0}}">
+    <view class="safety-header">
+      <text class="safety-icon">🚨</text>
+      <text class="safety-title">安全提醒</text>
+    </view>
+    <view class="safety-list">
+      <view class="safety-item" wx:for="{{trail.safety_tips}}" wx:key="index">
+        <text class="safety-bullet">⚠️</text>
+        <text class="safety-text">{{item}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- ===== 法律法规 ===== -->
+  <view class="law-card" wx:if="{{trail.law_tips && trail.law_tips.length > 0}}">
+    <text class="law-title">📜 法律法规</text>
+    <view class="law-list">
+      <text class="law-item" wx:for="{{trail.law_tips}}" wx:key="*this">• {{item}}</text>
+    </view>
+  </view>
+
+  <!-- ===== 环保提醒 ===== -->
+  <view class="eco-card" wx:if="{{trail.eco_tips && trail.eco_tips.length > 0}}">
+    <text class="eco-title">🌿 环保提醒</text>
+    <view class="eco-list">
+      <text class="eco-item" wx:for="{{trail.eco_tips}}" wx:key="*this">• {{item}}</text>
+    </view>
+  </view>
+
+  <!-- ===== 9. 紧急电话 ===== -->
+  <view class="emergency-card" wx:if="{{trail.emergencyPhone}}">
+    <view class="emergency-header">
+      <text class="emergency-icon">📞</text>
+      <text class="emergency-title">紧急联系电话</text>
+    </view>
+    <view class="emergency-phone" bindtap="onCallEmergency">
+      <text class="phone-text">{{trail.emergencyPhone}}</text>
+      <text class="phone-action">点击拨打 →</text>
+    </view>
+  </view>
+
+  <!-- ===== 10. 天气提示 ===== -->
+  <view class="weather-tip" wx:if="{{weather}}">
+    <text class="weather-title">🌤️ 当前天气参考</text>
+    <view class="weather-info">
+      <text class="weather-icon">{{weather.icon}}</text>
+      <text class="weather-temp">{{weather.temp}}°C</text>
+      <text class="weather-desc">{{weather.desc}}</text>
+    </view>
+  </view>
+
+  <!-- 底部安全间距 -->
+  <view class="bottom-safe"></view>
+
+  </block>
+</view>

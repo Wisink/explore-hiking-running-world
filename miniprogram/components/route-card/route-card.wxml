@@ -1,0 +1,58 @@
+<!-- 路线卡片组件 -->
+<view class="route-card" bindtap="onTap" hover-class="route-card-hover" hover-stay-time="100">
+  <!-- 封面图 -->
+  <view class="route-card__cover">
+    <image
+      class="route-card__image"
+      src="{{route.coverImage || route.cover}}"
+      mode="aspectFill"
+      lazy-load
+      binderror="onImageError"
+    />
+    <view class="route-card__cover-placeholder wx-if{{!route.coverImage && !route.cover}}">
+      <text class="route-card__cover-placeholder-text">🏔️</text>
+    </view>
+    <!-- 难度角标 -->
+    <view class="route-card__difficulty-badge difficulty-{{route.difficulty.level}}">
+      {{route.difficulty.label || difficultyText}}
+    </view>
+  </view>
+
+  <!-- 内容区 -->
+  <view class="route-card__body">
+    <!-- 路线名称 -->
+    <view class="route-card__title">{{route.name}}</view>
+    <!-- 一句话描述 -->
+    <view class="route-card__desc ellipsis">{{route.description}}</view>
+
+    <!-- 信息行 -->
+    <view class="route-card__info">
+      <view class="route-card__info-item">
+        <text class="route-card__info-icon">📏</text>
+        <text class="route-card__info-text">{{route.distance_km}}km</text>
+      </view>
+      <view class="route-card__info-item">
+        <text class="route-card__info-icon">⏱️</text>
+        <text class="route-card__info-text">{{route.duration_hours}}h</text>
+      </view>
+      <view class="route-card__info-item">
+        <text class="route-card__info-icon">⛰️</text>
+        <text class="route-card__info-text">{{route.elevation_gain_m}}m</text>
+      </view>
+      <view class="route-card__info-item route-card__cost {{route.cost.type === '免费' ? 'route-card__cost--free' : ''}}">
+        <text class="route-card__info-text">{{route.cost.type === '免费' ? '免费' : '¥' + (route.cost.amount || '?')}}</text>
+      </view>
+    </view>
+
+    <!-- 难度星级 -->
+    <view class="route-card__stars">
+      <text class="route-card__star" wx:for="{{5}}" wx:key="*this">{{index < route.difficulty.level ? '★' : '☆'}}</text>
+      <text class="route-card__star-label">{{route.difficulty.label}}</text>
+    </view>
+
+    <!-- 风景标签 -->
+    <view class="route-card__tags" wx:if="{{route.scenery && route.scenery.length}}">
+      <text class="route-card__scenery-tag" wx:for="{{route.scenery}}" wx:key="*this">{{item}}</text>
+    </view>
+  </view>
+</view>

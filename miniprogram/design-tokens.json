@@ -1,0 +1,121 @@
+{
+  "colors": {
+    "primary": {
+      "main": "#2E7D32",
+      "light": "#81C784",
+      "dark": "#1B5E20",
+      "bg": "rgba(46, 125, 50, 0.1)"
+    },
+    "accent": {
+      "main": "#FF8F00",
+      "light": "#FFB300",
+      "dark": "#E65100",
+      "bg": "rgba(255, 143, 0, 0.1)"
+    },
+    "neutral": {
+      "bg": "#F5F5F5",
+      "card": "#FFFFFF",
+      "textPrimary": "#212121",
+      "textSecondary": "#757575",
+      "textHint": "#9E9E9E",
+      "divider": "#E0E0E0",
+      "disabled": "#BDBDBD"
+    },
+    "difficulty": {
+      "1": "#4CAF50",
+      "2": "#8BC34A",
+      "3": "#FFC107",
+      "4": "#FF9800",
+      "5": "#F44336"
+    },
+    "tag": {
+      "difficulty": "#FF9800",
+      "cost": {
+        "free": "#4CAF50",
+        "paid": "#FF8F00"
+      },
+      "scenery": {
+        "bg": "rgba(129, 199, 132, 0.2)",
+        "text": "#2E7D32"
+      },
+      "crowd": {
+        "bg": "rgba(66, 165, 245, 0.15)",
+        "text": "#1565C0"
+      }
+    },
+    "status": {
+      "success": "#4CAF50",
+      "warning": "#FF9800",
+      "danger": "#F44336",
+      "info": "#2196F3"
+    }
+  },
+  "typography": {
+    "fontFamily": "-apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, 'PingFang SC', 'Microsoft YaHei', Arial, sans-serif",
+    "heading": {
+      "h1": { "size": "36rpx", "weight": "bold", "color": "#212121" },
+      "h2": { "size": "32rpx", "weight": "600", "color": "#212121" },
+      "h3": { "size": "28rpx", "weight": "500", "color": "#212121" }
+    },
+    "body": {
+      "large": { "size": "30rpx", "weight": "400", "color": "#424242" },
+      "regular": { "size": "28rpx", "weight": "400", "color": "#424242" },
+      "small": { "size": "24rpx", "weight": "400", "color": "#757575" },
+      "caption": { "size": "22rpx", "weight": "500", "color": "#757575" }
+    }
+  },
+  "spacing": {
+    "xs": "8rpx",
+    "sm": "12rpx",
+    "md": "16rpx",
+    "lg": "24rpx",
+    "xl": "32rpx",
+    "xxl": "48rpx",
+    "page": "32rpx",
+    "card": "24rpx"
+  },
+  "radius": {
+    "xs": "4rpx",
+    "sm": "8rpx",
+    "md": "12rpx",
+    "lg": "16rpx",
+    "xl": "24rpx",
+    "round": "50%"
+  },
+  "shadows": {
+    "card": "0 2rpx 8rpx rgba(0,0,0,0.08)",
+    "cardHover": "0 4rpx 16rpx rgba(0,0,0,0.12)",
+    "popup": "0 4rpx 16rpx rgba(0,0,0,0.12)",
+    "fab": "0 6rpx 20rpx rgba(0,0,0,0.15)"
+  },
+  "animations": {
+    "pageTransition": {
+      "enter": "300ms ease-out",
+      "exit": "250ms ease-in"
+    },
+    "buttonFeedback": {
+      "scale": "0.95",
+      "duration": "100ms"
+    },
+    "fadeIn": {
+      "duration": "200ms",
+      "timing": "ease"
+    },
+    "bounce": {
+      "duration": "400ms",
+      "timing": "cubic-bezier(0.68, -0.55, 0.265, 1.55)"
+    },
+    "leafRotate": {
+      "duration": "2000ms",
+      "timing": "linear",
+      "iteration": "infinite"
+    }
+  },
+  "zIndex": {
+    "tabBar": 100,
+    "filterBar": 90,
+    "popup": 200,
+    "mask": 190,
+    "toast": 300
+  }
+}

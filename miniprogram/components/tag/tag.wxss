@@ -1,0 +1,126 @@
+/* 标签组件样式 */
+
+.tag-item {
+  display: inline-flex;
+  align-items: center;
+  padding: 6rpx 16rpx;
+  border-radius: 4rpx;
+  font-size: 22rpx;
+  font-weight: 500;
+  transition: all 150ms ease;
+  user-select: none;
+}
+
+.tag-item--hover {
+  opacity: 0.8;
+  transform: scale(0.95);
+}
+
+/* 尺寸 */
+.tag-item--sm {
+  padding: 4rpx 12rpx;
+  font-size: 20rpx;
+}
+
+.tag-item--md {
+  padding: 6rpx 16rpx;
+  font-size: 22rpx;
+}
+
+.tag-item--lg {
+  padding: 8rpx 20rpx;
+  font-size: 24rpx;
+}
+
+/* 类型颜色 */
+.tag-item--difficulty {
+  background-color: rgba(255, 152, 0, 0.12);
+  color: #E65100;
+}
+
+.tag-item--difficulty.tag-item--selected {
+  background-color: #FF9800;
+  color: #FFFFFF;
+}
+
+.tag-item--cost-free {
+  background-color: rgba(76, 175, 80, 0.12);
+  color: #2E7D32;
+}
+
+.tag-item--cost-free.tag-item--selected {
+  background-color: #4CAF50;
+  color: #FFFFFF;
+}
+
+.tag-item--cost-paid {
+  background-color: rgba(255, 143, 0, 0.12);
+  color: #E65100;
+}
+
+.tag-item--cost-paid.tag-item--selected {
+  background-color: #FF8F00;
+  color: #FFFFFF;
+}
+
+.tag-item--scenery {
+  background-color: rgba(129, 199, 132, 0.2);
+  color: #2E7D32;
+}
+
+.tag-item--scenery.tag-item--selected {
+  background-color: #81C784;
+  color: #FFFFFF;
+}
+
+.tag-item--crowd {
+  background-color: rgba(66, 165, 245, 0.15);
+  color: #1565C0;
+}
+
+.tag-item--crowd.tag-item--selected {
+  background-color: #42A5F5;
+  color: #FFFFFF;
+}
+
+.tag-item--default {
+  background-color: #F5F5F5;
+  color: #757575;
+}
+
+.tag-item--default.tag-item--selected {
+  background-color: #2E7D32;
+  color: #FFFFFF;
+}
+
+.tag-item--primary {
+  background-color: rgba(46, 125, 50, 0.1);
+  color: #2E7D32;
+}
+
+.tag-item--primary.tag-item--selected {
+  background-color: #2E7D32;
+  color: #FFFFFF;
+}
+
+.tag-item--accent {
+  background-color: rgba(255, 143, 0, 0.1);
+  color: #FF8F00;
+}
+
+.tag-item--accent.tag-item--selected {
+  background-color: #FF8F00;
+  color: #FFFFFF;
+}
+
+/* 禁用 */
+.tag-item--disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+/* 图标 */
+.tag-item__icon {
+  margin-right: 4rpx;
+  font-size: 20rpx;
+}

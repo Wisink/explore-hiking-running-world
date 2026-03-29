@@ -1,0 +1,90 @@
+<!--pages/knowledge/knowledge.wxml-->
+<view class="knowledge-page">
+  <!-- 顶部标题 -->
+  <view class="page-header">
+    <view class="header-bg"></view>
+    <view class="header-content">
+      <text class="header-emoji">📚</text>
+      <text class="header-title">户外知识</text>
+      <text class="header-subtitle">装备 · 安全 · 礼仪</text>
+    </view>
+  </view>
+
+  <!-- 加载状态 -->
+  <view class="loading-card" wx:if="{{loading}}">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">正在加载知识库...</text>
+  </view>
+
+  <block wx:if="{{!loading}}">
+    <!-- 推荐阅读区 -->
+    <view class="section">
+      <view class="section-header">
+        <view class="section-title-wrap">
+          <text class="section-icon">⭐</text>
+          <text class="section-title">推荐阅读</text>
+        </view>
+      </view>
+      <scroll-view class="recommend-scroll" scroll-x enable-flex>
+        <view
+          class="recommend-card"
+          wx:for="{{recommended}}"
+          wx:key="_id"
+          data-id="{{item._id}}"
+          bindtap="onRecommendedTap"
+        >
+          <view class="recommend-cover" style="background: {{item.coverGradient}}">
+            <text class="recommend-cover-icon">{{item.category === '装备选购' ? '🥾' : item.category === '安全自救' ? '🆘' : '🤝'}}</text>
+          </view>
+          <view class="recommend-info">
+            <view class="recommend-tag">{{item.category}}</view>
+            <text class="recommend-title">{{item.title}}</text>
+            <text class="recommend-summary">{{item.summary}}</text>
+          </view>
+        </view>
+      </scroll-view>
+    </view>
+
+    <!-- 知识分类列表 -->
+    <view class="section" wx:for="{{categories}}" wx:key="key" wx:if="{{categorizedArticles[item.key] && categorizedArticles[item.key].length > 0}}">
+      <view class="section-header">
+        <view class="section-title-wrap">
+          <text class="section-icon">{{item.icon}}</text>
+          <text class="section-title">{{item.name}}</text>
+        </view>
+        <view class="article-count">
+          <text class="count-text">{{categorizedArticles[item.key].length}}篇</text>
+        </view>
+      </view>
+
+      <view class="article-list">
+        <view
+          class="article-item"
+          wx:for="{{categorizedArticles[item.key]}}"
+          wx:for-item="article"
+          wx:key="_id"
+          data-id="{{article._id}}"
+          bindtap="onArticleTap"
+        >
+          <view class="article-icon-wrap {{article.category === '装备选购' ? 'icon-equip' : article.category === '安全自救' ? 'icon-safety' : 'icon-etiquette'}}">
+            <text class="article-icon">{{article.category === '装备选购' ? '🥾' : article.category === '安全自救' ? '🆘' : '🤝'}}</text>
+          </view>
+          <view class="article-info">
+            <text class="article-title">{{article.title}}</text>
+            <text class="article-summary">{{article.summary}}</text>
+          </view>
+          <view class="article-arrow">
+            <text class="arrow-icon">›</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 底部 -->
+    <view class="footer">
+      <text class="footer-icon">📖</text>
+      <text class="footer-main">知识就是力量</text>
+      <text class="footer-sub">安全徒步，从学习开始</text>
+    </view>
+  </block>
+</view>

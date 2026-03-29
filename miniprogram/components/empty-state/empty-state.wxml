@@ -1,0 +1,13 @@
+<!-- 空状态组件 -->
+<view class="empty-state-comp">
+  <view class="empty-state-comp__icon">{{icon}}</view>
+  <view class="empty-state-comp__title">{{title}}</view>
+  <view class="empty-state-comp__desc" wx:if="{{description}}">{{description}}</view>
+  <view
+    class="empty-state-comp__btn"
+    wx:if="{{actionText}}"
+    bindtap="onAction"
+  >
+    {{actionText}}
+  </view>
+</view>

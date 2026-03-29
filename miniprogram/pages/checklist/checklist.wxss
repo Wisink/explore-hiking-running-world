@@ -1,0 +1,294 @@
+/* pages/checklist/checklist.wxss */
+
+.checklist-page {
+  min-height: 100vh;
+  background: #F5F5F5;
+  padding-bottom: 160rpx;
+}
+
+/* ===== 顶部标题栏 ===== */
+.header {
+  display: flex;
+  align-items: center;
+  padding: 16rpx 24rpx;
+  background: linear-gradient(135deg, #2E7D32 0%, #388E3C 100%);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.header-back {
+  width: 72rpx;
+  height: 72rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.back-icon {
+  font-size: 36rpx;
+  color: #FFFFFF;
+}
+
+.header-center {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.header-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #FFFFFF;
+}
+
+.header-subtitle {
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.8);
+  margin-top: 4rpx;
+  max-width: 400rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.header-right {
+  width: 72rpx;
+}
+
+/* ===== 进度概览 ===== */
+.progress-card {
+  background: #FFFFFF;
+  margin: 24rpx;
+  border-radius: 16rpx;
+  padding: 28rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
+}
+
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+.progress-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #333;
+}
+
+.progress-count {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #2E7D32;
+}
+
+.progress-bar-wrap {
+  margin-bottom: 12rpx;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 16rpx;
+  background: #E8E8E8;
+  border-radius: 8rpx;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4CAF50, #2E7D32);
+  border-radius: 8rpx;
+  transition: width 300ms ease;
+}
+
+.progress-tip {
+  font-size: 24rpx;
+  color: #757575;
+}
+
+/* ===== 清单分组 ===== */
+.check-group {
+  background: #FFFFFF;
+  margin: 0 24rpx 20rpx;
+  border-radius: 16rpx;
+  overflow: hidden;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
+}
+
+.group-header {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  padding: 20rpx 24rpx;
+  border-bottom: 1rpx solid #F0F0F0;
+}
+
+.group-header.must {
+  background: #FFF5F5;
+}
+
+.group-header.suggest {
+  background: #FFFBF0;
+}
+
+.group-header.noNeed {
+  background: #F5FFF5;
+}
+
+.group-icon {
+  font-size: 24rpx;
+}
+
+.group-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #333;
+}
+
+.group-badge {
+  font-size: 22rpx;
+  color: #999;
+  margin-left: auto;
+}
+
+/* ===== 清单项 ===== */
+.check-list {
+  padding: 8rpx 0;
+}
+
+.check-item {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  padding: 22rpx 24rpx;
+  transition: background 150ms ease;
+}
+
+.check-item:active {
+  background: #F5F5F5;
+}
+
+.check-item.checked {
+  background: #F9FFF9;
+}
+
+.check-item.checked .check-text {
+  color: #999;
+  text-decoration: line-through;
+}
+
+.check-item.no-need {
+  opacity: 0.6;
+}
+
+.check-item.no-need .check-text {
+  color: #999;
+  text-decoration: line-through;
+}
+
+/* 勾选框 */
+.checkbox {
+  width: 44rpx;
+  height: 44rpx;
+  border: 3rpx solid #D0D0D0;
+  border-radius: 10rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 150ms ease;
+}
+
+.checkbox.active {
+  background: #2E7D32;
+  border-color: #2E7D32;
+}
+
+.checkbox.disabled {
+  background: #F5F5F5;
+  border-color: #E0E0E0;
+}
+
+.check-icon {
+  font-size: 28rpx;
+  color: #FFFFFF;
+  font-weight: bold;
+}
+
+.cross-icon {
+  font-size: 24rpx;
+  color: #CCC;
+}
+
+.check-text {
+  font-size: 28rpx;
+  color: #333;
+  transition: all 150ms ease;
+}
+
+/* ===== 底部操作栏 ===== */
+.bottom-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  gap: 16rpx;
+  padding: 20rpx 24rpx;
+  padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
+  background: #FFFFFF;
+  box-shadow: 0 -2rpx 12rpx rgba(0, 0, 0, 0.08);
+  z-index: 100;
+}
+
+.bottom-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+  height: 88rpx;
+  border-radius: 12rpx;
+  font-size: 28rpx;
+  font-weight: 500;
+  border: none;
+  padding: 0;
+  line-height: 88rpx;
+  margin: 0;
+}
+
+.bottom-btn::after {
+  border: none;
+}
+
+.reset-btn {
+  background: #F5F5F5;
+  color: #666;
+}
+
+.share-btn {
+  background: linear-gradient(135deg, #2E7D32, #43A047);
+  color: #FFFFFF;
+}
+
+.btn-icon {
+  font-size: 28rpx;
+}
+
+.btn-text {
+  font-size: 28rpx;
+}
+
+/* ===== Canvas ===== */
+.share-canvas {
+  position: fixed;
+  left: -9999px;
+  top: 0;
+  width: 600px;
+  height: 2000px;
+}

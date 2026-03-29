@@ -1,42 +1,37 @@
 {
   "pages": [
-    "pages/welcome/welcome",
-    "pages/home/home",
-    "pages/search/search",
-    "pages/detail/detail",
-    "pages/profile/profile",
-    "pages/messages/messages",
-    "pages/laws/laws",
-    "pages/safety/safety",
-    "pages/correction/correction",
-    "pages/comments/comments",
-    "pages/etiquette/etiquette",
-    "pages/equipment/equipment"
+    "pages/routes/routes",
+    "pages/route-detail/route-detail",
+    "pages/checklist/checklist",
+    "pages/knowledge/knowledge",
+    "pages/article-detail/article-detail",
+    "pages/profile/profile"
   ],
   "window": {
     "backgroundTextStyle": "light",
-    "navigationBarBackgroundColor": "#2D5A27",
-    "navigationBarTitleText": "秦人户外集合",
+    "navigationBarBackgroundColor": "#2E7D32",
+    "navigationBarTitleText": "秦人徒步",
     "navigationBarTextStyle": "white",
-    "backgroundColor": "#F8F6F0"
+    "backgroundColor": "#F5F5F5"
   },
   "tabBar": {
-    "color": "#6B7B8D",
-    "selectedColor": "#2D5A27",
+    "color": "#757575",
+    "selectedColor": "#2E7D32",
     "backgroundColor": "#FFFFFF",
     "borderStyle": "white",
+    "position": "bottom",
     "list": [
       {
-        "pagePath": "pages/home/home",
-        "text": "首页",
-        "iconPath": "images/tabbar/home.png",
-        "selectedIconPath": "images/tabbar/home-active.png"
+        "pagePath": "pages/routes/routes",
+        "text": "路线",
+        "iconPath": "images/tabbar/trail.png",
+        "selectedIconPath": "images/tabbar/trail-active.png"
       },
       {
-        "pagePath": "pages/search/search",
-        "text": "搜索",
-        "iconPath": "images/tabbar/search.png",
-        "selectedIconPath": "images/tabbar/search-active.png"
+        "pagePath": "pages/knowledge/knowledge",
+        "text": "知识",
+        "iconPath": "images/tabbar/knowledge.png",
+        "selectedIconPath": "images/tabbar/knowledge-active.png"
       },
       {
         "pagePath": "pages/profile/profile",
@@ -47,8 +42,12 @@
     ]
   },
   "sitemapLocation": "sitemap.json",
-  "useExtendedLib": {
-    "weui": true
+  "usingComponents": {
+    "route-card": "/components/route-card/route-card",
+    "tag": "/components/tag/tag",
+    "filter-bar": "/components/filter-bar/filter-bar",
+    "empty-state": "/components/empty-state/empty-state",
+    "skeleton": "/components/skeleton/skeleton"
   },
   "cloud": true
 }

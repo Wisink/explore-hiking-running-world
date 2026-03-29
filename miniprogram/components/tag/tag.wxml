@@ -1,0 +1,10 @@
+<!-- 标签组件 -->
+<view
+  class="tag-item tag-item--{{type}} tag-item--{{size}} {{selected ? 'tag-item--selected' : ''}} {{disabled ? 'tag-item--disabled' : ''}}"
+  bindtap="onTap"
+  hover-class="{{disabled ? '' : 'tag-item--hover'}}"
+  hover-stay-time="100"
+>
+  <text class="tag-item__icon" wx:if="{{icon}}">{{icon}}</text>
+  <text class="tag-item__text">{{text}}</text>
+</view>

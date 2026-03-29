@@ -1,0 +1,31 @@
+<!-- 筛选栏组件 -->
+<view class="filter-bar">
+  <scroll-view
+    class="filter-bar__scroll"
+    scroll-x
+    enable-flex
+    scroll-with-animation
+    scroll-into-view="tag-{{activeIndex}}"
+  >
+    <view class="filter-bar__inner">
+      <view
+        class="filter-bar__item {{item.value === activeValue ? 'filter-bar__item--active' : ''}}"
+        id="tag-{{index}}"
+        wx:for="{{filters}}"
+        wx:key="value"
+        bindtap="onTap"
+        data-index="{{index}}"
+        data-value="{{item.value}}"
+      >
+        <text class="filter-bar__item-icon" wx:if="{{item.icon}}">{{item.icon}}</text>
+        <text class="filter-bar__item-text">{{item.label}}</text>
+      </view>
+    </view>
+  </scroll-view>
+
+  <!-- 高级筛选入口 -->
+  <view class="filter-bar__advanced" bindtap="onAdvanced" wx:if="{{showAdvanced}}">
+    <text class="filter-bar__advanced-icon">⚙️</text>
+    <text class="filter-bar__advanced-text">筛选</text>
+  </view>
+</view>

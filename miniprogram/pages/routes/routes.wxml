@@ -1,0 +1,152 @@
+<!--pages/routes/routes.wxml-->
+<view class="routes-page">
+
+  <!-- 顶部标题栏 -->
+  <view class="header">
+    <view class="header-left">
+      <text class="header-icon">🏔️</text>
+      <text class="header-title">秦人徒步</text>
+    </view>
+    <view class="header-right" bindtap="onSearchTap">
+      <text class="search-icon">🔍</text>
+    </view>
+  </view>
+
+  <!-- 搜索栏（展开状态） -->
+  <view class="search-bar" wx:if="{{showSearch}}">
+    <view class="search-input-wrap">
+      <text class="search-prefix">🔍</text>
+      <input
+        class="search-input"
+        placeholder="搜索路线名称、地点..."
+        value="{{searchKeyword}}"
+        bindinput="onSearchInput"
+        bindconfirm="onSearchConfirm"
+        confirm-type="search"
+        focus="{{showSearch}}"
+      />
+      <text class="search-clear" wx:if="{{searchKeyword}}" bindtap="onSearchClear">✕</text>
+    </view>
+    <text class="search-cancel" bindtap="onSearchCancel">取消</text>
+  </view>
+
+  <!-- 快捷筛选栏 -->
+  <scroll-view class="filter-bar" scroll-x enable-flex>
+    <view
+      class="filter-tag {{activeFilter === item.id ? 'active' : ''}}"
+      wx:for="{{filterTags}}"
+      wx:key="id"
+      data-filter="{{item.id}}"
+      bindtap="onFilterTap"
+    >
+      <text class="filter-icon" wx:if="{{item.icon}}">{{item.icon}}</text>
+      <text class="filter-text">{{item.label}}</text>
+    </view>
+  </scroll-view>
+
+  <!-- 骨架屏 -->
+  <view class="skeleton-list" wx:if="{{showSkeleton}}">
+    <view class="skeleton-card" wx:for="{{3}}" wx:key="index">
+      <view class="skeleton-image"></view>
+      <view class="skeleton-content">
+        <view class="skeleton-title"></view>
+        <view class="skeleton-desc"></view>
+        <view class="skeleton-tags">
+          <view class="skeleton-tag"></view>
+          <view class="skeleton-tag"></view>
+          <view class="skeleton-tag"></view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 路线卡片列表 -->
+  <view class="route-list" wx:if="{{!showSkeleton}}">
+    <view
+      class="route-card"
+      wx:for="{{routes}}"
+      wx:key="_id"
+      data-id="{{item._id}}"
+      data-index="{{index}}"
+      bindtap="onRouteTap"
+      hover-class="card-hover"
+      style="animation-delay: {{index * 60}}ms"
+    >
+      <!-- 卡片图片 -->
+      <view class="card-image-wrap">
+        <image
+          class="card-image"
+          src="{{item.coverImage || '/images/scenery/scenery-general.jpg'}}"
+          mode="aspectFill"
+          lazy-load
+        />
+        <!-- 难度标签 -->
+        <view class="card-difficulty" style="background: {{item.diffColor}}">
+          <text>{{item.diffText}}</text>
+        </view>
+        <!-- 免费标签 -->
+        <view class="card-free" wx:if="{{item.isFree}}">免费</view>
+        <!-- 收藏按钮 -->
+        <view
+          class="card-favorite {{item.isFavorited ? 'favorited' : ''}}"
+          data-id="{{item._id}}"
+          data-index="{{index}}"
+          catchtap="onFavoriteTap"
+        >
+          <text>{{item.isFavorited ? '❤️' : '🤍'}}</text>
+        </view>
+      </view>
+
+      <!-- 卡片内容 -->
+      <view class="card-content">
+        <text class="card-name">{{item.name}}</text>
+        <text class="card-desc">{{item.description || '探索这条美丽的路线'}}</text>
+
+        <!-- 信息标签 -->
+        <view class="card-info-tags">
+          <view class="info-tag" wx:if="{{item.distanceText}}">
+            <text class="info-tag-icon">📏</text>
+            <text>{{item.distanceText}}</text>
+          </view>
+          <view class="info-tag" wx:if="{{item.durationText}}">
+            <text class="info-tag-icon">⏱️</text>
+            <text>{{item.durationText}}</text>
+          </view>
+          <view class="info-tag" wx:if="{{item.cost}}">
+            <text class="info-tag-icon">💰</text>
+            <text>{{item.isFree ? '免费' : item.cost}}</text>
+          </view>
+        </view>
+
+        <!-- 风景标签 -->
+        <view class="card-scenery-tags" wx:if="{{item.features && item.features.length > 0}}">
+          <text class="scenery-tag" wx:for="{{item.features}}" wx:for-item="feat" wx:key="*this">{{feat}}</text>
+        </view>
+
+        <!-- 亲子标记 -->
+        <view class="card-family" wx:if="{{item.family_friendly}}">
+          <text class="family-badge">👨‍👩‍👧 亲子友好</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 空状态 -->
+    <view class="empty-state" wx:if="{{routes.length === 0 && !loading}}">
+      <text class="empty-icon">🥾</text>
+      <text class="empty-title">暂无匹配路线</text>
+      <text class="empty-desc">试试其他筛选条件？</text>
+    </view>
+
+    <!-- 加载更多 -->
+    <view class="load-more" wx:if="{{loading}}">
+      <view class="loading-spinner"></view>
+      <text class="loading-text">加载中...</text>
+    </view>
+
+    <!-- 没有更多 -->
+    <view class="no-more" wx:if="{{!hasMore && routes.length > 0 && !loading}}">
+      <text class="no-more-text">— 已经到底啦 —</text>
+    </view>
+  </view>
+
+</view>

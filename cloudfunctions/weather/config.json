@@ -1,0 +1,7 @@
+{
+  "triggers": [{
+    "name": "daily-weather",
+    "type": "timer",
+    "config": "0 0 7 * * * *"
+  }]
+}

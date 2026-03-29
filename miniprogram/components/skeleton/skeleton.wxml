@@ -1,0 +1,56 @@
+<!-- 骨架屏组件 -->
+<view class="skeleton">
+  <!-- 列表骨架 -->
+  <block wx:if="{{type === 'list'}}">
+    <view class="skeleton-card" wx:for="{{count}}" wx:key="*this">
+      <!-- 图片占位 -->
+      <view class="skeleton-card__image skeleton-pulse"></view>
+      <!-- 内容区 -->
+      <view class="skeleton-card__body">
+        <view class="skeleton-line skeleton-line--title skeleton-pulse"></view>
+        <view class="skeleton-line skeleton-line--desc skeleton-pulse"></view>
+        <view class="skeleton-card__row">
+          <view class="skeleton-line skeleton-line--short skeleton-pulse"></view>
+          <view class="skeleton-line skeleton-line--short skeleton-pulse"></view>
+          <view class="skeleton-line skeleton-line--short skeleton-pulse"></view>
+        </view>
+        <view class="skeleton-card__row">
+          <view class="skeleton-line skeleton-line--tag skeleton-pulse"></view>
+          <view class="skeleton-line skeleton-line--tag skeleton-pulse"></view>
+          <view class="skeleton-line skeleton-line--tag skeleton-pulse"></view>
+        </view>
+      </view>
+    </view>
+  </block>
+
+  <!-- 详情骨架 -->
+  <block wx:if="{{type === 'detail'}}">
+    <!-- 轮播图 -->
+    <view class="skeleton-detail__banner skeleton-pulse"></view>
+    <!-- 标题 -->
+    <view class="skeleton-detail__content">
+      <view class="skeleton-line skeleton-line--title skeleton-pulse"></view>
+      <view class="skeleton-line skeleton-line--desc skeleton-pulse"></view>
+      <view class="skeleton-detail__row">
+        <view class="skeleton-line skeleton-line--short skeleton-pulse"></view>
+        <view class="skeleton-line skeleton-line--short skeleton-pulse"></view>
+      </view>
+      <!-- 按钮行 -->
+      <view class="skeleton-detail__row" style="margin-top: 32rpx;">
+        <view class="skeleton-line skeleton-line--btn skeleton-pulse"></view>
+        <view class="skeleton-line skeleton-line--btn skeleton-pulse"></view>
+      </view>
+      <!-- 段落 -->
+      <view style="margin-top: 32rpx;">
+        <view class="skeleton-line skeleton-line--full skeleton-pulse"></view>
+        <view class="skeleton-line skeleton-line--full skeleton-pulse"></view>
+        <view class="skeleton-line skeleton-line--half skeleton-pulse"></view>
+      </view>
+      <!-- 更多段落 -->
+      <view style="margin-top: 24rpx;">
+        <view class="skeleton-line skeleton-line--full skeleton-pulse"></view>
+        <view class="skeleton-line skeleton-line--3-4 skeleton-pulse"></view>
+      </view>
+    </view>
+  </block>
+</view>

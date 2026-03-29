@@ -1,311 +1,348 @@
 // pages/profile/profile.js
 const app = getApp()
 
-// 等级配置：{ 名称, 所需完成数 }
-const LEVELS = [
-  { level: 1, name: '新手驴友', target: 3 },
-  { level: 2, name: '初级驴友', target: 10 },
-  { level: 3, name: '中级驴友', target: 25 },
-  { level: 4, name: '高级驴友', target: 50 },
-  { level: 5, name: '资深驴友', target: 100 },
-  { level: 6, name: '秦岭达人', target: Infinity }
-]
-
 Page({
   data: {
-    // 是否已登录
-    isLogin: false,
-    // 用户信息
-    userInfo: {
-      avatarUrl: '',
-      nickName: ''
-    },
-    // 用户等级
-    userLevel: {
-      level: 1,
-      name: '新手驴友',
-      current: 0,
-      target: 3,
-      progress: 0
-    },
-    // 数据统计
-    stats: {
-      favorites: 0,
-      footprints: 0,
-      comments: 0,
-      ecoActions: 0
-    },
-    // 未读消息数
-    unreadCount: 0,
-    // 登录弹窗
-    showLoginPopup: false
+    // 当前激活的Tab
+    activeTab: 'favorites',
+    // 收藏路线列表
+    favoriteRoutes: [],
+    // 已走过路线列表
+    completedRoutes: [],
+    // 统计数据
+    favoriteCount: 0,
+    completedCount: 0
   },
 
   onLoad() {
-    // 页面加载时检查登录状态
-    this.checkLoginStatus()
+    // 页面加载
   },
 
   onShow() {
-    // 每次页面显示时刷新数据（tabBar 页面切换时触发）
-    if (this.data.isLogin) {
-      this.loadUserData()
-    }
+    // 每次页面显示时刷新数据（从TabBar切换回来时触发）
+    this.loadData()
   },
 
-  // 下拉刷新
   onPullDownRefresh() {
-    if (this.data.isLogin) {
-      this.loadUserData().then(() => {
-        wx.stopPullDownRefresh()
-      })
-    } else {
+    this.loadData().then(() => {
       wx.stopPullDownRefresh()
-    }
-  },
-
-  // ========== 登录相关 ==========
-
-  /**
-   * 检查登录状态
-   * 从本地缓存读取用户信息
-   */
-  checkLoginStatus() {
-    const userInfo = wx.getStorageSync('userInfo')
-    if (userInfo && (userInfo._openid || userInfo.openid)) {
-      this.setData({
-        isLogin: true,
-        userInfo
-      })
-      this.loadUserData()
-    }
-  },
-
-  /**
-   * 点击用户区域
-   * 未登录 -> 弹出登录弹窗；已登录 -> 查看个人资料
-   */
-  onUserTap() {
-    if (!this.data.isLogin) {
-      this.setData({ showLoginPopup: true })
-    } else {
-      // 已登录暂不跳转，后续可扩展个人资料编辑页
-      wx.showToast({ title: `${this.data.userInfo.nickName || '用户'}`, icon: 'none' })
-    }
-  },
-
-  /**
-   * 关闭登录弹窗
-   */
-  onLoginClose() {
-    this.setData({ showLoginPopup: false })
-  },
-
-  /**
-   * 登录成功回调
-   */
-  onLoginSuccess() {
-    this.setData({ showLoginPopup: false })
-    this.checkLoginStatus()
+    })
   },
 
   // ========== 数据加载 ==========
 
   /**
-   * 加载用户相关数据
-   * 从云数据库获取统计数据、消息数、等级
+   * 加载所有数据
    */
-  async loadUserData() {
-    try {
-      await Promise.all([
-        this.loadStats(),
-        this.loadUnreadCount(),
-        this.loadUserLevel()
-      ])
-    } catch (err) {
-      console.error('加载用户数据失败：', err)
-    }
+  async loadData() {
+    await Promise.all([
+      this.loadFavorites(),
+      this.loadCompleted()
+    ])
   },
 
   /**
-   * 加载统计数据
-   * 查询收藏、足迹、评论、环保次数
+   * 从本地缓存加载收藏列表
+   * 收藏数据结构: { favorites: ["route_001", "route_002"] }
+   * 需要将ID转换为路线详情
    */
-  async loadStats() {
+  async loadFavorites() {
     try {
-      const userInfo = app.globalData.userInfo
-      if (!userInfo) return
+      const favorites = wx.getStorageSync('favorites') || []
+      const favoriteIds = Array.isArray(favorites) ? favorites : (favorites.favorites || [])
+      
+      this.setData({ favoriteCount: favoriteIds.length })
 
-      const res = await wx.cloud.callFunction({
-        name: 'stats',
-        data: {
-          action: 'getOverview'
-        }
-      })
-
-      if (res.result && res.result.code === 0) {
-        const data = res.result.data
-        this.setData({
-          stats: {
-            favorites: data.total?.trails || 0,
-            footprints: data.total?.trails || 0,
-            comments: data.total?.comments || 0,
-            ecoActions: data.total?.corrections || 0
-          }
-        })
+      if (favoriteIds.length === 0) {
+        this.setData({ favoriteRoutes: [] })
+        return
       }
-    } catch (err) {
-      console.error('加载统计数据失败：', err)
-    }
-  },
 
-  /**
-   * 加载未读消息数
-   */
-  async loadUnreadCount() {
-    try {
-      const userInfo = app.globalData.userInfo
-      if (!userInfo) return
-
-      const res = await wx.cloud.callFunction({
-        name: 'message',
-        data: {
-          action: 'getUnreadCount',
-          user_id: userInfo._id
-        }
-      })
-
-      if (res.result && res.result.code === 0) {
-        this.setData({ unreadCount: res.result.data || 0 })
-      }
-    } catch (err) {
-      console.error('加载消息数失败：', err)
-    }
-  },
-
-  /**
-   * 计算用户等级
-   * 基于已完成的路线足迹数来判定等级
-   */
-  async loadUserLevel() {
-    try {
-      const userInfo = app.globalData.userInfo
-      if (!userInfo) return
-
-      const count = this.data.stats.footprints
-
-      // 根据足迹数匹配等级
-      let matched = LEVELS[0]
-      let prevTarget = 0
-      for (let i = 0; i < LEVELS.length; i++) {
-        if (count < LEVELS[i].target) {
-          matched = LEVELS[i]
-          prevTarget = i > 0 ? LEVELS[i - 1].target : 0
-          break
-        }
-        if (i === LEVELS.length - 1) {
-          matched = LEVELS[i]
-          prevTarget = LEVELS[i - 1].target
+      // 从缓存中获取路线详情，或者使用基本信息
+      const routes = []
+      for (const id of favoriteIds) {
+        const route = this.getRouteById(id)
+        if (route) {
+          routes.push(route)
         }
       }
 
-      // 计算进度百分比
-      const range = matched.target - prevTarget
-      const currentInLevel = count - prevTarget
-      const progress = matched.target === Infinity
-        ? 100
-        : Math.min(100, Math.round((currentInLevel / range) * 100))
-
-      this.setData({
-        userLevel: {
-          level: matched.level,
-          name: matched.name,
-          current: count,
-          target: matched.target === Infinity ? '已满级' : matched.target,
-          progress
-        }
-      })
+      this.setData({ favoriteRoutes: routes })
     } catch (err) {
-      console.error('加载等级失败：', err)
-    }
-  },
-
-  // ========== 菜单跳转 ==========
-
-  /**
-   * 点击统计卡片
-   * 跳转到对应页面
-   */
-  onStatTap(e) {
-    const type = e.currentTarget.dataset.type
-    // 统计卡片类型到页面路由的映射（仅已存在的页面）
-    const pageMap = {
-      comments: '/pages/comments/comments'
-    }
-    const url = pageMap[type]
-    if (url) {
-      this.navigateTo(url)
-    } else {
-      wx.showToast({ title: '功能开发中，敬请期待', icon: 'none' })
+      console.error('加载收藏列表失败：', err)
+      this.setData({ favoriteRoutes: [], favoriteCount: 0 })
     }
   },
 
   /**
-   * 点击功能菜单
-   * 未登录提示登录，已登录跳转页面
+   * 从本地缓存加载已走过列表
+   * 已走过数据结构: { completed: [{ routeId, date, note }] }
    */
-  onMenuTap(e) {
-    const page = e.currentTarget.dataset.page
+  async loadCompleted() {
+    try {
+      const completed = wx.getStorageSync('completed') || []
+      const completedList = Array.isArray(completed) ? completed : (completed.completed || [])
+      
+      this.setData({ completedCount: completedList.length })
 
-    // 未登录拦截（安全知识和法律法规除外）
-    if (!this.data.isLogin && page !== 'safety' && page !== 'laws') {
-      this.setData({ showLoginPopup: true })
-      return
-    }
+      if (completedList.length === 0) {
+        this.setData({ completedRoutes: [] })
+        return
+      }
 
-    // 已存在的页面路由
-    const existingPages = {
-      comments: '/pages/comments/comments',
-      correction: '/pages/correction/correction',
-      messages: '/pages/messages/messages',
-      safety: '/pages/safety/safety',
-      laws: '/pages/laws/laws'
-    }
+      // 合并路线详情和已走过信息
+      const routes = []
+      for (const item of completedList) {
+        const route = this.getRouteById(item.routeId)
+        if (route) {
+          routes.push({
+            ...route,
+            routeId: item.routeId,
+            completedDate: item.date,
+            completedNote: item.note || ''
+          })
+        } else {
+          // 路线详情不存在时，使用基本信息
+          routes.push({
+            _id: item.routeId,
+            routeId: item.routeId,
+            name: item.name || '未知路线',
+            description: '',
+            coverImage: '',
+            location: '',
+            distance: '',
+            duration: '',
+            completedDate: item.date,
+            completedNote: item.note || ''
+          })
+        }
+      }
 
-    // 开发中的功能
-    const devPages = ['favorites', 'footprints', 'level', 'eco']
-
-    const url = existingPages[page]
-    if (url) {
-      this.navigateTo(url)
-    } else if (devPages.includes(page)) {
-      wx.showToast({ title: '功能开发中，敬请期待', icon: 'none' })
+      this.setData({ completedRoutes: routes })
+    } catch (err) {
+      console.error('加载已走过列表失败：', err)
+      this.setData({ completedRoutes: [], completedCount: 0 })
     }
   },
 
   /**
-   * 统一导航方法
-   * tabBar 页面用 switchTab，普通页面用 navigateTo
+   * 根据ID获取路线详情
+   * 优先从本地缓存的路线数据中查找
    */
-  navigateTo(url) {
-    // tabBar 页面列表
-    const tabBarPages = [
-      '/pages/home/home',
-      '/pages/search/search',
-      '/pages/profile/profile'
-    ]
-    if (tabBarPages.includes(url)) {
-      wx.switchTab({ url })
-    } else {
-      wx.navigateTo({ url })
+  getRouteById(id) {
+    // 先尝试从全局缓存的路线数据中查找
+    const allTrails = wx.getStorageSync('allTrails') || []
+    const trail = allTrails.find(t => t._id === id)
+    if (trail) {
+      return this.normalizeRoute(trail)
     }
+
+    // 尝试从 app.globalData 中查找
+    if (app.globalData && app.globalData.trails) {
+      const trail2 = app.globalData.trails.find(t => t._id === id)
+      if (trail2) {
+        return this.normalizeRoute(trail2)
+      }
+    }
+
+    // 返回基本信息（使用缓存中可能存在的路线名称）
+    const cachedName = wx.getStorageSync('routeName_' + id)
+    return {
+      _id: id,
+      name: cachedName || '路线详情',
+      description: '',
+      coverImage: '',
+      location: '',
+      distance: '',
+      duration: '',
+      difficulty: '',
+      difficultyLevel: 0,
+      sceneryTags: []
+    }
+  },
+
+  /**
+   * 标准化路线数据格式
+   * 将不同来源的路线数据统一格式
+   */
+  normalizeRoute(trail) {
+    return {
+      _id: trail._id,
+      name: trail.name || '未知路线',
+      description: trail.description || '',
+      coverImage: trail.coverImage || (trail.images && trail.images[0]) || '',
+      location: trail.location?.address || trail.location || '',
+      distance: trail.distance_km ? trail.distance_km + 'km' : (trail.distance || ''),
+      duration: trail.duration_hours ? trail.duration_hours + 'h' : (trail.duration || ''),
+      difficulty: this.getDifficultyLabel(trail.difficulty?.level || trail.difficultyLevel || 0),
+      difficultyLevel: trail.difficulty?.level || trail.difficultyLevel || 0,
+      sceneryTags: trail.scenery || trail.sceneryTags || []
+    }
+  },
+
+  /**
+   * 获取难度标签
+   */
+  getDifficultyLabel(level) {
+    const labels = ['', '轻松', '初级', '中级', '高级', '挑战']
+    return labels[level] || '未知'
+  },
+
+  /**
+   * 获取难度颜色
+   */
+  getDifficultyColor(level) {
+    const colors = {
+      1: '#4CAF50',
+      2: '#8BC34A',
+      3: '#FFC107',
+      4: '#FF9800',
+      5: '#F44336'
+    }
+    return colors[level] || '#9E9E9E'
+  },
+
+  // ========== Tab 切换 ==========
+
+  /**
+   * 切换Tab
+   */
+  switchTab(e) {
+    const tab = e.currentTarget.dataset.tab
+    if (tab !== this.data.activeTab) {
+      this.setData({ activeTab: tab })
+    }
+  },
+
+  // ========== 路线操作 ==========
+
+  /**
+   * 点击路线卡片 -> 进入详情页
+   */
+  onRouteTap(e) {
+    const id = e.currentTarget.dataset.id
+    if (id) {
+      // 缓存路线名称（供后续显示用）
+      const route = this.data.favoriteRoutes.find(r => r._id === id) ||
+                    this.data.completedRoutes.find(r => r._id === id)
+      if (route && route.name) {
+        wx.setStorageSync('routeName_' + id, route.name)
+      }
+      
+      wx.navigateTo({
+        url: `/pages/detail/detail?id=${id}`
+      })
+    }
+  },
+
+  /**
+   * 长按收藏卡片 -> 取消收藏
+   */
+  onRemoveFavorite(e) {
+    const id = e.currentTarget.dataset.id
+    const name = e.currentTarget.dataset.name || '该路线'
+
+    wx.showModal({
+      title: '取消收藏',
+      content: `确定要取消收藏「${name}」吗？`,
+      confirmText: '取消收藏',
+      confirmColor: '#FF4D4F',
+      success: (res) => {
+        if (res.confirm) {
+          this.removeFavorite(id)
+        }
+      }
+    })
+  },
+
+  /**
+   * 长按已走过卡片 -> 删除记录
+   */
+  onRemoveCompleted(e) {
+    const id = e.currentTarget.dataset.id
+    const name = e.currentTarget.dataset.name || '该路线'
+
+    wx.showModal({
+      title: '删除记录',
+      content: `确定要删除「${name}」的行走记录吗？`,
+      confirmText: '删除',
+      confirmColor: '#FF4D4F',
+      success: (res) => {
+        if (res.confirm) {
+          this.removeCompleted(id)
+        }
+      }
+    })
+  },
+
+  /**
+   * 从收藏中移除路线
+   */
+  removeFavorite(id) {
+    try {
+      let favorites = wx.getStorageSync('favorites') || []
+      // 兼容两种数据格式
+      if (!Array.isArray(favorites)) {
+        favorites = favorites.favorites || []
+      }
+      
+      favorites = favorites.filter(fid => fid !== id)
+      wx.setStorageSync('favorites', favorites)
+      
+      wx.showToast({
+        title: '已取消收藏',
+        icon: 'success'
+      })
+
+      this.loadFavorites()
+    } catch (err) {
+      console.error('取消收藏失败：', err)
+      wx.showToast({ title: '操作失败', icon: 'none' })
+    }
+  },
+
+  /**
+   * 从已走过中移除记录
+   */
+  removeCompleted(routeId) {
+    try {
+      let completed = wx.getStorageSync('completed') || []
+      // 兼容两种数据格式
+      if (!Array.isArray(completed)) {
+        completed = completed.completed || []
+      }
+      
+      completed = completed.filter(item => item.routeId !== routeId)
+      wx.setStorageSync('completed', completed)
+      
+      wx.showToast({
+        title: '已删除记录',
+        icon: 'success'
+      })
+
+      this.loadCompleted()
+    } catch (err) {
+      console.error('删除记录失败：', err)
+      wx.showToast({ title: '操作失败', icon: 'none' })
+    }
+  },
+
+  // ========== 导航 ==========
+
+  /**
+   * 去探索路线 -> 切换到首页Tab
+   */
+  goExplore() {
+    wx.switchTab({
+      url: '/pages/home/home'
+    })
   },
 
   // ========== 分享 ==========
 
   onShareAppMessage() {
     return {
-      title: '秦人户外集合 - 探索秦岭之美',
+      title: '秦人徒步路线分享 - 探索秦岭之美',
       path: '/pages/home/home'
     }
   }

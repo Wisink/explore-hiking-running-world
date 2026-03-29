@@ -1,6 +1,0 @@
-{
-  "usingComponents": {
-    "login-popup": "/components/login-popup/login-popup"
-  },
-  "navigationBarTitleText": "评论"
-}

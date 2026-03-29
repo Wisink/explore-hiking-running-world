@@ -1,0 +1,148 @@
+/* 路线卡片样式 */
+
+.route-card {
+  background-color: #FFFFFF;
+  border-radius: 16rpx;
+  margin-bottom: 16rpx;
+  overflow: hidden;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.08);
+  transition: box-shadow 200ms ease, transform 200ms ease;
+}
+
+.route-card-hover {
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.12);
+  transform: scale(0.98);
+}
+
+/* 封面 */
+.route-card__cover {
+  position: relative;
+  width: 100%;
+  height: 320rpx;
+  background-color: #E8E8E8;
+}
+
+.route-card__image {
+  width: 100%;
+  height: 100%;
+}
+
+.route-card__cover-placeholder {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
+}
+
+.route-card__cover-placeholder-text {
+  font-size: 80rpx;
+}
+
+/* 难度角标 */
+.route-card__difficulty-badge {
+  position: absolute;
+  top: 16rpx;
+  right: 16rpx;
+  padding: 6rpx 16rpx;
+  border-radius: 8rpx;
+  font-size: 22rpx;
+  font-weight: 500;
+  color: #FFFFFF;
+}
+
+.difficulty-1 { background-color: #4CAF50; }
+.difficulty-2 { background-color: #8BC34A; }
+.difficulty-3 { background-color: #FFC107; color: #333; }
+.difficulty-4 { background-color: #FF9800; }
+.difficulty-5 { background-color: #F44336; }
+
+/* 内容区 */
+.route-card__body {
+  padding: 24rpx;
+}
+
+.route-card__title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #212121;
+  margin-bottom: 8rpx;
+}
+
+.route-card__desc {
+  font-size: 26rpx;
+  color: #757575;
+  margin-bottom: 16rpx;
+  line-height: 1.5;
+}
+
+/* 信息行 */
+.route-card__info {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 12rpx;
+}
+
+.route-card__info-item {
+  display: flex;
+  align-items: center;
+  margin-right: 20rpx;
+  margin-bottom: 8rpx;
+}
+
+.route-card__info-icon {
+  font-size: 22rpx;
+  margin-right: 4rpx;
+}
+
+.route-card__info-text {
+  font-size: 24rpx;
+  color: #757575;
+}
+
+.route-card__cost--free .route-card__info-text {
+  color: #4CAF50;
+  font-weight: 500;
+}
+
+/* 星级 */
+.route-card__stars {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12rpx;
+}
+
+.route-card__star {
+  font-size: 24rpx;
+  color: #FF8F00;
+  letter-spacing: 2rpx;
+  margin-right: 2rpx;
+}
+
+.route-card__star-label {
+  font-size: 22rpx;
+  color: #757575;
+  margin-left: 8rpx;
+}
+
+/* 风景标签 */
+.route-card__tags {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.route-card__scenery-tag {
+  display: inline-block;
+  padding: 4rpx 12rpx;
+  border-radius: 4rpx;
+  font-size: 22rpx;
+  color: #2E7D32;
+  background-color: rgba(129, 199, 132, 0.2);
+  margin-right: 8rpx;
+  margin-bottom: 6rpx;
+}
