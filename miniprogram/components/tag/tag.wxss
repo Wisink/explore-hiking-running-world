@@ -1,126 +1,176 @@
-/* 标签组件样式 */
+/* 标签组件 v2.0 - 自然色系+波纹效果 */
 
-.tag-item {
+.tag {
   display: inline-flex;
   align-items: center;
-  padding: 6rpx 16rpx;
-  border-radius: 4rpx;
-  font-size: 22rpx;
+  position: relative;
+  overflow: hidden;
+  padding: 8rpx 20rpx;
+  border-radius: 8rpx;
+  font-size: 24rpx;
   font-weight: 500;
-  transition: all 150ms ease;
+  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
   user-select: none;
 }
 
-.tag-item--hover {
-  opacity: 0.8;
+.tag--hover {
+  opacity: 0.85;
   transform: scale(0.95);
 }
 
 /* 尺寸 */
-.tag-item--sm {
-  padding: 4rpx 12rpx;
+.tag--sm {
+  padding: 4rpx 14rpx;
   font-size: 20rpx;
+  border-radius: 6rpx;
 }
 
-.tag-item--md {
-  padding: 6rpx 16rpx;
-  font-size: 22rpx;
-}
-
-.tag-item--lg {
+.tag--md {
   padding: 8rpx 20rpx;
   font-size: 24rpx;
+  border-radius: 8rpx;
 }
 
-/* 类型颜色 */
-.tag-item--difficulty {
-  background-color: rgba(255, 152, 0, 0.12);
+.tag--lg {
+  padding: 10rpx 24rpx;
+  font-size: 26rpx;
+  border-radius: 10rpx;
+}
+
+/* 类型 - 自然色系 */
+.tag--difficulty {
+  background: rgba(255, 152, 0, 0.1);
   color: #E65100;
+  border: 1rpx solid rgba(255, 152, 0, 0.15);
 }
 
-.tag-item--difficulty.tag-item--selected {
-  background-color: #FF9800;
+.tag--difficulty.tag--selected {
+  background: linear-gradient(135deg, #FF9800 0%, #FFA726 100%);
   color: #FFFFFF;
+  border-color: transparent;
+  box-shadow: 0 2rpx 8rpx rgba(255, 152, 0, 0.3);
 }
 
-.tag-item--cost-free {
-  background-color: rgba(76, 175, 80, 0.12);
+.tag--cost-free {
+  background: rgba(76, 175, 80, 0.1);
   color: #2E7D32;
+  border: 1rpx solid rgba(76, 175, 80, 0.15);
 }
 
-.tag-item--cost-free.tag-item--selected {
-  background-color: #4CAF50;
+.tag--cost-free.tag--selected {
+  background: linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%);
   color: #FFFFFF;
+  border-color: transparent;
+  box-shadow: 0 2rpx 8rpx rgba(76, 175, 80, 0.3);
 }
 
-.tag-item--cost-paid {
-  background-color: rgba(255, 143, 0, 0.12);
+.tag--cost-paid {
+  background: rgba(255, 143, 0, 0.1);
   color: #E65100;
+  border: 1rpx solid rgba(255, 143, 0, 0.15);
 }
 
-.tag-item--cost-paid.tag-item--selected {
-  background-color: #FF8F00;
+.tag--cost-paid.tag--selected {
+  background: linear-gradient(135deg, #FF8F00 0%, #FFA726 100%);
   color: #FFFFFF;
+  border-color: transparent;
 }
 
-.tag-item--scenery {
-  background-color: rgba(129, 199, 132, 0.2);
+.tag--scenery {
+  background: rgba(129, 199, 132, 0.15);
   color: #2E7D32;
+  border: 1rpx solid rgba(129, 199, 132, 0.2);
 }
 
-.tag-item--scenery.tag-item--selected {
-  background-color: #81C784;
+.tag--scenery.tag--selected {
+  background: linear-gradient(135deg, #81C784 0%, #A5D6A7 100%);
   color: #FFFFFF;
+  border-color: transparent;
 }
 
-.tag-item--crowd {
-  background-color: rgba(66, 165, 245, 0.15);
+.tag--crowd {
+  background: rgba(100, 181, 246, 0.12);
   color: #1565C0;
+  border: 1rpx solid rgba(100, 181, 246, 0.18);
 }
 
-.tag-item--crowd.tag-item--selected {
-  background-color: #42A5F5;
+.tag--crowd.tag--selected {
+  background: linear-gradient(135deg, #42A5F5 0%, #64B5F6 100%);
   color: #FFFFFF;
+  border-color: transparent;
 }
 
-.tag-item--default {
-  background-color: #F5F5F5;
-  color: #757575;
+.tag--default {
+  background: #F5F5F0;
+  color: #757570;
+  border: 1rpx solid var(--color-border, #E0E0DB);
 }
 
-.tag-item--default.tag-item--selected {
-  background-color: #2E7D32;
+.tag--default.tag--selected {
+  background: linear-gradient(135deg, #2E7D32 0%, #43A047 100%);
   color: #FFFFFF;
+  border-color: transparent;
+  box-shadow: 0 2rpx 8rpx rgba(46, 125, 50, 0.3);
 }
 
-.tag-item--primary {
-  background-color: rgba(46, 125, 50, 0.1);
+.tag--primary {
+  background: rgba(46, 125, 50, 0.08);
   color: #2E7D32;
+  border: 1rpx solid rgba(46, 125, 50, 0.12);
 }
 
-.tag-item--primary.tag-item--selected {
-  background-color: #2E7D32;
+.tag--primary.tag--selected {
+  background: linear-gradient(135deg, #2E7D32 0%, #43A047 100%);
   color: #FFFFFF;
+  border-color: transparent;
 }
 
-.tag-item--accent {
-  background-color: rgba(255, 143, 0, 0.1);
+.tag--accent {
+  background: rgba(255, 143, 0, 0.08);
   color: #FF8F00;
+  border: 1rpx solid rgba(255, 143, 0, 0.12);
 }
 
-.tag-item--accent.tag-item--selected {
-  background-color: #FF8F00;
+.tag--accent.tag--selected {
+  background: linear-gradient(135deg, #FF8F00 0%, #FFA726 100%);
   color: #FFFFFF;
+  border-color: transparent;
 }
 
 /* 禁用 */
-.tag-item--disabled {
-  opacity: 0.4;
+.tag--disabled {
+  opacity: 0.35;
   pointer-events: none;
 }
 
 /* 图标 */
-.tag-item__icon {
-  margin-right: 4rpx;
+.tag__icon {
+  margin-right: 6rpx;
   font-size: 20rpx;
+}
+
+.tag__text {
+  position: relative;
+  z-index: 1;
+}
+
+/* 波纹效果 */
+.tag__ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.4);
+  width: 200%;
+  padding-bottom: 200%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  animation: ripple 400ms ease-out;
+  pointer-events: none;
+}
+
+@keyframes ripple {
+  to {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0;
+  }
 }

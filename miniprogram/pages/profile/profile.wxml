@@ -1,140 +1,154 @@
 <!--pages/profile/profile.wxml-->
 <view class="profile-page">
 
-  <!-- 顶部标题区域 -->
-  <view class="header">
-    <text class="header-title">🥾 我的徒步</text>
-    <text class="header-subtitle">记录每一步的风景</text>
+  <!-- 顶部标题 -->
+  <view class="page-header">
+    <view class="page-header__bg"></view>
+    <view class="page-header__content">
+      <text class="page-header__emoji">🥾</text>
+      <text class="page-header__title">我的徒步</text>
+      <text class="page-header__sub">记录每一步的风景</text>
+    </view>
   </view>
 
-  <!-- 统计数据卡片 -->
+  <!-- 统计卡片 -->
   <view class="stats-card">
-    <view class="stat-item">
-      <text class="stat-num">{{favoriteCount}}</text>
-      <text class="stat-label">⭐ 收藏</text>
+    <view class="stats-card__item">
+      <text class="stats-card__num">{{favoriteCount}}</text>
+      <text class="stats-card__label">⭐ 收藏</text>
     </view>
-    <view class="stat-divider"></view>
-    <view class="stat-item">
-      <text class="stat-num">{{completedCount}}</text>
-      <text class="stat-label">👣 已走过</text>
+    <view class="stats-card__divider"></view>
+    <view class="stats-card__item">
+      <text class="stats-card__num">{{completedCount}}</text>
+      <text class="stats-card__label">👣 已走过</text>
     </view>
   </view>
 
-  <!-- Tab 切换栏 -->
+  <!-- Tab 切换 -->
   <view class="tab-bar">
-    <view class="tab-item {{activeTab === 'favorites' ? 'active' : ''}}" bindtap="switchTab" data-tab="favorites">
-      <text class="tab-text">⭐ 我的收藏</text>
-      <view class="tab-line" wx:if="{{activeTab === 'favorites'}}"></view>
+    <view
+      class="tab-bar__item {{activeTab === 'favorites' ? 'tab-bar__item--on' : ''}}"
+      bindtap="switchTab"
+      data-tab="favorites"
+    >
+      <text class="tab-bar__text">⭐ 我的收藏</text>
+      <view class="tab-bar__line" wx:if="{{activeTab === 'favorites'}}"></view>
     </view>
-    <view class="tab-item {{activeTab === 'completed' ? 'active' : ''}}" bindtap="switchTab" data-tab="completed">
-      <text class="tab-text">👣 已走过</text>
-      <view class="tab-line" wx:if="{{activeTab === 'completed'}}"></view>
+    <view
+      class="tab-bar__item {{activeTab === 'completed' ? 'tab-bar__item--on' : ''}}"
+      bindtap="switchTab"
+      data-tab="completed"
+    >
+      <text class="tab-bar__text">👣 已走过</text>
+      <view class="tab-bar__line" wx:if="{{activeTab === 'completed'}}"></view>
     </view>
   </view>
 
   <!-- 收藏列表 -->
-  <view class="list-section" wx:if="{{activeTab === 'favorites'}}">
-    <!-- 空状态 -->
-    <view class="empty-state" wx:if="{{favoriteRoutes.length === 0}}">
-      <view class="empty-icon">💚</view>
+  <view class="list-wrap" wx:if="{{activeTab === 'favorites'}}">
+    <view class="empty-wrap" wx:if="{{favoriteRoutes.length === 0}}">
+      <view class="empty-visual">
+        <view class="empty-circle"></view>
+        <text class="empty-icon">💚</text>
+      </view>
       <text class="empty-title">还没有收藏的路线</text>
       <text class="empty-desc">浏览路线时点击收藏，喜欢的路线都在这里</text>
       <view class="empty-btn" bindtap="goExplore">
-        <text class="empty-btn-text">去探索路线</text>
+        <text>去探索路线</text>
       </view>
     </view>
 
-    <!-- 收藏路线卡片列表 -->
     <view class="route-list" wx:else>
-      <view class="route-card" wx:for="{{favoriteRoutes}}" wx:key="_id" bindtap="onRouteTap" data-id="{{item._id}}">
-        <view class="card-cover">
-          <image class="card-image" src="{{item.coverImage || '/images/scenery/scenery-trail.jpg'}}" mode="aspectFill" lazy-load></image>
-          <view class="card-difficulty-badge" style="background: {{getDifficultyColor(item.difficultyLevel)}}">
-            <text class="badge-text">{{item.difficulty || '未知'}}</text>
+      <view
+        class="route-card"
+        wx:for="{{favoriteRoutes}}"
+        wx:key="_id"
+        bindtap="onRouteTap"
+        data-id="{{item._id}}"
+        hover-class="route-card--hover"
+        hover-stay-time="80"
+      >
+        <view class="route-card__cover">
+          <image class="route-card__img" src="{{item.coverImage || '/images/scenery/scenery-trail.jpg'}}" mode="aspectFill" lazy-load></image>
+          <view class="route-card__overlay"></view>
+          <view class="route-card__badge" style="background: {{getDifficultyColor(item.difficultyLevel)}}">
+            <text>{{item.difficulty || '未知'}}</text>
           </view>
         </view>
-        <view class="card-body">
-          <text class="card-name">{{item.name}}</text>
-          <text class="card-desc">{{item.description || item.location}}</text>
-          <view class="card-tags">
-            <view class="card-tag" wx:if="{{item.distance}}">
-              <text class="tag-text">📏 {{item.distance}}</text>
-            </view>
-            <view class="card-tag" wx:if="{{item.duration}}">
-              <text class="tag-text">⏱ {{item.duration}}</text>
-            </view>
-            <view class="card-tag" wx:if="{{item.location}}">
-              <text class="tag-text">📍 {{item.location}}</text>
-            </view>
-          </view>
-          <view class="card-scenery-tags" wx:if="{{item.sceneryTags && item.sceneryTags.length > 0}}">
-            <text class="scenery-tag" wx:for="{{item.sceneryTags}}" wx:for-item="tag" wx:index="index" wx:key="*this">{{tag}}</text>
+        <view class="route-card__body">
+          <text class="route-card__name">{{item.name}}</text>
+          <text class="route-card__desc">{{item.description || item.location}}</text>
+          <view class="route-card__tags">
+            <text class="route-card__tag" wx:if="{{item.distance}}">📏 {{item.distance}}</text>
+            <text class="route-card__tag" wx:if="{{item.duration}}">⏱ {{item.duration}}</text>
+            <text class="route-card__tag" wx:if="{{item.location}}">📍 {{item.location}}</text>
           </view>
         </view>
-        <!-- 长按取消收藏 -->
-        <view class="card-action" catchlongpress="onRemoveFavorite" data-id="{{item._id}}" data-name="{{item.name}}">
-          <text class="action-dot">⋯</text>
+        <view class="route-card__action" catchlongpress="onRemoveFavorite" data-id="{{item._id}}" data-name="{{item.name}}">
+          <text>⋯</text>
         </view>
       </view>
     </view>
   </view>
 
   <!-- 已走过列表 -->
-  <view class="list-section" wx:if="{{activeTab === 'completed'}}">
-    <!-- 空状态 -->
-    <view class="empty-state" wx:if="{{completedRoutes.length === 0}}">
-      <view class="empty-icon">🌈</view>
+  <view class="list-wrap" wx:if="{{activeTab === 'completed'}}">
+    <view class="empty-wrap" wx:if="{{completedRoutes.length === 0}}">
+      <view class="empty-visual">
+        <view class="empty-circle"></view>
+        <text class="empty-icon">🌈</text>
+      </view>
       <text class="empty-title">还没有走过的路线</text>
       <text class="empty-desc">完成徒步后标记为已走过，记录你的户外足迹</text>
       <view class="empty-btn" bindtap="goExplore">
-        <text class="empty-btn-text">去探索路线</text>
+        <text>去探索路线</text>
       </view>
     </view>
 
-    <!-- 已走过路线列表 -->
     <view class="route-list" wx:else>
-      <view class="route-card completed-card" wx:for="{{completedRoutes}}" wx:key="routeId" bindtap="onRouteTap" data-id="{{item._id}}">
-        <view class="card-cover">
-          <image class="card-image" src="{{item.coverImage || '/images/scenery/scenery-trail.jpg'}}" mode="aspectFill" lazy-load></image>
-          <view class="completed-badge">
-            <text class="completed-badge-text">✅ 已走过</text>
+      <view
+        class="route-card route-card--completed"
+        wx:for="{{completedRoutes}}"
+        wx:key="routeId"
+        bindtap="onRouteTap"
+        data-id="{{item._id}}"
+        hover-class="route-card--hover"
+        hover-stay-time="80"
+      >
+        <view class="route-card__cover">
+          <image class="route-card__img" src="{{item.coverImage || '/images/scenery/scenery-trail.jpg'}}" mode="aspectFill" lazy-load></image>
+          <view class="route-card__overlay"></view>
+          <view class="route-card__done">
+            <text>✅ 已走过</text>
           </view>
         </view>
-        <view class="card-body">
-          <text class="card-name">{{item.name}}</text>
-          <text class="card-desc">{{item.description || item.location}}</text>
-          <view class="card-tags">
-            <view class="card-tag" wx:if="{{item.distance}}">
-              <text class="tag-text">📏 {{item.distance}}</text>
-            </view>
-            <view class="card-tag" wx:if="{{item.duration}}">
-              <text class="tag-text">⏱ {{item.duration}}</text>
-            </view>
+        <view class="route-card__body">
+          <text class="route-card__name">{{item.name}}</text>
+          <text class="route-card__desc">{{item.description || item.location}}</text>
+          <view class="route-card__tags">
+            <text class="route-card__tag" wx:if="{{item.distance}}">📏 {{item.distance}}</text>
+            <text class="route-card__tag" wx:if="{{item.duration}}">⏱ {{item.duration}}</text>
           </view>
-          <!-- 走过信息 -->
           <view class="completed-info">
-            <view class="completed-date">
-              <text class="date-icon">📅</text>
-              <text class="date-text">{{item.completedDate}}</text>
+            <view class="completed-info__date">
+              <text>📅 {{item.completedDate}}</text>
             </view>
-            <view class="completed-note" wx:if="{{item.completedNote}}">
-              <text class="note-icon">💭</text>
-              <text class="note-text">{{item.completedNote}}</text>
+            <view class="completed-info__note" wx:if="{{item.completedNote}}">
+              <text>💭 {{item.completedNote}}</text>
             </view>
           </view>
         </view>
-        <!-- 长按删除记录 -->
-        <view class="card-action" catchlongpress="onRemoveCompleted" data-id="{{item.routeId}}" data-name="{{item.name}}">
-          <text class="action-dot">⋯</text>
+        <view class="route-card__action" catchlongpress="onRemoveCompleted" data-id="{{item.routeId}}" data-name="{{item.name}}">
+          <text>⋯</text>
         </view>
       </view>
     </view>
   </view>
 
-  <!-- 底部提示 -->
-  <view class="footer-tip">
-    <text class="tip-icon">🌿</text>
-    <text class="tip-text">安全出行，文明登山</text>
+  <!-- 底部 -->
+  <view class="footer">
+    <text class="footer__icon">🌿</text>
+    <text class="footer__text">安全出行，文明登山</text>
   </view>
 
 </view>

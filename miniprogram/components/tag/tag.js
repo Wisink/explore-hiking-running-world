@@ -30,9 +30,20 @@ Component({
     }
   },
 
+  data: {
+    showRipple: false
+  },
+
   methods: {
     onTap() {
       if (this.data.disabled) return;
+
+      // 触发波纹效果
+      this.setData({ showRipple: true });
+      setTimeout(() => {
+        this.setData({ showRipple: false });
+      }, 400);
+
       this.triggerEvent('tap', {
         text: this.data.text,
         type: this.data.type,

@@ -2,11 +2,11 @@
 <view class="knowledge-page">
   <!-- 顶部标题 -->
   <view class="page-header">
-    <view class="header-bg"></view>
-    <view class="header-content">
-      <text class="header-emoji">📚</text>
-      <text class="header-title">户外知识</text>
-      <text class="header-subtitle">装备 · 安全 · 礼仪</text>
+    <view class="page-header__bg"></view>
+    <view class="page-header__content">
+      <text class="page-header__emoji">📚</text>
+      <text class="page-header__title">户外知识</text>
+      <text class="page-header__sub">装备 · 安全 · 礼仪</text>
     </view>
   </view>
 
@@ -17,12 +17,12 @@
   </view>
 
   <block wx:if="{{!loading}}">
-    <!-- 推荐阅读区 -->
+    <!-- 推荐阅读 -->
     <view class="section">
-      <view class="section-header">
-        <view class="section-title-wrap">
-          <text class="section-icon">⭐</text>
-          <text class="section-title">推荐阅读</text>
+      <view class="section__head">
+        <view class="section__title-wrap">
+          <text class="section__icon">⭐</text>
+          <text class="section__title">推荐阅读</text>
         </view>
       </view>
       <scroll-view class="recommend-scroll" scroll-x enable-flex>
@@ -33,13 +33,13 @@
           data-id="{{item._id}}"
           bindtap="onRecommendedTap"
         >
-          <view class="recommend-cover" style="background: {{item.coverGradient}}">
-            <text class="recommend-cover-icon">{{item.category === '装备选购' ? '🥾' : item.category === '安全自救' ? '🆘' : '🤝'}}</text>
+          <view class="recommend-card__cover" style="background: {{item.coverGradient}}">
+            <text class="recommend-card__icon">{{item.category === '装备选购' ? '🥾' : item.category === '安全自救' ? '🆘' : '🤝'}}</text>
           </view>
-          <view class="recommend-info">
-            <view class="recommend-tag">{{item.category}}</view>
-            <text class="recommend-title">{{item.title}}</text>
-            <text class="recommend-summary">{{item.summary}}</text>
+          <view class="recommend-card__info">
+            <view class="recommend-card__tag">{{item.category}}</view>
+            <text class="recommend-card__title">{{item.title}}</text>
+            <text class="recommend-card__summary">{{item.summary}}</text>
           </view>
         </view>
       </scroll-view>
@@ -47,13 +47,13 @@
 
     <!-- 知识分类列表 -->
     <view class="section" wx:for="{{categories}}" wx:key="key" wx:if="{{categorizedArticles[item.key] && categorizedArticles[item.key].length > 0}}">
-      <view class="section-header">
-        <view class="section-title-wrap">
-          <text class="section-icon">{{item.icon}}</text>
-          <text class="section-title">{{item.name}}</text>
+      <view class="section__head">
+        <view class="section__title-wrap">
+          <text class="section__icon">{{item.icon}}</text>
+          <text class="section__title">{{item.name}}</text>
         </view>
-        <view class="article-count">
-          <text class="count-text">{{categorizedArticles[item.key].length}}篇</text>
+        <view class="section__count">
+          <text>{{categorizedArticles[item.key].length}}篇</text>
         </view>
       </view>
 
@@ -65,26 +65,26 @@
           wx:key="_id"
           data-id="{{article._id}}"
           bindtap="onArticleTap"
+          hover-class="article-item--hover"
+          hover-stay-time="80"
         >
-          <view class="article-icon-wrap {{article.category === '装备选购' ? 'icon-equip' : article.category === '安全自救' ? 'icon-safety' : 'icon-etiquette'}}">
-            <text class="article-icon">{{article.category === '装备选购' ? '🥾' : article.category === '安全自救' ? '🆘' : '🤝'}}</text>
+          <view class="article-item__icon {{article.category === '装备选购' ? 'article-item__icon--equip' : article.category === '安全自救' ? 'article-item__icon--safety' : 'article-item__icon--manner'}}">
+            <text>{{article.category === '装备选购' ? '🥾' : article.category === '安全自救' ? '🆘' : '🤝'}}</text>
           </view>
-          <view class="article-info">
-            <text class="article-title">{{article.title}}</text>
-            <text class="article-summary">{{article.summary}}</text>
+          <view class="article-item__body">
+            <text class="article-item__title">{{article.title}}</text>
+            <text class="article-item__summary">{{article.summary}}</text>
           </view>
-          <view class="article-arrow">
-            <text class="arrow-icon">›</text>
-          </view>
+          <text class="article-item__arrow">›</text>
         </view>
       </view>
     </view>
 
     <!-- 底部 -->
     <view class="footer">
-      <text class="footer-icon">📖</text>
-      <text class="footer-main">知识就是力量</text>
-      <text class="footer-sub">安全徒步，从学习开始</text>
+      <text class="footer__icon">🌿</text>
+      <text class="footer__main">知识就是力量</text>
+      <text class="footer__sub">安全徒步，从学习开始</text>
     </view>
   </block>
 </view>

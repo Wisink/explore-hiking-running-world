@@ -1,111 +1,102 @@
-/* 骨架屏组件样式 */
+/* 骨架屏组件 v2.0 - 自然渐变 shimmer */
 
-.skeleton {
-  padding: 0;
-}
-
-/* 脉冲动画 */
-.skeleton-pulse {
-  animation: skeletonPulse 1.5s ease-in-out infinite;
-  background: linear-gradient(90deg, #F0F0F0 25%, #E0E0E0 50%, #F0F0F0 75%);
+.skel-shimmer {
+  background: linear-gradient(
+    90deg,
+    #F0F0EB 25%,
+    #E8F5E9 37%,
+    #F0F0EB 63%
+  );
   background-size: 400rpx 100%;
+  animation: skelShimmer 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
-@keyframes skeletonPulse {
+@keyframes skelShimmer {
   0% { background-position: -400rpx 0; }
   100% { background-position: 400rpx 0; }
 }
 
 /* 卡片骨架 */
-.skeleton-card {
-  background-color: #FFFFFF;
-  border-radius: 16rpx;
-  margin-bottom: 16rpx;
+.skel-card {
+  background: #FFFFFF;
+  border-radius: 20rpx;
+  margin-bottom: 24rpx;
   overflow: hidden;
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.05);
 }
 
-.skeleton-card__image {
+.skel-cover {
   width: 100%;
-  height: 320rpx;
-  border-radius: 16rpx 16rpx 0 0;
+  height: 360rpx;
+  border-radius: 20rpx 20rpx 0 0;
 }
 
-.skeleton-card__body {
+.skel-body {
   padding: 24rpx;
 }
 
-.skeleton-card__row {
+.skel-row {
   display: flex;
   gap: 12rpx;
-  margin-top: 12rpx;
+  margin-top: 14rpx;
 }
 
 /* 线条骨架 */
-.skeleton-line {
+.skel-line {
   border-radius: 8rpx;
   height: 28rpx;
 }
 
-.skeleton-line--title {
-  width: 60%;
-  height: 32rpx;
+.skel-line--title {
+  width: 55%;
+  height: 34rpx;
   margin-bottom: 16rpx;
 }
 
-.skeleton-line--desc {
+.skel-line--desc {
   width: 80%;
   height: 24rpx;
   margin-bottom: 16rpx;
 }
 
-.skeleton-line--short {
-  width: 120rpx;
-  height: 24rpx;
-}
-
-.skeleton-line--tag {
-  width: 80rpx;
-  height: 28rpx;
-  border-radius: 4rpx;
-}
-
-.skeleton-line--full {
+.skel-line--full {
   width: 100%;
   height: 24rpx;
   margin-bottom: 16rpx;
 }
 
-.skeleton-line--half {
+.skel-line--half {
   width: 50%;
   height: 24rpx;
   margin-bottom: 16rpx;
 }
 
-.skeleton-line--3-4 {
+.skel-line--3-4 {
   width: 75%;
   height: 24rpx;
   margin-bottom: 16rpx;
 }
 
-.skeleton-line--btn {
-  flex: 1;
-  height: 88rpx;
+/* 芯片/标签骨架 */
+.skel-chip {
+  width: 100rpx;
+  height: 32rpx;
   border-radius: 8rpx;
 }
 
+/* 按钮骨架 */
+.skel-btn {
+  flex: 1;
+  height: 88rpx;
+  border-radius: 12rpx;
+}
+
 /* 详情骨架 */
-.skeleton-detail__banner {
+.skel-banner {
   width: 100%;
   height: 480rpx;
 }
 
-.skeleton-detail__content {
+.skel-content {
   padding: 32rpx;
-}
-
-.skeleton-detail__row {
-  display: flex;
-  gap: 16rpx;
-  margin-top: 16rpx;
 }

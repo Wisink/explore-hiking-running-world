@@ -3,7 +3,6 @@ Component({
     filters: {
       type: Array,
       value: []
-      // [{ label: '全部', value: 'all', icon: '' }, ...]
     },
     activeValue: {
       type: String,

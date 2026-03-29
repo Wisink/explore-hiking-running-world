@@ -1,5 +1,6 @@
 // pages/route-detail/route-detail.js
 const app = getApp()
+const cloudSync = require('../../utils/cloud-sync')
 
 // 难度映射
 const DIFFICULTY_MAP = {
@@ -201,32 +202,36 @@ Page({
   },
 
   // 收藏/取消收藏
-  onFavorite: function () {
+  onFavorite: async function () {
     const id = this.data.trailId
-    let favorites = wx.getStorageSync('route_favorites') || []
-    const idx = favorites.indexOf(id)
+    const isFavorited = this.data.isFavorited
 
-    if (idx > -1) {
-      favorites.splice(idx, 1)
-    } else {
-      favorites.push(id)
-    }
-
-    wx.setStorageSync('route_favorites', favorites)
-    this.setData({ isFavorited: idx === -1 })
+    // 即时反馈
+    this.setData({ isFavorited: !isFavorited })
 
     // 心形弹跳动画
     wx.vibrateShort && wx.vibrateShort({ type: 'light' })
     wx.showToast({
-      title: idx === -1 ? '已收藏 ❤️' : '已取消收藏',
+      title: !isFavorited ? '已收藏 ❤️' : '已取消收藏',
       icon: 'none'
     })
+
+    // 同步到云端
+    try {
+      if (!isFavorited) {
+        await cloudSync.addFavorite(id)
+      } else {
+        await cloudSync.removeFavorite(id)
+      }
+    } catch (err) {
+      console.error('收藏同步失败:', err)
+    }
   },
 
   // 检查收藏状态
   checkFavoriteStatus: function () {
-    const favorites = wx.getStorageSync('route_favorites') || []
-    this.setData({ isFavorited: favorites.includes(this.data.trailId) })
+    const isFavorited = cloudSync.isFavorited(this.data.trailId)
+    this.setData({ isFavorited })
   },
 
   // 复制导航地址

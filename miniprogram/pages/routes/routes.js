@@ -1,5 +1,6 @@
 // pages/routes/routes.js
 const app = getApp()
+const cloudSync = require('../../utils/cloud-sync')
 
 // 筛选标签配置
 const FILTER_TAGS = [
@@ -160,7 +161,7 @@ Page({
     }
 
     // 检查收藏状态
-    const favorites = wx.getStorageSync('route_favorites') || []
+    const favorites = cloudSync.getLocalFavorites()
     const isFavorited = favorites.includes(item._id)
 
     return {
@@ -241,29 +242,31 @@ Page({
   },
 
   // 收藏/取消收藏
-  onFavoriteTap: function (e) {
+  onFavoriteTap: async function (e) {
     const id = e.currentTarget.dataset.id
     const index = e.currentTarget.dataset.index
-    let favorites = wx.getStorageSync('route_favorites') || []
+    const isFavorited = this.data.routes[index].isFavorited
 
-    const idx = favorites.indexOf(id)
-    if (idx > -1) {
-      favorites.splice(idx, 1)
-    } else {
-      favorites.push(id)
-    }
-
-    wx.setStorageSync('route_favorites', favorites)
-
-    // 更新列表状态
+    // 更新列表状态（即时反馈）
     const key = `routes[${index}].isFavorited`
-    this.setData({ [key]: idx === -1 })
+    this.setData({ [key]: !isFavorited })
 
     wx.showToast({
-      title: idx === -1 ? '已收藏 ❤️' : '已取消收藏',
+      title: !isFavorited ? '已收藏 ❤️' : '已取消收藏',
       icon: 'none',
       duration: 1200
     })
+
+    // 同步到云端
+    try {
+      if (!isFavorited) {
+        await cloudSync.addFavorite(id)
+      } else {
+        await cloudSync.removeFavorite(id)
+      }
+    } catch (err) {
+      console.error('收藏同步失败:', err)
+    }
   },
 
   // 显示搜索框
@@ -294,7 +297,7 @@ Page({
 
   // 刷新收藏状态
   refreshFavoriteStatus: function () {
-    const favorites = wx.getStorageSync('route_favorites') || []
+    const favorites = cloudSync.getLocalFavorites()
     const routes = this.data.routes.map(item => ({
       ...item,
       isFavorited: favorites.includes(item._id)

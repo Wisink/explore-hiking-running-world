@@ -1,137 +1,153 @@
-/* pages/profile/profile.wxss */
+/* pages/profile/profile.wxss - v2.0 */
 
 .profile-page {
   min-height: 100vh;
-  background: linear-gradient(180deg, #E8F5E9 0%, #F8F6F0 12%, #F8F6F0 100%);
+  background: linear-gradient(180deg, #E8F5E9 0%, #FAFAF5 10%);
   padding-bottom: 120rpx;
 }
 
-/* ===== 顶部标题 ===== */
-.header {
+/* 顶部标题 */
+.page-header {
+  position: relative;
   padding: 40rpx 32rpx 20rpx;
+  overflow: hidden;
 }
 
-.header-title {
+.page-header__bg {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(135deg, rgba(46, 125, 50, 0.06) 0%, rgba(67, 160, 71, 0.04) 100%);
+}
+
+.page-header__content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.page-header__emoji {
+  font-size: 48rpx;
+  margin-bottom: 8rpx;
+}
+
+.page-header__title {
   font-size: 44rpx;
   font-weight: 800;
   color: #1A1A1A;
-  display: block;
   letter-spacing: 1rpx;
 }
 
-.header-subtitle {
+.page-header__sub {
   font-size: 26rpx;
-  color: #888888;
-  margin-top: 8rpx;
-  display: block;
+  color: #9E9E99;
 }
 
-/* ===== 统计卡片 ===== */
+/* 统计卡片 */
 .stats-card {
   display: flex;
   align-items: center;
   justify-content: space-around;
   background: #FFFFFF;
   margin: 16rpx 24rpx 24rpx;
-  padding: 32rpx 20rpx;
-  border-radius: 20rpx;
-  box-shadow: 0 4rpx 24rpx rgba(0, 0, 0, 0.06);
-  border: 1rpx solid rgba(0, 0, 0, 0.04);
+  padding: 36rpx 20rpx;
+  border-radius: 24rpx;
+  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.06);
 }
 
-.stat-item {
+.stats-card__item {
   display: flex;
   flex-direction: column;
   align-items: center;
   flex: 1;
 }
 
-.stat-num {
-  font-size: 48rpx;
+.stats-card__num {
+  font-size: 52rpx;
   font-weight: 800;
-  color: #2D5A27;
+  color: #2E7D32;
   margin-bottom: 8rpx;
+  animation: countUp 500ms cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
 }
 
-.stat-label {
+@keyframes countUp {
+  from { opacity: 0; transform: translateY(16rpx); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.stats-card__label {
   font-size: 26rpx;
-  color: #6B7B8D;
+  color: #757570;
   font-weight: 500;
 }
 
-.stat-divider {
+.stats-card__divider {
   width: 1rpx;
   height: 48rpx;
-  background-color: #EEEEEE;
+  background: #F0F0EB;
 }
 
-/* ===== Tab 切换栏 ===== */
+/* Tab 切换 */
 .tab-bar {
   display: flex;
   background: #FFFFFF;
   margin: 0 24rpx;
-  border-radius: 16rpx 16rpx 0 0;
+  border-radius: 20rpx 20rpx 0 0;
   overflow: hidden;
   box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
 }
 
-.tab-item {
+.tab-bar__item {
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 28rpx 0 20rpx;
   position: relative;
-  transition: all 0.3s ease;
+  transition: all 250ms ease;
 }
 
-.tab-item.active .tab-text {
-  color: #2D5A27;
+.tab-bar__item--on .tab-bar__text {
+  color: #2E7D32;
   font-weight: 700;
 }
 
-.tab-text {
+.tab-bar__text {
   font-size: 28rpx;
-  color: #888888;
+  color: #9E9E99;
   font-weight: 500;
-  transition: color 0.3s ease;
+  transition: color 250ms ease;
 }
 
-.tab-line {
+.tab-bar__line {
   position: absolute;
   bottom: 0;
   left: 50%;
   transform: translateX(-50%);
-  width: 60rpx;
+  width: 48rpx;
   height: 6rpx;
-  background: linear-gradient(90deg, #2D5A27, #43A047);
+  background: linear-gradient(90deg, #2E7D32, #43A047);
   border-radius: 3rpx;
-  animation: tabLineIn 0.3s ease;
+  animation: tabSlide 250ms cubic-bezier(0, 0, 0.2, 1) both;
 }
 
-@keyframes tabLineIn {
-  from {
-    width: 0;
-    opacity: 0;
-  }
-  to {
-    width: 60rpx;
-    opacity: 1;
-  }
+@keyframes tabSlide {
+  from { width: 0; opacity: 0; }
+  to { width: 48rpx; opacity: 1; }
 }
 
-/* ===== 列表区域 ===== */
-.list-section {
+/* 列表区域 */
+.list-wrap {
   margin: 0 24rpx;
   background: #FFFFFF;
-  border-radius: 0 0 16rpx 16rpx;
+  border-radius: 0 0 20rpx 20rpx;
   box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.04);
   overflow: hidden;
   min-height: 400rpx;
 }
 
-/* ===== 空状态 ===== */
-.empty-state {
+/* 空状态 */
+.empty-wrap {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -139,63 +155,87 @@
   padding: 80rpx 40rpx;
 }
 
-.empty-icon {
-  font-size: 96rpx;
-  margin-bottom: 24rpx;
-  animation: emptyBounce 2s ease-in-out infinite;
+.empty-visual {
+  position: relative;
+  width: 140rpx;
+  height: 140rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 28rpx;
 }
 
-@keyframes emptyBounce {
+.empty-circle {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
+  animation: emptyPulse 3s ease-in-out infinite;
+}
+
+@keyframes emptyPulse {
+  0%, 100% { transform: scale(1); opacity: 0.6; }
+  50% { transform: scale(1.08); opacity: 1; }
+}
+
+.empty-icon {
+  position: relative;
+  font-size: 64rpx;
+  animation: emptyFloat 3s ease-in-out infinite;
+}
+
+@keyframes emptyFloat {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-12rpx); }
+  50% { transform: translateY(-10rpx); }
 }
 
 .empty-title {
   font-size: 32rpx;
   font-weight: 700;
-  color: #333333;
+  color: #303028;
   margin-bottom: 12rpx;
 }
 
 .empty-desc {
   font-size: 26rpx;
-  color: #999999;
+  color: #9E9E99;
   text-align: center;
   line-height: 1.6;
   margin-bottom: 32rpx;
 }
 
 .empty-btn {
-  background: linear-gradient(135deg, #2D5A27 0%, #43A047 100%);
+  background: linear-gradient(135deg, #2E7D32 0%, #43A047 100%);
   padding: 18rpx 40rpx;
   border-radius: 40rpx;
-  box-shadow: 0 4rpx 16rpx rgba(45, 90, 39, 0.3);
-  transition: all 0.3s ease;
+  box-shadow: 0 4rpx 16rpx rgba(46, 125, 50, 0.3);
+  transition: transform 150ms ease;
 }
 
 .empty-btn:active {
   transform: scale(0.95);
 }
 
-.empty-btn-text {
+.empty-btn text {
   font-size: 28rpx;
   color: #FFFFFF;
   font-weight: 600;
 }
 
-/* ===== 路线卡片列表 ===== */
+/* 路线卡片列表 */
 .route-list {
   padding: 16rpx;
 }
 
 .route-card {
-  background: #FAFAFA;
+  background: #FAFAF5;
   border-radius: 16rpx;
   overflow: hidden;
   margin-bottom: 20rpx;
   box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
-  border: 1rpx solid rgba(0, 0, 0, 0.04);
-  transition: all 0.3s ease;
+  border: 1rpx solid rgba(0, 0, 0, 0.03);
+  transition: all 200ms ease;
   position: relative;
 }
 
@@ -203,157 +243,119 @@
   margin-bottom: 0;
 }
 
-.route-card:active {
+.route-card--hover {
   transform: scale(0.98);
-  box-shadow: 0 1rpx 4rpx rgba(0, 0, 0, 0.06);
 }
 
 /* 卡片封面 */
-.card-cover {
+.route-card__cover {
   position: relative;
   height: 200rpx;
   overflow: hidden;
 }
 
-.card-image {
+.route-card__img {
   width: 100%;
   height: 100%;
-  background: #E0E0E0;
+  background: #E0E0DB;
 }
 
-.card-difficulty-badge {
+.route-card__overlay {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 40%;
+  background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.3) 100%);
+  pointer-events: none;
+}
+
+.route-card__badge {
   position: absolute;
   top: 16rpx;
   right: 16rpx;
   padding: 6rpx 16rpx;
   border-radius: 12rpx;
-}
-
-.badge-text {
   font-size: 22rpx;
   color: #FFFFFF;
   font-weight: 600;
 }
 
-.completed-badge {
+.route-card__done {
   position: absolute;
   top: 16rpx;
   right: 16rpx;
-  background: rgba(45, 90, 39, 0.85);
+  background: rgba(46, 125, 50, 0.85);
   padding: 8rpx 18rpx;
   border-radius: 12rpx;
-  backdrop-filter: blur(8rpx);
-}
-
-.completed-badge-text {
   font-size: 22rpx;
   color: #FFFFFF;
   font-weight: 600;
+  backdrop-filter: blur(8rpx);
 }
 
 /* 卡片内容 */
-.card-body {
+.route-card__body {
   padding: 20rpx 24rpx 24rpx;
 }
 
-.card-name {
+.route-card__name {
+  display: block;
   font-size: 32rpx;
   font-weight: 700;
   color: #1A1A1A;
-  display: block;
   margin-bottom: 8rpx;
 }
 
-.card-desc {
-  font-size: 24rpx;
-  color: #888888;
+.route-card__desc {
   display: block;
-  margin-bottom: 16rpx;
+  font-size: 24rpx;
+  color: #9E9E99;
+  margin-bottom: 14rpx;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.card-tags {
+.route-card__tags {
   display: flex;
   flex-wrap: wrap;
   gap: 10rpx;
-  margin-bottom: 12rpx;
 }
 
-.card-tag {
-  background: #F0F7F0;
+.route-card__tag {
   padding: 6rpx 14rpx;
+  background: #F0F7F0;
   border-radius: 8rpx;
-}
-
-.tag-text {
   font-size: 22rpx;
-  color: #2D5A27;
+  color: #2E7D32;
   font-weight: 500;
-}
-
-.card-scenery-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8rpx;
-}
-
-.scenery-tag {
-  background: #FFF8E1;
-  padding: 4rpx 12rpx;
-  border-radius: 6rpx;
-  font-size: 20rpx;
-  color: #F57F17;
 }
 
 /* 已走过信息 */
 .completed-info {
   margin-top: 16rpx;
   padding-top: 16rpx;
-  border-top: 1rpx dashed #E0E0E0;
+  border-top: 1rpx dashed #E0E0DB;
 }
 
-.completed-date {
-  display: flex;
-  align-items: center;
-  gap: 8rpx;
+.completed-info__date {
+  font-size: 24rpx;
+  color: #2E7D32;
+  font-weight: 600;
   margin-bottom: 8rpx;
 }
 
-.date-icon {
-  font-size: 24rpx;
-}
-
-.date-text {
-  font-size: 24rpx;
-  color: #2D5A27;
-  font-weight: 600;
-}
-
-.completed-note {
-  display: flex;
-  align-items: flex-start;
-  gap: 8rpx;
+.completed-info__note {
   background: #FFFDE7;
   padding: 12rpx 16rpx;
   border-radius: 10rpx;
   margin-top: 8rpx;
-}
-
-.note-icon {
-  font-size: 24rpx;
-  flex-shrink: 0;
-}
-
-.note-text {
   font-size: 24rpx;
   color: #5D4037;
   line-height: 1.6;
 }
 
-/* 卡片操作按钮 */
-.card-action {
+/* 卡片操作 */
+.route-card__action {
   position: absolute;
   top: 16rpx;
   left: 16rpx;
@@ -365,16 +367,17 @@
   background: rgba(255, 255, 255, 0.8);
   border-radius: 50%;
   backdrop-filter: blur(8rpx);
-}
-
-.action-dot {
   font-size: 28rpx;
-  color: #666666;
-  letter-spacing: 2rpx;
+  color: #757570;
 }
 
-/* ===== 底部提示 ===== */
-.footer-tip {
+/* 已走过卡片特殊样式 */
+.route-card--completed {
+  border-left: 6rpx solid #2E7D32;
+}
+
+/* 底部 */
+.footer {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -382,20 +385,11 @@
   gap: 10rpx;
 }
 
-.tip-icon {
+.footer__icon {
   font-size: 28rpx;
 }
 
-.tip-text {
+.footer__text {
   font-size: 24rpx;
-  color: #AAAAAA;
-}
-
-/* ===== 已走过卡片特殊样式 ===== */
-.completed-card {
-  border-left: 6rpx solid #2D5A27;
-}
-
-.completed-card .card-body {
-  padding-left: 20rpx;
+  color: #C0C0BB;
 }

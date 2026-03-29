@@ -3,45 +3,46 @@
 
   <!-- 顶部标题栏 -->
   <view class="header">
-    <view class="header-back" bindtap="onGoBack">
-      <text class="back-icon">←</text>
+    <view class="header__bg"></view>
+    <view class="header__content">
+      <view class="header__back" bindtap="onGoBack">
+        <text class="header__back-icon">←</text>
+      </view>
+      <view class="header__center">
+        <text class="header__title">📋 行前清单</text>
+        <text class="header__sub">{{trailName}}</text>
+      </view>
+      <view class="header__spacer"></view>
     </view>
-    <view class="header-center">
-      <text class="header-title">📋 行前清单</text>
-      <text class="header-subtitle">{{trailName}}</text>
-    </view>
-    <view class="header-right"></view>
   </view>
 
   <!-- 进度概览 -->
   <view class="progress-card">
-    <view class="progress-header">
-      <text class="progress-title">准备进度</text>
-      <text class="progress-count">{{checkedCount}}/{{totalCount}}</text>
+    <view class="progress-card__row">
+      <text class="progress-card__label">准备进度</text>
+      <text class="progress-card__count">{{checkedCount}}/{{totalCount}}</text>
     </view>
-    <view class="progress-bar-wrap">
-      <view class="progress-bar">
-        <view
-          class="progress-fill"
-          style="width: {{totalCount > 0 ? (checkedCount / totalCount * 100) : 0}}%"
-        ></view>
-      </view>
+    <view class="progress-card__track">
+      <view
+        class="progress-card__fill"
+        style="width: {{totalCount > 0 ? (checkedCount / totalCount * 100) : 0}}%"
+      ></view>
     </view>
-    <text class="progress-tip" wx:if="{{checkedCount === totalCount && totalCount > 0}}">🎉 全部准备完毕！可以出发了！</text>
-    <text class="progress-tip" wx:elif="{{checkedCount > 0}}">还差 {{totalCount - checkedCount}} 项，继续加油！</text>
-    <text class="progress-tip" wx:else>开始准备吧！逐项勾选打勾 ✅</text>
+    <text class="progress-card__tip" wx:if="{{checkedCount === totalCount && totalCount > 0}}">🎉 全部准备完毕！可以出发了！</text>
+    <text class="progress-card__tip" wx:elif="{{checkedCount > 0}}">还差 {{totalCount - checkedCount}} 项，继续加油！</text>
+    <text class="progress-card__tip" wx:else>开始准备吧！逐项打勾 ✅</text>
   </view>
 
   <!-- 必须带 -->
   <view class="check-group" wx:if="{{equipment.must.length > 0}}">
-    <view class="group-header must">
-      <text class="group-icon">🔴</text>
-      <text class="group-title">必须带</text>
-      <text class="group-badge">缺了会很麻烦</text>
+    <view class="check-group__head check-group__head--must">
+      <text class="check-group__dot" style="background: #F44336;"></text>
+      <text class="check-group__title">必须带</text>
+      <text class="check-group__badge">缺了会很麻烦</text>
     </view>
-    <view class="check-list">
+    <view class="check-group__list">
       <view
-        class="check-item {{item.checked ? 'checked' : ''}}"
+        class="check-item {{item.checked ? 'check-item--on' : ''}}"
         wx:for="{{equipment.must}}"
         wx:key="id"
         data-id="{{item.id}}"
@@ -49,24 +50,24 @@
         data-index="{{index}}"
         bindtap="onCheckItem"
       >
-        <view class="checkbox {{item.checked ? 'active' : ''}}">
-          <text class="check-icon" wx:if="{{item.checked}}">✓</text>
+        <view class="check-item__box {{item.checked ? 'check-item__box--on' : ''}}">
+          <text class="check-item__tick" wx:if="{{item.checked}}">✓</text>
         </view>
-        <text class="check-text">{{item.name}}</text>
+        <text class="check-item__text">{{item.name}}</text>
       </view>
     </view>
   </view>
 
   <!-- 建议带 -->
   <view class="check-group" wx:if="{{equipment.suggest.length > 0}}">
-    <view class="group-header suggest">
-      <text class="group-icon">🟡</text>
-      <text class="group-title">建议带</text>
-      <text class="group-badge">有了更舒适</text>
+    <view class="check-group__head check-group__head--suggest">
+      <text class="check-group__dot" style="background: #FF9800;"></text>
+      <text class="check-group__title">建议带</text>
+      <text class="check-group__badge">有了更舒适</text>
     </view>
-    <view class="check-list">
+    <view class="check-group__list">
       <view
-        class="check-item {{item.checked ? 'checked' : ''}}"
+        class="check-item {{item.checked ? 'check-item--on' : ''}}"
         wx:for="{{equipment.suggest}}"
         wx:key="id"
         data-id="{{item.id}}"
@@ -74,53 +75,42 @@
         data-index="{{index}}"
         bindtap="onCheckItem"
       >
-        <view class="checkbox {{item.checked ? 'active' : ''}}">
-          <text class="check-icon" wx:if="{{item.checked}}">✓</text>
+        <view class="check-item__box {{item.checked ? 'check-item__box--on' : ''}}">
+          <text class="check-item__tick" wx:if="{{item.checked}}">✓</text>
         </view>
-        <text class="check-text">{{item.name}}</text>
+        <text class="check-item__text">{{item.name}}</text>
       </view>
     </view>
   </view>
 
   <!-- 不用带 -->
   <view class="check-group" wx:if="{{equipment.noNeed.length > 0}}">
-    <view class="group-header noNeed">
-      <text class="group-icon">🟢</text>
-      <text class="group-title">不用带</text>
-      <text class="group-badge">轻装上阵就好</text>
+    <view class="check-group__head check-group__head--noneed">
+      <text class="check-group__dot" style="background: #4CAF50;"></text>
+      <text class="check-group__title">不用带</text>
+      <text class="check-group__badge">轻装上阵就好</text>
     </view>
-    <view class="check-list">
-      <view
-        class="check-item no-need"
-        wx:for="{{equipment.noNeed}}"
-        wx:key="id"
-      >
-        <view class="checkbox disabled">
-          <text class="cross-icon">✕</text>
+    <view class="check-group__list">
+      <view class="check-item check-item--dim" wx:for="{{equipment.noNeed}}" wx:key="id">
+        <view class="check-item__box check-item__box--disabled">
+          <text class="check-item__cross">✕</text>
         </view>
-        <text class="check-text">{{item.name}}</text>
+        <text class="check-item__text">{{item.name}}</text>
       </view>
     </view>
   </view>
 
   <!-- 底部操作栏 -->
   <view class="bottom-bar">
-    <view class="bottom-btn reset-btn" bindtap="onReset">
-      <text class="btn-icon">🔄</text>
-      <text class="btn-text">重置</text>
+    <view class="bottom-bar__btn bottom-bar__btn--reset" bindtap="onReset">
+      <text>🔄</text>
+      <text>重置</text>
     </view>
-    <button class="bottom-btn share-btn" bindtap="onShareChecklist">
-      <text class="btn-icon">📤</text>
-      <text class="btn-text">分享清单</text>
+    <button class="bottom-bar__btn bottom-bar__btn--share" bindtap="onShareChecklist">
+      <text>📤</text>
+      <text>分享清单</text>
     </button>
   </view>
 
-  <!-- Canvas（隐藏，用于生成图片） -->
-  <canvas
-    type="2d"
-    id="checklist-canvas"
-    canvas-id="checklist-canvas"
-    class="share-canvas"
-  ></canvas>
-
+  <canvas type="2d" id="checklist-canvas" canvas-id="checklist-canvas" class="share-canvas"></canvas>
 </view>
