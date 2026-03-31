@@ -4,16 +4,23 @@ const app = getApp()
 Page({
   data: {
     loading: true,
-    recommended: [],       // 推荐文章（横向滚动）
+    activeCategory: '',
+    categoryCount: { equipment: 0, safety: 0, etiquette: 0 },
+    grouped: {},
+    filteredArticles: [],
+    recommended: [],
     categories: [
       { key: '装备选购', icon: '🥾', name: '装备选购' },
       { key: '安全自救', icon: '🆘', name: '安全自救' },
       { key: '户外礼仪', icon: '🤝', name: '户外礼仪' }
     ],
-    categorizedArticles: {}  // 按分类组织的文章
+    categorizedArticles: {}
   },
 
-  onLoad() {
+  onLoad(options) {
+    if (options && options.category) {
+      this.setData({ activeCategory: options.category })
+    }
     this.loadArticles()
   },
 
@@ -62,6 +69,12 @@ Page({
   },
 
   processArticles(articles) {
+    // 按分类过滤
+    let filtered = articles
+    if (this.data.activeCategory) {
+      filtered = articles.filter(a => a.category === this.data.activeCategory)
+    }
+
     // 推荐文章（前3篇）
     const recommended = articles.slice(0, 3).map((item, index) => ({
       ...item,
@@ -73,11 +86,28 @@ Page({
     this.data.categories.forEach(cat => {
       categorizedArticles[cat.key] = articles
         .filter(a => a.category === cat.key)
-        .sort((a, b) => a.order - b.order)
+        .sort((a, b) => (a.order || 0) - (b.order || 0))
     })
+
+    // 按分类分组
+    const grouped = {}
+    articles.forEach(a => {
+      if (!grouped[a.category]) grouped[a.category] = []
+      grouped[a.category].push(a)
+    })
+
+    // 统计各分类数量
+    const categoryCount = {
+      equipment: (grouped['装备选购'] || []).length,
+      safety: (grouped['安全自救'] || []).length,
+      etiquette: (grouped['户外礼仪'] || []).length
+    }
 
     this.setData({
       loading: false,
+      articles: filtered,
+      grouped,
+      categoryCount,
       recommended,
       categorizedArticles
     })
@@ -90,6 +120,14 @@ Page({
       'linear-gradient(135deg, #1565C0 0%, #42A5F5 100%)'
     ]
     return gradients[index % gradients.length]
+  },
+
+  // 分类卡片点击
+  onCategoryTap(e) {
+    const category = e.currentTarget.dataset.category
+    const activeCategory = this.data.activeCategory === category ? '' : category
+    this.setData({ activeCategory })
+    this.loadArticles()
   },
 
   // 点击推荐文章

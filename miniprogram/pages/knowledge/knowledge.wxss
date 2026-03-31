@@ -285,3 +285,42 @@
   font-size: 22rpx;
   color: #C0C0BB;
 }
+
+/* 分类快速入口 */
+.category-cards {
+  display: flex;
+  gap: 16rpx;
+  padding: 24rpx;
+}
+
+.category-card {
+  flex: 1;
+  background: #FFFFFF;
+  border-radius: 16rpx;
+  padding: 24rpx 16rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.06);
+}
+
+.category-card--on {
+  background: #E8F5E9;
+  box-shadow: 0 2rpx 12rpx rgba(76,175,80,0.2);
+}
+
+.category-card__icon {
+  font-size: 48rpx;
+}
+
+.category-card__title {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #303028;
+}
+
+.category-card__count {
+  font-size: 22rpx;
+  color: #9E9E99;
+}

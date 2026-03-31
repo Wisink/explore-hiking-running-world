@@ -116,6 +116,10 @@
   color: #1A1A1A;
 }
 
+.related__list {
+  margin-top: 16rpx;
+}
+
 .related__item {
   display: flex;
   align-items: center;

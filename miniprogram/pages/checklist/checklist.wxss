@@ -232,6 +232,33 @@
   transition: all 200ms ease;
 }
 
+/* 添加自定义物品按钮 */
+.add-custom-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10rpx;
+  padding: 22rpx 28rpx;
+  border-top: 1rpx dashed #E0E0DB;
+  transition: background 150ms ease;
+}
+
+.add-custom-btn:active {
+  background: #F5F5F0;
+}
+
+.add-custom-btn__icon {
+  font-size: 32rpx;
+  color: #2E7D32;
+  font-weight: 700;
+}
+
+.add-custom-btn__text {
+  font-size: 26rpx;
+  color: #2E7D32;
+  font-weight: 500;
+}
+
 /* 底部操作栏 */
 .bottom-bar {
   position: fixed;

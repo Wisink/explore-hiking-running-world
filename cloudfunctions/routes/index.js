@@ -14,31 +14,54 @@ function fail(message = '操作失败', data = null) {
 
 /**
  * 获取路线列表（支持分页、筛选）
- * 入参：{ action: "list", page, pageSize, filter: { difficulty, cost, direction } }
+ * 入参：{ action: "list", page, pageSize, filter }
+ * filter 可以是字符串（前端标签筛选）或对象（高级筛选）
  */
 async function list(event) {
-  const { page = 1, pageSize = 20, filter = {} } = event
-  const skip = (page - 1) * pageSize
+  let { page = 0, pageSize = 20, filter } = event
+  // 兼容前端传 0-indexed 的 page
+  const skip = Math.max(0, page) * pageSize
   const where = {}
 
-  // 难度筛选：数组 [1,2,3]
-  if (filter.difficulty && filter.difficulty.length > 0) {
-    where['difficulty.level'] = _.in(filter.difficulty)
-  }
-
-  // 费用筛选："免费" | "收费"
-  if (filter.cost) {
-    where['cost.type'] = filter.cost
-  }
-
-  // 方向筛选："秦岭东线" | "秦岭中线" | "秦岭西线"
-  if (filter.direction) {
-    where['location.direction'] = filter.direction
-  }
-
-  // 适合人群筛选："新手" | "亲子5岁+"
-  if (filter.suitableFor) {
-    where['difficulty.suitableFor'] = _.elemMatch(_.eq(filter.suitableFor))
+  // 如果 filter 是字符串（前端标签筛选），转换为查询条件
+  if (typeof filter === 'string' && filter && filter !== 'all') {
+    switch (filter) {
+      case 'beginner':
+        where['difficulty.label'] = '第一次也能走'
+        break
+      case 'family':
+        where['difficulty.suitableFor'] = _.elemMatch(_.eq('亲子5岁+'))
+        break
+      case 'free':
+        where['cost.type'] = '免费'
+        break
+      case 'east':
+        where['location.direction'] = '秦岭东线'
+        break
+      case 'center':
+        where['location.direction'] = '秦岭中线'
+        break
+      case 'west':
+        where['location.direction'] = '秦岭西线'
+        break
+      // stream/waterfall/forest/stone/autumn/hot 在客户端过滤
+      default:
+        break
+    }
+  } else if (typeof filter === 'object' && filter) {
+    // 高级筛选对象
+    if (filter.difficulty && filter.difficulty.length > 0) {
+      where['difficulty.level'] = _.in(filter.difficulty)
+    }
+    if (filter.cost) {
+      where['cost.type'] = filter.cost
+    }
+    if (filter.direction) {
+      where['location.direction'] = filter.direction
+    }
+    if (filter.suitableFor) {
+      where['difficulty.suitableFor'] = _.elemMatch(_.eq(filter.suitableFor))
+    }
   }
 
   try {

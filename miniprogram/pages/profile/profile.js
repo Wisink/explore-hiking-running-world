@@ -11,7 +11,10 @@ Page({
     completedRoutes: [],
     // 统计数据
     favoriteCount: 0,
-    completedCount: 0
+    completedCount: 0,
+    totalDistance: 0,
+    // 同步状态
+    syncStatus: ''
   },
 
   onLoad() {
@@ -21,6 +24,7 @@ Page({
   onShow() {
     // 每次页面显示时刷新数据（从TabBar切换回来时触发）
     this.loadData()
+    this.syncFromCloud()
   },
 
   onPullDownRefresh() {
@@ -76,7 +80,7 @@ Page({
 
   /**
    * 从本地缓存加载已走过列表
-   * 已走过数据结构: { completed: [{ routeId, date, note }] }
+   * 已走过数据结构: { completed: [{ routeId, date, weather, feeling, difficultyFeeling }] }
    */
   async loadCompleted() {
     try {
@@ -86,12 +90,13 @@ Page({
       this.setData({ completedCount: completedList.length })
 
       if (completedList.length === 0) {
-        this.setData({ completedRoutes: [] })
+        this.setData({ completedRoutes: [], totalDistance: 0 })
         return
       }
 
-      // 合并路线详情和已走过信息
+      // 合并路线详情和已走过信息，并计算总里程
       const routes = []
+      let totalDistance = 0
       for (const item of completedList) {
         const route = this.getRouteById(item.routeId)
         if (route) {
@@ -99,10 +104,16 @@ Page({
             ...route,
             routeId: item.routeId,
             completedDate: item.date,
-            completedNote: item.note || ''
+            completedNote: item.note || '',
+            weather: item.weather || '',
+            weatherEmoji: this.getWeatherEmoji(item.weather),
+            feeling: item.feeling || '',
+            difficultyFeeling: item.difficultyFeeling || ''
           })
+          // 提取数值距离
+          const distNum = parseFloat(route.distance) || 0
+          totalDistance += distNum
         } else {
-          // 路线详情不存在时，使用基本信息
           routes.push({
             _id: item.routeId,
             routeId: item.routeId,
@@ -113,15 +124,19 @@ Page({
             distance: '',
             duration: '',
             completedDate: item.date,
-            completedNote: item.note || ''
+            completedNote: item.note || '',
+            weather: item.weather || '',
+            weatherEmoji: this.getWeatherEmoji(item.weather),
+            feeling: item.feeling || '',
+            difficultyFeeling: item.difficultyFeeling || ''
           })
         }
       }
 
-      this.setData({ completedRoutes: routes })
+      this.setData({ completedRoutes: routes, totalDistance: Math.round(totalDistance * 10) / 10 })
     } catch (err) {
       console.error('加载已走过列表失败：', err)
-      this.setData({ completedRoutes: [], completedCount: 0 })
+      this.setData({ completedRoutes: [], completedCount: 0, totalDistance: 0 })
     }
   },
 
@@ -202,6 +217,36 @@ Page({
     return colors[level] || '#9E9E9E'
   },
 
+  // ========== 云端同步 ==========
+
+  syncFromCloud: async function () {
+    this.setData({ syncStatus: 'syncing' })
+    try {
+      const cloudSync = require('../../utils/cloud-sync.js')
+      const result = await cloudSync.pullFromCloud()
+      if (result) {
+        // 重新加载本地数据
+        this.loadFavorites()
+        this.loadCompleted()
+        this.setData({ syncStatus: 'success' })
+        // 3秒后隐藏提示
+        setTimeout(() => {
+          if (this.data.syncStatus === 'success') {
+            this.setData({ syncStatus: '' })
+          }
+        }, 3000)
+      }
+    } catch (err) {
+      console.error('同步失败:', err)
+      this.setData({ syncStatus: 'error' })
+      setTimeout(() => {
+        if (this.data.syncStatus === 'error') {
+          this.setData({ syncStatus: '' })
+        }
+      }, 3000)
+    }
+  },
+
   // ========== Tab 切换 ==========
 
   /**
@@ -230,7 +275,7 @@ Page({
       }
       
       wx.navigateTo({
-        url: `/pages/detail/detail?id=${id}`
+        url: `/pages/route-detail/route-detail?id=${id}`
       })
     }
   },
@@ -280,20 +325,19 @@ Page({
    */
   removeFavorite(id) {
     try {
+      // 先更新本地
       let favorites = wx.getStorageSync('favorites') || []
-      // 兼容两种数据格式
       if (!Array.isArray(favorites)) {
         favorites = favorites.favorites || []
       }
-      
       favorites = favorites.filter(fid => fid !== id)
       wx.setStorageSync('favorites', favorites)
-      
-      wx.showToast({
-        title: '已取消收藏',
-        icon: 'success'
-      })
 
+      // 同步到云端
+      const cloudSync = require('../../utils/cloud-sync.js')
+      cloudSync.removeFavorite(id)
+
+      wx.showToast({ title: '已取消收藏', icon: 'success' })
       this.loadFavorites()
     } catch (err) {
       console.error('取消收藏失败：', err)
@@ -306,20 +350,19 @@ Page({
    */
   removeCompleted(routeId) {
     try {
+      // 先更新本地
       let completed = wx.getStorageSync('completed') || []
-      // 兼容两种数据格式
       if (!Array.isArray(completed)) {
         completed = completed.completed || []
       }
-      
       completed = completed.filter(item => item.routeId !== routeId)
       wx.setStorageSync('completed', completed)
-      
-      wx.showToast({
-        title: '已删除记录',
-        icon: 'success'
-      })
 
+      // 同步到云端
+      const cloudSync = require('../../utils/cloud-sync.js')
+      cloudSync.removeCompleted(routeId)
+
+      wx.showToast({ title: '已删除记录', icon: 'success' })
       this.loadCompleted()
     } catch (err) {
       console.error('删除记录失败：', err)
@@ -329,12 +372,37 @@ Page({
 
   // ========== 导航 ==========
 
+  // ========== 工具方法 ==========
+
+  /**
+   * 获取天气emoji
+   */
+  getWeatherEmoji(weather) {
+    if (!weather) return ''
+    const map = {
+      '晴': '☀️', 'sunny': '☀️',
+      '多云': '⛅', 'cloudy': '⛅',
+      '阴': '☁️', 'overcast': '☁️',
+      '雨': '🌧️', 'rain': '🌧️', '小雨': '🌦️', '大雨': '🌧️',
+      '雪': '❄️', 'snow': '❄️',
+      '雾': '🌫️', 'fog': '🌫️',
+      '风': '💨', 'wind': '💨'
+    }
+    // 尝试精确匹配
+    if (map[weather]) return map[weather]
+    // 模糊匹配
+    for (const [key, emoji] of Object.entries(map)) {
+      if (weather.includes(key)) return emoji
+    }
+    return '🌤️'
+  },
+
   /**
    * 去探索路线 -> 切换到首页Tab
    */
   goExplore() {
     wx.switchTab({
-      url: '/pages/home/home'
+      url: '/pages/routes/routes'
     })
   },
 
@@ -343,7 +411,7 @@ Page({
   onShareAppMessage() {
     return {
       title: '秦人徒步路线分享 - 探索秦岭之美',
-      path: '/pages/home/home'
+      path: '/pages/routes/routes'
     }
   }
 })

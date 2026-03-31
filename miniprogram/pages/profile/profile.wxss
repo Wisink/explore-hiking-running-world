@@ -43,6 +43,36 @@
   color: #9E9E99;
 }
 
+/* 同步状态 */
+.sync-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+  padding: 12rpx 24rpx;
+  background: #E3F2FD;
+  border-bottom: 1rpx solid #BBDEFB;
+}
+
+.sync-bar--success {
+  background: #E8F5E9;
+  border-bottom-color: #C8E6C9;
+}
+
+.sync-bar--error {
+  background: #FFF3E0;
+  border-bottom-color: #FFE0B2;
+}
+
+.sync-bar__icon {
+  font-size: 24rpx;
+}
+
+.sync-bar__text {
+  font-size: 24rpx;
+  color: #555;
+}
+
 /* 统计卡片 */
 .stats-card {
   display: flex;
@@ -342,6 +372,17 @@
   color: #2E7D32;
   font-weight: 600;
   margin-bottom: 8rpx;
+}
+
+.completed-info__difficulty {
+  font-size: 24rpx;
+  color: #E65100;
+  font-weight: 500;
+  margin-bottom: 8rpx;
+  background: #FFF3E0;
+  padding: 8rpx 14rpx;
+  border-radius: 8rpx;
+  display: inline-block;
 }
 
 .completed-info__note {

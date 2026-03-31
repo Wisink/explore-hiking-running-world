@@ -11,6 +11,8 @@ Page({
       suggest: [],
       noNeed: []
     },
+    // 自定义物品
+    customItems: [],
     // 勾选状态（key = category-index）
     checkedMap: {},
     // 统计
@@ -23,7 +25,10 @@ Page({
   onLoad: function (options) {
     const trailId = options.id || ''
     const trailName = options.name ? decodeURIComponent(options.name) : ''
-    this.setData({ trailId, trailName })
+    // 加载自定义物品缓存
+    const customCacheKey = `customItems_${trailId}`
+    const customItems = wx.getStorageSync(customCacheKey) || []
+    this.setData({ trailId, trailName, customItems })
     this.loadChecklist()
   },
 
@@ -39,10 +44,10 @@ Page({
     }
 
     wx.cloud.callFunction({
-      name: 'trail',
+      name: 'routes',
       data: {
-        action: 'getDetail',
-        id: this.data.trailId
+        action: 'detail',
+        routeId: this.data.trailId
       },
       success: (res) => {
         if (res.result && res.result.code === 0 && res.result.data) {
@@ -60,31 +65,63 @@ Page({
     })
   },
 
-  // 处理装备数据
+  // 处理装备数据（支持 { name, reason } 对象格式和纯字符串格式）
   processEquipment: function (equipment, cachedChecked) {
-    const must = (equipment.must || []).map((name, i) => ({
-      id: `must-${i}`,
-      name: name,
-      checked: !!cachedChecked[`must-${i}`]
-    }))
+    const normalize = (item) => {
+      if (typeof item === 'string') return { name: item, reason: '' }
+      return { name: item.name || '', reason: item.reason || '' }
+    }
 
-    const suggest = (equipment.suggest || []).map((name, i) => ({
-      id: `suggest-${i}`,
-      name: name,
-      checked: !!cachedChecked[`suggest-${i}`]
-    }))
+    const must = (equipment.must || []).map((raw, i) => {
+      const item = normalize(raw)
+      return {
+        id: `must-${i}`,
+        name: item.name,
+        reason: item.reason,
+        displayName: item.reason ? `${item.name}（${item.reason}）` : item.name,
+        checked: !!cachedChecked[`must-${i}`]
+      }
+    })
 
-    const noNeed = (equipment.noNeed || []).map((name, i) => ({
-      id: `noNeed-${i}`,
-      name: name,
-      checked: !!cachedChecked[`noNeed-${i}`]
-    }))
+    const suggest = (equipment.suggest || []).map((raw, i) => {
+      const item = normalize(raw)
+      return {
+        id: `suggest-${i}`,
+        name: item.name,
+        reason: item.reason,
+        displayName: item.reason ? `${item.name}（${item.reason}）` : item.name,
+        checked: !!cachedChecked[`suggest-${i}`]
+      }
+    })
 
-    const totalCount = must.length + suggest.length + noNeed.length
-    const checkedCount = [...must, ...suggest, ...noNeed].filter(i => i.checked).length
+    const noNeed = (equipment.noNeed || []).map((raw, i) => {
+      const item = normalize(raw)
+      return {
+        id: `noNeed-${i}`,
+        name: item.name,
+        reason: item.reason,
+        displayName: item.reason ? `${item.name}（${item.reason}）` : item.name,
+        checked: !!cachedChecked[`noNeed-${i}`]
+      }
+    })
+
+    // 合并自定义物品
+    const customItems = (this.data.customItems || []).map((item, i) => ({
+      id: `custom-${i}`,
+      name: item.name,
+      reason: item.reason || '',
+      displayName: item.reason ? `${item.name}（${item.reason}）` : item.name,
+      checked: !!cachedChecked[`custom-${i}`],
+      isCustom: true
+    }))
+    // 自定义物品默认加入 suggest 分类
+    const allSuggest = [...suggest, ...customItems]
+
+    const totalCount = must.length + allSuggest.length
+    const checkedCount = [...must, ...allSuggest, ...noNeed].filter(i => i.checked).length
 
     this.setData({
-      equipment: { must, suggest, noNeed },
+      equipment: { must, suggest: allSuggest, noNeed },
       totalCount,
       checkedCount
     })
@@ -97,9 +134,30 @@ Page({
 
   getDefaultEquipment: function () {
     return {
-      must: ['徒步鞋（防滑）', '饮用水 1.5L', '干粮/路餐', '手机充满电', '少量现金', '身份证'],
-      suggest: ['登山杖', '防晒帽', '防晒霜', '充电宝', '创可贴', '湿纸巾', '垃圾袋'],
-      noNeed: ['帐篷', '睡袋', '炊具', '绳索', '专业攀岩装备']
+      must: [
+        { name: '防滑运动鞋', reason: '路面有碎石' },
+        { name: '饮用水 1.5L', reason: '沿途无补给点' },
+        { name: '干粮/路餐', reason: '补充体力' },
+        { name: '手机充满电', reason: '导航和紧急联系' },
+        { name: '少量现金', reason: '部分区域无网络' },
+        { name: '身份证', reason: '景区可能查验' }
+      ],
+      suggest: [
+        { name: '登山杖', reason: '减轻膝盖负担' },
+        { name: '防晒帽', reason: '山顶紫外线强' },
+        { name: '防晒霜', reason: '长时间户外' },
+        { name: '充电宝', reason: '手机续航' },
+        { name: '创可贴', reason: '防磨脚' },
+        { name: '湿纸巾', reason: '擦汗清洁' },
+        { name: '垃圾袋', reason: '无痕山林' }
+      ],
+      noNeed: [
+        { name: '帐篷', reason: '当日往返' },
+        { name: '睡袋', reason: '不住宿' },
+        { name: '炊具', reason: '带干粮即可' },
+        { name: '绳索', reason: '非攀岩路线' },
+        { name: '专业攀岩装备', reason: '无需技术攀登' }
+      ]
     }
   },
 
@@ -125,6 +183,71 @@ Page({
     wx.setStorageSync(cacheKey, checkedMap)
 
     this.setData({ equipment, checkedCount, checkedMap })
+
+    // 同步到云端（B4）
+    this.syncChecklistToCloud(checkedMap)
+  },
+
+  // 同步勾选状态到云端
+  syncChecklistToCloud: function (checkedMap) {
+    try {
+      const cloudSync = require('../../utils/cloud-sync.js')
+      cloudSync.syncChecklist(this.data.trailId, checkedMap, this.data.customItems)
+    } catch (err) {
+      console.error('同步清单到云端失败：', err)
+    }
+  },
+
+  // 添加自定义物品（B2）
+  onAddCustomItem: function () {
+    wx.showModal({
+      title: '添加自定义物品',
+      editable: true,
+      placeholderText: '输入物品名称',
+      success: (res) => {
+        if (res.confirm && res.content && res.content.trim()) {
+          const name = res.content.trim()
+          const customItems = [...this.data.customItems, { name, reason: '' }]
+          
+          // 保存到缓存
+          const customCacheKey = `customItems_${this.data.trailId}`
+          wx.setStorageSync(customCacheKey, customItems)
+
+          this.setData({ customItems })
+
+          // 重新处理装备数据
+          const cacheKey = `checklist_${this.data.trailId}`
+          const cachedChecked = wx.getStorageSync(cacheKey) || {}
+          
+          // 需要重新加载完整装备数据来重新处理
+          const must = this.data.equipment.must.filter(i => !i.isCustom)
+          const suggest = this.data.equipment.suggest.filter(i => !i.isCustom)
+          const noNeed = this.data.equipment.noNeed
+          
+          // 重新合并
+          const customProcessed = customItems.map((item, i) => ({
+            id: `custom-${i}`,
+            name: item.name,
+            reason: item.reason || '',
+            displayName: item.reason ? `${item.name}（${item.reason}）` : item.name,
+            checked: !!cachedChecked[`custom-${i}`],
+            isCustom: true
+          }))
+
+          const allSuggest = [...suggest, ...customProcessed]
+          const totalCount = must.length + allSuggest.length
+          const checkedCount = [...must, ...allSuggest, ...noNeed].filter(i => i.checked).length
+
+          this.setData({
+            equipment: { must, suggest: allSuggest, noNeed },
+            totalCount,
+            checkedCount
+          })
+
+          wx.showToast({ title: '已添加', icon: 'success' })
+        }
+      }
+    })
   },
 
   // 重置清单
@@ -198,19 +321,21 @@ Page({
       ctx.font = '16px sans-serif'
       ctx.fillText(this.data.trailName, 30, 82)
 
-      // 进度条
-      const progress = this.data.totalCount > 0 ? this.data.checkedCount / this.data.totalCount : 0
+      // 提示文案
+      ctx.fillStyle = '#FF6D00'
+      ctx.font = 'bold 14px sans-serif'
+      ctx.fillText('⚠️ 请按清单准备，逐项打勾 ✅', 30, 115)
+
+      // 进度条（分享时显示为空白清单）
       ctx.fillStyle = '#E0E0E0'
-      ctx.fillRect(30, 115, width - 60, 8)
-      ctx.fillStyle = '#4CAF50'
-      ctx.fillRect(30, 115, (width - 60) * progress, 8)
+      ctx.fillRect(30, 130, width - 60, 8)
 
       ctx.fillStyle = '#333'
       ctx.font = '14px sans-serif'
-      ctx.fillText(`已准备 ${this.data.checkedCount}/${this.data.totalCount} 项`, 30, 145)
+      ctx.fillText(`共 ${this.data.totalCount} 项`, 30, 158)
 
-      // 绘制清单项
-      let y = 170
+      // 绘制清单项（分享时全部显示为未勾选）
+      let y = 188
       const categories = [
         { key: 'must', title: '🔴 必须带', color: '#F44336' },
         { key: 'suggest', title: '🟡 建议带', color: '#FF9800' },
@@ -227,26 +352,26 @@ Page({
         y += 30
 
         items.forEach(item => {
-          // 勾选框
+          // 勾选框（统一为空白）
           ctx.strokeStyle = '#CCC'
           ctx.lineWidth = 1
           ctx.strokeRect(40, y - 14, 16, 16)
+          // 不填充，保持空白勾选框
 
-          if (item.checked) {
-            ctx.fillStyle = '#2E7D32'
-            ctx.fillRect(42, y - 12, 12, 12)
-            ctx.fillStyle = '#999'
-          } else {
-            ctx.fillStyle = '#333'
-          }
-
+          ctx.fillStyle = '#333'
           ctx.font = '15px sans-serif'
-          ctx.fillText(item.name, 66, y)
+          const displayText = item.reason ? `${item.name}（${item.reason}）` : item.name
+          ctx.fillText(displayText, 66, y)
           y += 28
         })
 
         y += 10
       })
+
+      // 分享提示
+      ctx.fillStyle = '#999'
+      ctx.font = '14px sans-serif'
+      ctx.fillText('长按图片进行分享或保存', width / 2 - 85, height - 45)
 
       // 底部水印
       ctx.fillStyle = '#CCC'
@@ -273,7 +398,7 @@ Page({
 
   // 计算画布高度
   calculateCanvasHeight: function () {
-    let height = 160 // 标题区域
+    let height = 178 // 标题区域 + 提示文案
     const categories = ['must', 'suggest', 'noNeed']
     categories.forEach(key => {
       const items = this.data.equipment[key]
@@ -283,11 +408,11 @@ Page({
         height += 10 // 间距
       }
     })
-    height += 40 // 底部
+    height += 60 // 底部（增加分享提示文字高度）
     return height
   },
 
-  // 降级分享方案
+  // 降级分享方案（B3：文本分享）
   onShareFallback: function () {
     const categories = [
       { key: 'must', title: '🔴 必须带' },
@@ -295,13 +420,14 @@ Page({
       { key: 'noNeed', title: '🟢 不用带' }
     ]
 
-    let text = `🎒 ${this.data.trailName} - 行前清单\n\n`
+    let text = `🎒 ${this.data.trailName} - 行前清单\n\n⚠️ 请按清单准备，逐项打勾 ✅\n\n`
     categories.forEach(cat => {
       const items = this.data.equipment[cat.key]
       if (items.length === 0) return
       text += `${cat.title}\n`
       items.forEach(item => {
-        text += `${item.checked ? '✅' : '⬜'} ${item.name}\n`
+        const displayText = item.reason ? `${item.name}（${item.reason}）` : item.name
+        text += `⬜ ${displayText}\n`
       })
       text += '\n'
     })

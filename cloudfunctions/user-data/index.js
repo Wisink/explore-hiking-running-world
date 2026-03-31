@@ -36,10 +36,16 @@ exports.main = async (event, context) => {
         return await removeFavorite(openid, event.routeId)
 
       case 'add-completed':
-        return await addCompleted(openid, event.routeId, event.date, event.note)
+        return await addCompleted(openid, event.routeId, event.date, event.note, event.weather, event.feeling, event.difficultyFeeling, event.companions, event.name)
 
       case 'remove-completed':
         return await removeCompleted(openid, event.routeId)
+
+      case 'sync-checklist':
+        return await syncChecklist(openid, event.routeId, event.checkedItems, event.customItems)
+
+      case 'get-checklist':
+        return await getChecklist(openid, event.routeId)
 
       default:
         return { code: -1, message: '未知操作' }
@@ -60,7 +66,8 @@ async function getUserData(openid) {
       code: 0,
       data: {
         favorites: [],
-        completed: []
+        completed: [],
+        checklists: {}
       }
     }
   }
@@ -69,7 +76,8 @@ async function getUserData(openid) {
     code: 0,
     data: {
       favorites: res.data[0].favorites || [],
-      completed: res.data[0].completed || []
+      completed: res.data[0].completed || [],
+      checklists: res.data[0].checklists || {}
     }
   }
 }
@@ -164,16 +172,24 @@ async function removeFavorite(openid, routeId) {
   return { code: 0, message: '取消收藏成功' }
 }
 
-// 添加已走过
-async function addCompleted(openid, routeId, date, note) {
+// 添加已走过 - 同一路线同一天不能重复标记
+async function addCompleted(openid, routeId, date, note, weather, feeling, difficultyFeeling, companions, name) {
+  const completedDate = date || new Date().toISOString().split('T')[0]
   const completedItem = {
     routeId: routeId,
-    date: date || new Date().toISOString().split('T')[0],
-    note: note || ''
+    date: completedDate,
+    name: name || '',
+    weather: weather || '',
+    feeling: feeling || '',
+    difficultyFeeling: difficultyFeeling || '',
+    companions: companions || '',
+    note: note || '',
+    completedAt: Date.now()
   }
 
   const res = await db.collection('user_data').where({ _openid: openid }).get()
 
+  // 新建记录
   if (res.data.length === 0) {
     await db.collection('user_data').add({
       data: {
@@ -184,9 +200,16 @@ async function addCompleted(openid, routeId, date, note) {
       }
     })
   } else {
+    // 检查：同一天同一路线不能重复标记
+    const existing = res.data[0].completed || []
+    const duplicate = existing.some(item => item.routeId === routeId && item.date === completedDate)
+    if (duplicate) {
+      return { code: -1, message: '这一天已经标记过这条路线了' }
+    }
+
     await db.collection('user_data').where({ _openid: openid }).update({
       data: {
-        completed: _.addToSet(completedItem),
+        completed: _.push([completedItem]),
         updatedAt: db.serverDate()
       }
     })
@@ -212,4 +235,48 @@ async function removeCompleted(openid, routeId) {
   }
 
   return { code: 0, message: '删除成功' }
+}
+
+// 同步清单勾选状态
+async function syncChecklist(openid, routeId, checkedItems, customItems) {
+  const res = await db.collection('user_data').where({ _openid: openid }).get()
+
+  if (res.data.length === 0) {
+    await db.collection('user_data').add({
+      data: {
+        _openid: openid,
+        favorites: [],
+        completed: [],
+        checklists: {
+          [routeId]: { checked: checkedItems || [], custom: customItems || [] }
+        },
+        updatedAt: db.serverDate()
+      }
+    })
+  } else {
+    const checklists = res.data[0].checklists || {}
+    checklists[routeId] = { checked: checkedItems || [], custom: customItems || [] }
+    await db.collection('user_data').where({ _openid: openid }).update({
+      data: {
+        checklists: checklists,
+        updatedAt: db.serverDate()
+      }
+    })
+  }
+
+  return { code: 0, message: '清单同步成功' }
+}
+
+// 获取清单勾选状态
+async function getChecklist(openid, routeId) {
+  const res = await db.collection('user_data').where({ _openid: openid }).get()
+
+  if (res.data.length === 0) {
+    return { code: 0, data: { checked: [], custom: [] } }
+  }
+
+  const checklists = res.data[0].checklists || {}
+  const data = checklists[routeId] || { checked: [], custom: [] }
+
+  return { code: 0, data: data }
 }

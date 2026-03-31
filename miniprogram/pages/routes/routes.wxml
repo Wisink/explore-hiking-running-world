@@ -19,21 +19,47 @@
   </view>
 
   <!-- 搜索栏（展开状态） -->
-  <view class="search-bar" wx:if="{{showSearch}}">
-    <view class="search-bar__input">
-      <text class="search-bar__icon">🔍</text>
-      <input
-        class="search-bar__field"
-        placeholder="搜索路线名称、地点..."
-        value="{{searchKeyword}}"
-        bindinput="onSearchInput"
-        bindconfirm="onSearchConfirm"
-        confirm-type="search"
-        focus="{{showSearch}}"
-      />
-      <text class="search-bar__clear" wx:if="{{searchKeyword}}" bindtap="onSearchClear">✕</text>
+  <view class="search-bar-row" wx:if="{{showSearch}}">
+    <view class="search-bar">
+      <view class="search-bar__input">
+        <text class="search-bar__icon">🔍</text>
+        <input
+          class="search-bar__field"
+          placeholder="搜索路线名称、地点..."
+          value="{{searchKeyword}}"
+          bindinput="onSearchInput"
+          bindconfirm="onSearchConfirm"
+          confirm-type="search"
+          focus="{{showSearch}}"
+        />
+        <text class="search-bar__clear" wx:if="{{searchKeyword}}" bindtap="onSearchClear">✕</text>
+      </view>
+      <view class="filter-toggle" bindtap="onToggleAdvancedFilter">
+        <text>{{showAdvancedFilter ? '收起' : '筛选'}}</text>
+      </view>
+      <text class="search-bar__cancel" bindtap="onSearchCancel">取消</text>
     </view>
-    <text class="search-bar__cancel" bindtap="onSearchCancel">取消</text>
+  </view>
+
+  <!-- 高级筛选 -->
+  <view class="advanced-filter" wx:if="{{showAdvancedFilter && showSearch}}">
+    <view class="advanced-filter__row">
+      <text class="advanced-filter__label">难度</text>
+      <view class="advanced-filter__options">
+        <text class="advanced-filter__option {{activeDifficulty === '' ? 'active' : ''}}" data-value="" bindtap="onDifficultyFilter">全部</text>
+        <text class="advanced-filter__option {{activeDifficulty === '初级' ? 'active' : ''}}" data-value="初级" bindtap="onDifficultyFilter">初级</text>
+        <text class="advanced-filter__option {{activeDifficulty === '中级' ? 'active' : ''}}" data-value="中级" bindtap="onDifficultyFilter">中级</text>
+        <text class="advanced-filter__option {{activeDifficulty === '高级' ? 'active' : ''}}" data-value="高级" bindtap="onDifficultyFilter">高级</text>
+      </view>
+    </view>
+    <view class="advanced-filter__row">
+      <text class="advanced-filter__label">费用</text>
+      <view class="advanced-filter__options">
+        <text class="advanced-filter__option {{activeCost === '' ? 'active' : ''}}" data-value="" bindtap="onCostFilter">全部</text>
+        <text class="advanced-filter__option {{activeCost === 'free' ? 'active' : ''}}" data-value="free" bindtap="onCostFilter">免费</text>
+        <text class="advanced-filter__option {{activeCost === 'paid' ? 'active' : ''}}" data-value="paid" bindtap="onCostFilter">收费</text>
+      </view>
+    </view>
   </view>
 
   <!-- 筛选标签栏 -->
@@ -93,6 +119,11 @@
         <!-- 难度角标 -->
         <view class="route-card__badge" style="background: {{item.diffColor}}">
           {{item.diffText}}
+        </view>
+
+        <!-- 当季推荐角标 -->
+        <view class="route-card__season" wx:if="{{item.isCurrentSeason}}">
+          <text>{{item.seasonEmoji}} 当季推荐</text>
         </view>
 
         <!-- 免费角标 -->

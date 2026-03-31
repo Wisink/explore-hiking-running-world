@@ -7,7 +7,12 @@ const FILTER_TAGS = [
   { id: 'all', label: '全部', icon: '' },
   { id: 'beginner', label: '新手友好', icon: '⭐' },
   { id: 'family', label: '亲子推荐', icon: '👨‍👩‍👧' },
+  { id: 'stream', label: '有溪流', icon: '🌊' },
+  { id: 'waterfall', label: '有瀑布', icon: '💧' },
+  { id: 'forest', label: '森林', icon: '🌲' },
   { id: 'free', label: '免费路线', icon: '💰' },
+  { id: 'stone', label: '石阶路', icon: '🪨' },
+  { id: 'autumn', label: '秋天去', icon: '🍂' },
   { id: 'hot', label: '本周热门', icon: '🔥' },
   { id: 'east', label: '秦岭东线', icon: '' },
   { id: 'center', label: '秦岭中线', icon: '' },
@@ -33,6 +38,10 @@ Page({
     // 搜索
     searchKeyword: '',
     showSearch: false,
+    // 高级筛选
+    showAdvancedFilter: false,
+    activeDifficulty: '',
+    activeCost: '',
     // 路线列表
     routes: [],
     // 分页
@@ -82,7 +91,7 @@ Page({
       }, 8000)
 
       wx.cloud.callFunction({
-        name: 'trail',
+        name: 'routes',
         data: {
           action: 'list',
           filter: this.data.activeFilter,
@@ -92,8 +101,8 @@ Page({
         },
         success: (res) => {
           clearTimeout(timeoutId)
-          if (res.result && res.result.code === 0 && res.result.data) {
-            this.processRoutes(res.result.data, page, reset)
+          if (res.result && res.result.code === 0 && res.result.data && res.result.data.list) {
+            this.processRoutes(res.result.data.list, page, reset)
           } else {
             // 降级到本地数据
             const localData = this.getLocalRoutes()
@@ -141,18 +150,51 @@ Page({
     })
   },
 
+  // 获取当前季节emoji
+  getSeasonEmoji: function () {
+    const month = new Date().getMonth() + 1
+    if (month >= 3 && month <= 5) return '🌸'
+    if (month >= 6 && month <= 8) return '☀️'
+    if (month >= 9 && month <= 11) return '🍂'
+    return '❄️'
+  },
+
+  // 获取当前季节
+  getCurrentSeason: function () {
+    const month = new Date().getMonth() + 1
+    if (month >= 3 && month <= 5) return '春'
+    if (month >= 6 && month <= 8) return '夏'
+    if (month >= 9 && month <= 11) return '秋'
+    return '冬'
+  },
+
   // 处理单条路线数据
   processRouteItem: function (item) {
-    const diffInfo = DIFFICULTY_MAP[item.difficulty] || { level: 3, color: '#FFC107', text: item.difficulty || '适中' }
+    // 兼容 flat（本地）和 structured（云数据库）两种格式
+    const difficultyStr = typeof item.difficulty === 'object' ? (item.difficulty.label || '中级') : (item.difficulty || '中级')
+    const diffInfo = DIFFICULTY_MAP[difficultyStr] || { level: 3, color: '#FFC107', text: difficultyStr || '适中' }
 
     // 解析距离和耗时
-    let distanceText = item.distance || ''
-    let durationText = ''
-    if (distanceText && distanceText.includes('/')) {
-      const parts = distanceText.split('/')
+    let distanceText, durationText
+    if (typeof item.distance === 'string' && item.distance.includes('/')) {
+      const parts = item.distance.split('/')
       distanceText = parts[0].trim()
       durationText = parts[1] ? parts[1].trim() : ''
+    } else if (item.distance_km) {
+      distanceText = `约${item.distance_km}公里`
+      durationText = item.duration_hours ? `约${item.duration_hours}小时` : ''
+    } else {
+      distanceText = item.distance || ''
+      durationText = ''
     }
+
+    // location: flat=string, structured=object
+    const locationStr = typeof item.location === 'object' ? (item.location.address || '') : (item.location || '')
+
+    // cost: flat=string, structured=object
+    const costStr = typeof item.cost === 'object'
+      ? (item.cost.type === '免费' ? '免费' : `${item.cost.note || ''} ${item.cost.amount ? item.cost.amount + '元' : ''}`.trim())
+      : (item.cost || '免费')
 
     // 获取封面图
     let coverImage = item.image || item.coverImage || ''
@@ -164,16 +206,27 @@ Page({
     const favorites = cloudSync.getLocalFavorites()
     const isFavorited = favorites.includes(item._id)
 
+    // 当季推荐判断
+    const currentSeason = this.getCurrentSeason()
+    const bestSeason = item.best_season || item.bestSeason || []
+    const seasonStr = Array.isArray(bestSeason) ? bestSeason.join(',') : String(bestSeason)
+    const isCurrentSeason = seasonStr.includes(currentSeason)
+
     return {
       ...item,
       coverImage: coverImage,
+      difficulty: difficultyStr,
+      location: locationStr,
+      cost: costStr,
       diffLevel: diffInfo.level,
       diffColor: diffInfo.color,
       diffText: diffInfo.text,
       distanceText: distanceText,
       durationText: durationText,
       isFavorited: isFavorited,
-      isFree: !item.cost || item.cost.includes('免费') || item.cost === '0' || item.cost === '0元'
+      isFree: costStr.includes('免费'),
+      isCurrentSeason: isCurrentSeason,
+      seasonEmoji: this.getSeasonEmoji()
     }
   },
 
@@ -197,29 +250,56 @@ Page({
 
   // 应用筛选条件
   applyFilter: function (data) {
+    let result = data
     const filter = this.data.activeFilter
-    if (filter === 'all') return data
 
-    return data.filter(item => {
-      switch (filter) {
-        case 'beginner':
-          return item.difficulty === '初级' || item.diffLevel <= 2
-        case 'family':
-          return item.family_friendly === true
-        case 'free':
-          return item.isFree
-        case 'hot':
-          return (item.likes_count || 0) >= 100 || (item.view_count || 0) >= 1000
-        case 'east':
-          return item.location && (item.location.includes('蓝田') || item.location.includes('临潼') || item.location.includes('华阴') || item.location.includes('渭南'))
-        case 'center':
-          return item.location && (item.location.includes('长安') || item.location.includes('鄠邑') || item.location.includes('周至'))
-        case 'west':
-          return item.location && (item.location.includes('眉县') || item.location.includes('宝鸡') || item.location.includes('太白'))
-        default:
-          return true
-      }
-    })
+    // 标签筛选
+    if (filter !== 'all') {
+      result = data.filter(item => {
+        switch (filter) {
+          case 'beginner':
+            return item.difficulty === '初级' || item.diffLevel <= 2
+          case 'family':
+            return item.family_friendly === true
+          case 'stream':
+            return (item.features || []).some(f => f.includes('溪流'))
+          case 'waterfall':
+            return (item.features || []).some(f => f.includes('瀑布'))
+          case 'forest':
+            return (item.features || []).some(f => f.includes('森林') || f.includes('树林'))
+          case 'stone':
+            return (item.features || []).some(f => f.includes('石阶')) || (item.road_type && item.road_type.includes('石阶'))
+          case 'autumn':
+            return (item.best_season && item.best_season.includes('秋')) || (item.season && item.season.includes('秋'))
+          case 'free':
+            return item.isFree
+          case 'hot':
+            return (item.likes_count || 0) >= 100 || (item.view_count || 0) >= 1000
+          case 'east':
+            return item.location && (item.location.includes('蓝田') || item.location.includes('临潼') || item.location.includes('华阴') || item.location.includes('渭南'))
+          case 'center':
+            return item.location && (item.location.includes('长安') || item.location.includes('鄠邑') || item.location.includes('周至'))
+          case 'west':
+            return item.location && (item.location.includes('眉县') || item.location.includes('宝鸡') || item.location.includes('太白'))
+          default:
+            return true
+        }
+      })
+    }
+
+    // 高级筛选：难度
+    if (this.data.activeDifficulty) {
+      result = result.filter(item => item.difficulty === this.data.activeDifficulty)
+    }
+
+    // 高级筛选：费用
+    if (this.data.activeCost === 'free') {
+      result = result.filter(item => item.isFree)
+    } else if (this.data.activeCost === 'paid') {
+      result = result.filter(item => !item.isFree)
+    }
+
+    return result
   },
 
   // 切换筛选标签
@@ -292,7 +372,26 @@ Page({
 
   // 取消搜索
   onSearchCancel: function () {
-    this.setData({ showSearch: false })
+    this.setData({ showSearch: false, showAdvancedFilter: false })
+  },
+
+  // 切换高级筛选
+  onToggleAdvancedFilter: function () {
+    this.setData({ showAdvancedFilter: !this.data.showAdvancedFilter })
+  },
+
+  // 难度筛选
+  onDifficultyFilter: function (e) {
+    const value = e.currentTarget.dataset.value
+    this.setData({ activeDifficulty: value })
+    this.loadRoutes(true)
+  },
+
+  // 费用筛选
+  onCostFilter: function (e) {
+    const value = e.currentTarget.dataset.value
+    this.setData({ activeCost: value })
+    this.loadRoutes(true)
   },
 
   // 刷新收藏状态
@@ -308,9 +407,60 @@ Page({
   // 获取本地路线数据（降级方案）
   getLocalRoutes: function () {
     try {
-      const data = require('../../../trails_data.json')
-      return data
+      const allData = require('../../trails_data.json')
+      // 对本地数据做筛选和分页
+      let filtered = allData
+
+      // 应用筛选
+      const filter = this.data.activeFilter
+      if (filter && filter !== 'all') {
+        filtered = allData.filter(item => {
+          switch (filter) {
+            case 'beginner':
+              return item.difficulty === '初级'
+            case 'family':
+              return item.family_friendly === true
+            case 'stream':
+              return (item.features || []).some(f => f.includes('溪流'))
+            case 'waterfall':
+              return (item.features || []).some(f => f.includes('瀑布'))
+            case 'forest':
+              return (item.features || []).some(f => f.includes('森林') || f.includes('树林'))
+            case 'stone':
+              return (item.features || []).some(f => f.includes('石阶'))
+            case 'autumn':
+              return (item.best_season || []).some(s => s.includes('秋'))
+            case 'free':
+              return !item.cost || item.cost.includes('免费')
+            case 'hot':
+              return (item.likes_count || 0) >= 100 || (item.view_count || 0) >= 1000
+            case 'east':
+              return item.location && (item.location.includes('蓝田') || item.location.includes('临潼') || item.location.includes('华阴') || item.location.includes('渭南'))
+            case 'center':
+              return item.location && (item.location.includes('长安') || item.location.includes('鄠邑') || item.location.includes('周至'))
+            case 'west':
+              return item.location && (item.location.includes('眉县') || item.location.includes('宝鸡') || item.location.includes('太白'))
+            default:
+              return true
+          }
+        })
+      }
+
+      // 应用搜索
+      if (this.data.searchKeyword) {
+        const kw = this.data.searchKeyword.toLowerCase()
+        filtered = filtered.filter(item =>
+          (item.name && item.name.toLowerCase().includes(kw)) ||
+          (item.location && item.location.toLowerCase().includes(kw)) ||
+          (item.description && item.description.toLowerCase().includes(kw))
+        )
+      }
+
+      // 分页
+      const start = this.data.page * PAGE_SIZE
+      return filtered.slice(start, start + PAGE_SIZE)
     } catch (e) {
+      console.error('读取本地数据失败:', e)
       return this.getMockRoutes()
     }
   },

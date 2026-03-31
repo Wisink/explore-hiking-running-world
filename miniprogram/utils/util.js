@@ -188,7 +188,7 @@ const navigateBack = (delta = 1) => {
   if (pages.length > 1) {
     wx.navigateBack({ delta })
   } else {
-    wx.switchTab({ url: '/pages/home/home' })
+    wx.switchTab({ url: '/pages/routes/routes' })
   }
 }
 
