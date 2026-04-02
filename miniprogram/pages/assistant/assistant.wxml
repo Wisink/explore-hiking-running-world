@@ -100,7 +100,7 @@
     </view>
 
     <view class="step-back" bindtap="onPrevStep">
-      <text>← 返回上一步</text>
+      <text>返回上一步</text>
     </view>
   </view>
 
@@ -136,14 +136,13 @@
     </view>
 
     <view class="step-back" bindtap="onPrevStep">
-      <text>← 返回上一步</text>
+      <text>返回上一步</text>
     </view>
   </view>
 
   <!-- ===== 推荐结果 ===== -->
   <view class="result-wrap" wx:if="{{showResult}}">
     <view class="result-header">
-      <view class="result-header__icon">✨</view>
       <view class="result-header__title">为你推荐</view>
       <view class="result-header__desc" wx:if="{{resultReason}}">{{resultReason}}</view>
       <view class="result-header__count">从 {{allMatched.length}} 条路线中精选</view>
