@@ -27,7 +27,7 @@ async function list(event) {
   if (typeof filter === 'string' && filter && filter !== 'all') {
     switch (filter) {
       case 'beginner':
-        where['difficulty.label'] = '第一次也能走'
+        where['difficulty.label'] = _.in(['第一次也能走', '初级'])
         break
       case 'family':
         where['difficulty.suitableFor'] = _.elemMatch(_.eq('亲子5岁+'))
@@ -44,7 +44,39 @@ async function list(event) {
       case 'west':
         where['location.direction'] = '秦岭西线'
         break
-      // stream/waterfall/forest/stone/autumn/hot 在客户端过滤
+      case 'stream':
+        where['scenery'] = _.in(['溪流', '溪流清澈', '溪流潺潺', '瀑布群|溪流|峡谷'])
+        break
+      case 'waterfall':
+        where['scenery'] = _.in(['瀑布', '瀑布壮观', '瀑布群', '瀑布|高冠峪|戏水|避暑', '瀑布群|溪流|峡谷'])
+        break
+      case 'forest':
+        where['scenery'] = _.in(['森林', '原始森林'])
+        break
+      case 'stone':
+        where['sections.road'] = db.RegExp({ regexp: '石', options: 'i' })
+        break
+      case 'season': {
+        const month = new Date().getMonth() + 1
+        if (month >= 3 && month <= 5) {
+          // 春天
+          where['best_season'] = _.in(['春', '春季', '全年', '春夏'])
+        } else if (month >= 6 && month <= 8) {
+          // 夏天
+          where['best_season'] = _.in(['夏', '夏季', '全年', '春夏', '夏秋'])
+        } else if (month >= 9 && month <= 11) {
+          // 秋天
+          where['scenery'] = _.in(['红叶', '红叶漫山', '红叶|古寺|环线', '银杏林', '金黄', '秋色', '彩林'])
+        } else {
+          // 冬天
+          where['best_season'] = _.in(['冬', '冬季', '全年'])
+        }
+        break
+      }
+      case 'hot':
+        // 本周热门：按用户完成次数降序（需要user_data集合）
+        // 先按默认顺序返回，后续可以接入用户数据
+        break
       default:
         break
     }
@@ -76,7 +108,8 @@ async function list(event) {
       .field({
         _id: true, name: true, description: true, coverImage: true,
         difficulty: true, distance_km: true, duration_hours: true,
-        cost: true, scenery: true, location: true, order: true
+        cost: true, scenery: true, location: true, order: true,
+        best_season: true, sections: true, elevation_gain_m: true
       })
       .get()
 
@@ -119,15 +152,16 @@ async function search(event) {
   const { keyword, page = 1, pageSize = 20 } = event
   if (!keyword || !keyword.trim()) return fail('请输入搜索关键词')
 
-  const skip = (page - 1) * pageSize
+  const skip = Math.max(0, page) * pageSize
   const kw = keyword.trim()
 
-  // 名称、描述、地址模糊搜索
+  // 名称、描述、地址、风景标签模糊搜索
   const where = _.or([
     { name: db.RegExp({ regexp: kw, options: 'i' }) },
     { description: db.RegExp({ regexp: kw, options: 'i' }) },
     { 'location.address': db.RegExp({ regexp: kw, options: 'i' }) },
-    { scenery: db.RegExp({ regexp: kw, options: 'i' }) }
+    { scenery: db.RegExp({ regexp: kw, options: 'i' }) },
+    { 'difficulty.suitableFor': db.RegExp({ regexp: kw, options: 'i' }) }
   ])
 
   try {

@@ -1,0 +1,36 @@
+<!-- 筛选栏组件 v2.0 -->
+<view class="filter-bar">
+  <scroll-view
+    class="filter-bar__scroll"
+    scroll-x
+    enable-flex
+    scroll-with-animation
+    scroll-into-view="filter-{{activeIndex}}"
+  >
+    <view class="filter-bar__inner">
+      <view
+        class="filter-bar__item {{item.value === activeValue ? 'filter-bar__item--active' : ''}}"
+        id="filter-{{index}}"
+        wx:for="{{filters}}"
+        wx:key="value"
+        bindtap="onTap"
+        data-index="{{index}}"
+        data-value="{{item.value}}"
+      >
+        <text class="filter-bar__icon" wx:if="{{item.icon}}">{{item.icon}}</text>
+        <text class="filter-bar__label">{{item.label}}</text>
+        <!-- 选中指示条 -->
+        <view class="filter-bar__indicator" wx:if="{{item.value === activeValue}}"></view>
+      </view>
+    </view>
+  </scroll-view>
+
+  <!-- 高级筛选入口 -->
+  <view class="filter-bar__more" bindtap="onAdvanced" wx:if="{{showAdvanced}}">
+    <view class="filter-bar__more-icon">
+      <view class="more-dot"></view>
+      <view class="more-dot"></view>
+      <view class="more-dot"></view>
+    </view>
+  </view>
+</view>

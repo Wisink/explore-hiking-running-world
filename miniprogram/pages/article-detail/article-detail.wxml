@@ -14,7 +14,10 @@
           <text class="article-header__tag-icon">{{article.categoryIcon}}</text>
           <text class="article-header__tag-text">{{article.category}}</text>
         </view>
-        <text class="article-header__date">{{article.formattedDate}}</text>
+        <view class="article-header__right">
+          <text class="article-header__views">👁 {{article.viewCount}} 次阅读</text>
+          <text class="article-header__date">{{article.formattedDate}}</text>
+        </view>
       </view>
 
       <text class="article-header__title">{{article.title}}</text>
@@ -58,4 +61,5 @@
       <text class="footer__text">安全徒步，快乐出行</text>
     </view>
   </block>
+  <view class="nice-toast nice-toast--{{toastType}} {{showToast ? 'nice-toast--show' : ''}}">{{toastMessage}}</view>
 </view>

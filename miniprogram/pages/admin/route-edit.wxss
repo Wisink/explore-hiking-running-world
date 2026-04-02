@@ -1,0 +1,339 @@
+/* pages/admin/route-edit.wxss - v3.0 自然清新风 + 毛玻璃 */
+
+.edit-page {
+  min-height: 100vh;
+  padding-bottom: 160rpx;
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(129,199,132,.35) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(165,214,167,.25) 0%, transparent 50%),
+    radial-gradient(ellipse at 60% 80%, rgba(76,175,80,.2) 0%, transparent 50%),
+    linear-gradient(160deg, #e8f5e9 0%, #c8e6c9 25%, #a5d6a7 50%, #81c784 75%, #66bb6a 100%);
+}
+
+/* ========== 表单区块 — 毛玻璃 ========== */
+.form-section {
+  background: rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255,255,255,.22);
+  margin: 24rpx;
+  border-radius: 20rpx;
+  padding: 28rpx;
+  box-shadow: 0 4rpx 16rpx rgba(31,38,50,.12);
+}
+
+.form-section__title {
+  display: block;
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #1a2e1a;
+  margin-bottom: 24rpx;
+  padding-bottom: 16rpx;
+  border-bottom: 1px solid rgba(255,255,255,.18);
+}
+
+.form-item {
+  margin-bottom: 24rpx;
+}
+
+.form-item:last-child { margin-bottom: 0; }
+
+.form-label {
+  display: block;
+  font-size: 26rpx;
+  font-weight: 500;
+  color: #4a6b4a;
+  margin-bottom: 10rpx;
+}
+
+.form-input {
+  width: 100%;
+  height: 80rpx;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,.2);
+  border-radius: 12rpx;
+  padding: 0 20rpx;
+  font-size: 28rpx;
+  color: #1a2e1a;
+  box-sizing: border-box;
+  transition: border-color 200ms ease;
+}
+
+.form-input:focus { border-color: rgba(46, 125, 50, 0.5); }
+.form-input::placeholder { color: #6b8b6b; }
+
+.form-input--small {
+  height: 72rpx;
+  font-size: 26rpx;
+}
+
+.form-textarea {
+  width: 100%;
+  min-height: 160rpx;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,.2);
+  border-radius: 12rpx;
+  padding: 20rpx;
+  font-size: 28rpx;
+  color: #1a2e1a;
+  box-sizing: border-box;
+}
+
+.form-textarea--tall { min-height: 400rpx; }
+.form-textarea::placeholder { color: #6b8b6b; }
+
+.form-preview {
+  width: 100%;
+  height: 200rpx;
+  border-radius: 12rpx;
+  margin-top: 12rpx;
+  background: rgba(224,224,219,.3);
+}
+
+.form-row {
+  display: flex;
+  gap: 16rpx;
+}
+
+.form-item--half { flex: 1; }
+
+/* ========== Picker — 毛玻璃 ========== */
+.form-picker {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 80rpx;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,.2);
+  border-radius: 12rpx;
+  padding: 0 20rpx;
+  font-size: 28rpx;
+  color: #1a2e1a;
+}
+
+.form-picker__arrow {
+  font-size: 24rpx;
+  color: #6b8b6b;
+}
+
+/* ========== 标签 — 毛玻璃 ========== */
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+  margin-bottom: 16rpx;
+}
+
+.tag-item {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  padding: 8rpx 16rpx;
+  background: rgba(129, 199, 132, 0.2);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(129,199,132,.2);
+  border-radius: 8rpx;
+  font-size: 24rpx;
+  color: #2d6a4f;
+}
+
+.tag-item__remove {
+  width: 32rpx;
+  height: 32rpx;
+  border-radius: 50%;
+  background: rgba(244, 67, 54, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tag-item__remove text { font-size: 18rpx; color: #F44336; }
+
+.tag-add {
+  display: flex;
+  gap: 12rpx;
+  align-items: center;
+}
+
+.tag-add__btn {
+  height: 72rpx;
+  padding: 0 24rpx;
+  background: linear-gradient(135deg, rgba(46,125,50,.8) 0%, rgba(67,160,71,.8) 100%);
+  border-radius: 12rpx;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  border: 1px solid rgba(255,255,255,.2);
+}
+
+.tag-add__btn text {
+  font-size: 26rpx;
+  color: #FFFFFF;
+  font-weight: 500;
+}
+
+/* ========== 分段 — 毛玻璃 ========== */
+.section-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+  margin-bottom: 16rpx;
+}
+
+.section-item {
+  background: rgba(250, 250, 245, 0.2);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: 12rpx;
+  padding: 20rpx;
+}
+
+.section-item__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12rpx;
+}
+
+.section-item__num {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #2d6a4f;
+}
+
+.section-item__remove {
+  padding: 4rpx 16rpx;
+  background: rgba(244, 67, 54, 0.1);
+  border-radius: 8rpx;
+}
+
+.section-item__remove text { font-size: 22rpx; color: #F44336; }
+
+.section-item .form-input { margin-bottom: 12rpx; }
+.section-item .form-row { margin-bottom: 12rpx; }
+
+.add-section-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20rpx;
+  border: 2rpx dashed rgba(129, 199, 132, 0.4);
+  border-radius: 12rpx;
+  background: rgba(255,255,255,.08);
+}
+
+.add-section-btn text {
+  font-size: 26rpx;
+  color: #2d6a4f;
+  font-weight: 500;
+}
+
+/* ========== 保存按钮 — 毛玻璃 ========== */
+.save-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 24rpx 32rpx;
+  padding-bottom: calc(24rpx + env(safe-area-inset-bottom));
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(255,255,255,.2);
+  box-shadow: 0 -4rpx 16rpx rgba(31,38,50,.06);
+}
+
+.save-bar__row {
+  display: flex;
+  gap: 16rpx;
+  align-items: center;
+}
+
+.delete-btn {
+  height: 88rpx;
+  padding: 0 40rpx;
+  background: rgba(244, 67, 54, 0.15);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(244, 67, 54, 0.3);
+  border-radius: 16rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.delete-btn:active { transform: scale(0.98); }
+
+.delete-btn text {
+  font-size: 30rpx;
+  color: #F44336;
+  font-weight: 600;
+}
+
+.save-btn {
+  flex: 1;
+  height: 88rpx;
+  background: linear-gradient(135deg, rgba(46,125,50,.85) 0%, rgba(67,160,71,.85) 100%);
+  border-radius: 16rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4rpx 16rpx rgba(46, 125, 50, 0.3);
+  border: 1px solid rgba(255,255,255,.2);
+}
+
+.save-btn:active { transform: scale(0.98); }
+.save-btn--disabled { opacity: 0.6; }
+
+.save-btn text {
+  font-size: 32rpx;
+  color: #FFFFFF;
+  font-weight: 600;
+}
+
+/* ========== 加载 ========== */
+.loading-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+}
+
+.loading-text {
+  font-size: 28rpx;
+  color: #6b8b6b;
+}
+
+/* ========== Toast ========== */
+.edit-toast {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.8);
+  background: rgba(0, 0, 0, 0.75);
+  color: #FFFFFF;
+  padding: 20rpx 40rpx;
+  border-radius: 12rpx;
+  font-size: 28rpx;
+  z-index: 9999;
+  opacity: 0;
+  transition: all 300ms ease;
+  pointer-events: none;
+}
+
+.edit-toast--show {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.edit-toast--success { background: rgba(46, 125, 50, 0.85); }
+.edit-toast--error { background: rgba(244, 67, 54, 0.85); }

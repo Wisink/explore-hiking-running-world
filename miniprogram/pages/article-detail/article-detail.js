@@ -1,3 +1,7 @@
+function showNiceToast(that, message, type = 'info', duration = 2000) {
+  that.setData({ showToast: true, toastMessage: message, toastType: type })
+  setTimeout(function() { that.setData({ showToast: false }) }, duration)
+}
 // pages/article-detail/article-detail.js
 const app = getApp()
 
@@ -15,7 +19,7 @@ Page({
       this.setData({ articleId: id })
       this.loadArticle(id)
     } else {
-      wx.showToast({ title: '文章不存在', icon: 'none' })
+      showNiceToast(this, '文章不存在', 'error', 2000)
       setTimeout(() => wx.navigateBack(), 1500)
     }
   },
@@ -32,15 +36,26 @@ Page({
     this.setData({ loading: true })
 
     if (wx.cloud) {
-      const db = wx.cloud.database()
-      db.collection('articles').doc(id).get()
-        .then(res => {
+      // 通过云函数增加阅读次数（绕过客户端安全规则）
+      wx.cloud.callFunction({
+        name: 'articles',
+        data: { action: 'incrementView', articleId: id }
+      }).then(res => {
+        console.log('[incrementView] 云函数返回:', JSON.stringify(res.result))
+        if (res.result && res.result.code !== 0) {
+          console.warn('[incrementView] 自增失败:', res.result.message)
+        }
+      }).catch(err => {
+        console.warn('[incrementView] 云函数调用失败:', err)
+      }).finally(() => {
+        // 无论自增是否成功，都加载文章详情
+        wx.cloud.database().collection('articles').doc(id).get().then(res => {
           this.processArticle(res.data)
-        })
-        .catch(err => {
-          console.warn('云数据库加载失败，使用本地数据:', err)
+        }).catch(err => {
+          console.warn('获取文章详情失败，使用本地数据:', err)
           this.loadLocalArticle(id)
         })
+      })
     } else {
       this.loadLocalArticle(id)
     }
@@ -53,7 +68,7 @@ Page({
       if (article) {
         this.processArticle(article, articles)
       } else {
-        wx.showToast({ title: '文章不存在', icon: 'none' })
+        showNiceToast(this, '文章不存在', 'error', 2000)
         setTimeout(() => wx.navigateBack(), 1500)
       }
     } catch (e) {
@@ -83,11 +98,15 @@ Page({
       } catch (e) {}
     }
 
+    // 确保 viewCount 有值（首次阅读的旧文章可能没有该字段）
+    const viewCount = typeof article.viewCount === 'number' ? article.viewCount : 1
+
     this.setData({
       loading: false,
       article: {
         ...article,
         formattedDate,
+        viewCount,
         categoryIcon: this.getCategoryIcon(article.category)
       },
       relatedArticles: related
@@ -99,7 +118,7 @@ Page({
 
   getCategoryIcon(category) {
     const icons = {
-      '装备选购': '🥾',
+      '装备推荐': '🥾',
       '安全自救': '🆘',
       '户外礼仪': '🤝'
     }

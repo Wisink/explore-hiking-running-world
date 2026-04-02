@@ -1,0 +1,9 @@
+{
+  "name": "init-stats",
+  "version": "1.0.0",
+  "description": "初始化路线收藏次数和已走过次数统计",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

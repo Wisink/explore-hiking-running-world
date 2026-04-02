@@ -1,0 +1,193 @@
+<!--pages/profile/profile.wxml-->
+<view class="profile-page">
+
+  <!-- 顶部标题 -->
+  <view class="page-header">
+    <view class="page-header__bg"></view>
+    <view class="page-header__content">
+      <text class="page-header__emoji">🥾</text>
+      <text class="page-header__title">我的徒步</text>
+      <text class="page-header__sub">记录每一步的风景</text>
+    </view>
+  </view>
+
+  <!-- 同步状态 -->
+  <view class="sync-bar" wx:if="{{syncStatus === 'syncing'}}">
+    <text class="sync-bar__icon">🔄</text>
+    <text class="sync-bar__text">正在同步数据...</text>
+  </view>
+  <view class="sync-bar sync-bar--success" wx:elif="{{syncStatus === 'success'}}">
+    <text class="sync-bar__icon">✅</text>
+    <text class="sync-bar__text">数据已同步</text>
+  </view>
+  <view class="sync-bar sync-bar--error" wx:elif="{{syncStatus === 'error'}}">
+    <text class="sync-bar__icon">⚠️</text>
+    <text class="sync-bar__text">同步失败，请检查网络</text>
+  </view>
+
+  <!-- 统计卡片 -->
+  <view class="stats-card">
+    <view class="stats-card__item">
+      <text class="stats-card__num">{{favoriteCount}}</text>
+      <text class="stats-card__label">⭐ 收藏</text>
+    </view>
+    <view class="stats-card__divider"></view>
+    <view class="stats-card__item">
+      <text class="stats-card__num">{{completedCount}}</text>
+      <text class="stats-card__label">👣 已走过</text>
+    </view>
+    <view class="stats-card__divider"></view>
+    <view class="stats-card__item">
+      <text class="stats-card__num">{{totalDistance}}</text>
+      <text class="stats-card__label">📏 总里程(km)</text>
+    </view>
+  </view>
+
+  <!-- Tab 切换 -->
+  <view class="tab-bar">
+    <view
+      class="tab-bar__item {{activeTab === 'favorites' ? 'tab-bar__item--on' : ''}}"
+      bindtap="switchTab"
+      data-tab="favorites"
+    >
+      <text class="tab-bar__text">⭐ 我的收藏</text>
+      <view class="tab-bar__line" wx:if="{{activeTab === 'favorites'}}"></view>
+    </view>
+    <view
+      class="tab-bar__item {{activeTab === 'completed' ? 'tab-bar__item--on' : ''}}"
+      bindtap="switchTab"
+      data-tab="completed"
+    >
+      <text class="tab-bar__text">👣 已走过</text>
+      <view class="tab-bar__line" wx:if="{{activeTab === 'completed'}}"></view>
+    </view>
+  </view>
+
+  <!-- 收藏列表 -->
+  <view class="list-wrap" wx:if="{{activeTab === 'favorites'}}">
+    <view class="empty-wrap" wx:if="{{favoriteRoutes.length === 0}}">
+      <view class="empty-visual">
+        <view class="empty-circle"></view>
+        <text class="empty-icon">💚</text>
+      </view>
+      <text class="empty-title">还没有收藏的路线</text>
+      <text class="empty-desc">浏览路线时点击收藏，喜欢的路线都在这里</text>
+      <view class="empty-btn" bindtap="goExplore">
+        <text>去探索路线</text>
+      </view>
+    </view>
+
+    <view class="route-list" wx:else>
+      <view
+        class="route-card"
+        wx:for="{{favoriteRoutes}}"
+        wx:key="_id"
+        bindtap="onRouteTap"
+        data-id="{{item._id}}"
+        hover-class="route-card--hover"
+        hover-stay-time="80"
+      >
+        <view class="route-card__cover">
+          <image class="route-card__img" src="{{item.coverImage || '/images/scenery/scenery-trail.jpg'}}" mode="aspectFill" lazy-load></image>
+          <view class="route-card__overlay"></view>
+          <view class="route-card__badge" style="background: {{getDifficultyColor(item.difficultyLevel)}}">
+            <text>{{item.difficulty || '未知'}}</text>
+          </view>
+        </view>
+        <view class="route-card__body">
+          <text class="route-card__name">{{item.name}}</text>
+          <text class="route-card__desc">{{item.description || item.location}}</text>
+          <view class="route-card__tags">
+            <text class="route-card__tag" wx:if="{{item.distance}}">📏 {{item.distance}}</text>
+            <text class="route-card__tag" wx:if="{{item.duration}}">⏱ {{item.duration}}</text>
+            <text class="route-card__tag" wx:if="{{item.location}}">📍 {{item.location}}</text>
+          </view>
+        </view>
+        <view
+          class="route-card__fav"
+          data-id="{{item._id}}"
+          data-index="{{index}}"
+          catchtap="onCancelFavorite"
+        >
+          <text>❤️</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 已走过列表 -->
+  <view class="list-wrap" wx:if="{{activeTab === 'completed'}}">
+    <view class="empty-wrap" wx:if="{{completedRoutes.length === 0}}">
+      <view class="empty-visual">
+        <view class="empty-circle"></view>
+        <text class="empty-icon">🌈</text>
+      </view>
+      <text class="empty-title">还没有走过的路线</text>
+      <text class="empty-desc">完成徒步后标记为已走过，记录你的户外足迹</text>
+      <view class="empty-btn" bindtap="goExplore">
+        <text>去探索路线</text>
+      </view>
+    </view>
+
+    <view class="route-list" wx:else>
+      <view
+        class="route-card route-card--completed"
+        wx:for="{{completedRoutes}}"
+        wx:key="routeId"
+        bindtap="onCompletedRouteTap"
+        data-id="{{item._id}}"
+        hover-class="route-card--hover"
+        hover-stay-time="80"
+      >
+        <view class="route-card__cover">
+          <image class="route-card__img" src="{{item.coverImage || '/images/scenery/scenery-trail.jpg'}}" mode="aspectFill" lazy-load></image>
+          <view class="route-card__overlay"></view>
+          <view class="route-card__done">
+            <text>✅ 已走过{{item.completedCount > 1 ? item.completedCount + '次' : ''}}</text>
+          </view>
+        </view>
+        <view class="route-card__body">
+          <text class="route-card__name">{{item.name}}</text>
+          <text class="route-card__desc">{{item.description || item.location}}</text>
+          <view class="route-card__tags">
+            <text class="route-card__tag" wx:if="{{item.distance}}">📏 {{item.distance}}</text>
+            <text class="route-card__tag" wx:if="{{item.duration}}">⏱ {{item.duration}}</text>
+          </view>
+          <view class="completed-info">
+            <view class="completed-info__date">
+              <text>📅 {{item.completedDate}}</text>
+              <text wx:if="{{item.weather}}"> {{item.weatherEmoji}} {{item.weather}}</text>
+            </view>
+            <view class="completed-info__difficulty" wx:if="{{item.difficultyFeeling}}">
+              <text>💪 难度感受：{{item.difficultyFeeling === 'easy' ? '轻松' : item.difficultyFeeling === 'normal' ? '适中' : item.difficultyFeeling === 'hard' ? '困难' : item.difficultyFeeling}}</text>
+            </view>
+            <view class="completed-info__companion" wx:if="{{item.companion}}">
+              <text>👥 {{item.companion}}</text>
+            </view>
+            <view class="completed-info__note" wx:if="{{item.completedNote}}">
+              <text>💭 {{item.completedNote}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 后台管理入口（仅管理员可见） -->
+  <view class="admin-entry" wx:if="{{isAdmin}}" bindtap="goAdmin">
+    <text class="admin-entry__icon">⚙️</text>
+    <text class="admin-entry__text">后台管理</text>
+    <text class="admin-entry__arrow">›</text>
+  </view>
+
+  <!-- 底部 -->
+  <view class="footer">
+    <text class="footer__icon">🌿</text>
+    <text class="footer__text">安全出行，文明登山</text>
+  </view>
+  <view class="icp-footer">
+    <text class="icp-footer__text" bindtap="onIcpTap">陕ICP备2026006901号</text>
+  </view>
+
+  <view class="nice-toast nice-toast--{{toastType}} {{showToast ? 'nice-toast--show' : ''}}">{{toastMessage}}</view>
+</view>

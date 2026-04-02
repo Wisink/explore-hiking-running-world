@@ -1,12 +1,16 @@
-/* pages/checklist/checklist.wxss - v2.0 */
+/* pages/checklist/checklist.wxss - v3.0 自然清新风 + 毛玻璃 */
 
 .checklist-page {
   min-height: 100vh;
-  background: #FAFAF5;
   padding-bottom: 180rpx;
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(129,199,132,.35) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(165,214,167,.25) 0%, transparent 50%),
+    radial-gradient(ellipse at 60% 80%, rgba(76,175,80,.2) 0%, transparent 50%),
+    linear-gradient(160deg, #e8f5e9 0%, #c8e6c9 25%, #a5d6a7 50%, #81c784 75%, #66bb6a 100%);
 }
 
-/* 顶部标题栏 */
+/* 顶部标题栏 — 毛玻璃 */
 .header {
   position: relative;
   overflow: hidden;
@@ -15,7 +19,10 @@
 .header__bg {
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: linear-gradient(135deg, #2E7D32 0%, #388E3C 100%);
+  background: linear-gradient(135deg, rgba(129,199,132,.5) 0%, rgba(76,175,80,.4) 100%);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(255,255,255,.2);
 }
 
 .header__content {
@@ -32,13 +39,13 @@
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,.25);
 }
 
-.header__back-icon {
-  font-size: 34rpx;
-  color: #FFFFFF;
-}
+.header__back-icon { font-size: 34rpx; color: #FFFFFF; }
 
 .header__center {
   flex: 1;
@@ -51,6 +58,7 @@
   font-size: 32rpx;
   font-weight: 700;
   color: #FFFFFF;
+  text-shadow: 0 1rpx 6rpx rgba(255,255,255,.4);
 }
 
 .header__sub {
@@ -63,17 +71,18 @@
   white-space: nowrap;
 }
 
-.header__spacer {
-  width: 68rpx;
-}
+.header__spacer { width: 68rpx; }
 
-/* 进度卡片 */
+/* 进度卡片 — 毛玻璃 */
 .progress-card {
-  background: #FFFFFF;
+  background: rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255,255,255,.25);
   margin: 24rpx;
   border-radius: 20rpx;
   padding: 28rpx;
-  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.05);
+  box-shadow: 0 8rpx 32rpx rgba(31,38,50,.15);
 }
 
 .progress-card__row {
@@ -86,19 +95,19 @@
 .progress-card__label {
   font-size: 28rpx;
   font-weight: 600;
-  color: #303028;
+  color: #1a2e1a;
 }
 
 .progress-card__count {
   font-size: 28rpx;
   font-weight: 700;
-  color: #2E7D32;
+  color: #2d6a4f;
 }
 
 .progress-card__track {
   width: 100%;
   height: 16rpx;
-  background: #F0F0EB;
+  background: rgba(255, 255, 255, 0.2);
   border-radius: 8rpx;
   overflow: hidden;
   margin-bottom: 12rpx;
@@ -106,23 +115,26 @@
 
 .progress-card__fill {
   height: 100%;
-  background: linear-gradient(90deg, #4CAF50 0%, #2E7D32 100%);
+  background: linear-gradient(90deg, rgba(76,175,80,.8) 0%, rgba(46,125,50,.8) 100%);
   border-radius: 8rpx;
   transition: width 350ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .progress-card__tip {
   font-size: 24rpx;
-  color: #757570;
+  color: #6b8b6b;
 }
 
-/* 清单分组 */
+/* 清单分组 — 毛玻璃 */
 .check-group {
-  background: #FFFFFF;
+  background: rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255,255,255,.2);
   margin: 0 24rpx 20rpx;
   border-radius: 20rpx;
   overflow: hidden;
-  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
+  box-shadow: 0 2rpx 12rpx rgba(31,38,50,.1);
 }
 
 .check-group__head {
@@ -130,12 +142,12 @@
   align-items: center;
   gap: 10rpx;
   padding: 22rpx 28rpx;
-  border-bottom: 1rpx solid #F0F0EB;
+  border-bottom: 1px solid rgba(255,255,255,.12);
 }
 
-.check-group__head--must { background: #FFF5F5; }
-.check-group__head--suggest { background: #FFFBF0; }
-.check-group__head--noneed { background: #F5FFF5; }
+.check-group__head--must { background: rgba(255, 245, 245, 0.3); }
+.check-group__head--suggest { background: rgba(255, 251, 240, 0.3); }
+.check-group__head--noneed { background: rgba(245, 255, 245, 0.3); }
 
 .check-group__dot {
   width: 12rpx;
@@ -146,19 +158,17 @@
 .check-group__title {
   font-size: 28rpx;
   font-weight: 600;
-  color: #303028;
+  color: #1a2e1a;
 }
 
 .check-group__badge {
   font-size: 22rpx;
-  color: #9E9E99;
+  color: #6b8b6b;
   margin-left: auto;
 }
 
 /* 清单项 */
-.check-group__list {
-  padding: 8rpx 0;
-}
+.check-group__list { padding: 8rpx 0; }
 
 .check-item {
   display: flex;
@@ -168,25 +178,19 @@
   transition: background 150ms ease;
 }
 
-.check-item:active {
-  background: #F5F5F0;
-}
+.check-item:active { background: rgba(255,255,255,.08); }
 
-.check-item--on {
-  background: #F9FFF9;
-}
+.check-item--on { background: rgba(200, 230, 201, 0.15); }
 
 .check-item--on .check-item__text {
-  color: #C0C0BB;
+  color: #6b8b6b;
   text-decoration: line-through;
 }
 
-.check-item--dim {
-  opacity: 0.55;
-}
+.check-item--dim { opacity: 1; }
 
 .check-item--dim .check-item__text {
-  color: #9E9E99;
+  color: #6b8b6b;
   text-decoration: line-through;
 }
 
@@ -194,41 +198,36 @@
 .check-item__box {
   width: 44rpx;
   height: 44rpx;
-  border: 3rpx solid #D0D0DB;
+  border: 3rpx solid rgba(255,255,255,.3);
   border-radius: 12rpx;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   transition: all 200ms cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .check-item__box--on {
-  background: linear-gradient(135deg, #2E7D32 0%, #43A047 100%);
-  border-color: #2E7D32;
+  background: linear-gradient(135deg, rgba(46,125,50,.8) 0%, rgba(67,160,71,.8) 100%);
+  border-color: rgba(76, 175, 80, 0.5);
   transform: scale(1.05);
   box-shadow: 0 2rpx 8rpx rgba(46, 125, 50, 0.3);
 }
 
 .check-item__box--disabled {
-  background: #F5F5F0;
-  border-color: #E0E0DB;
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255,255,255,.15);
 }
 
-.check-item__tick {
-  font-size: 28rpx;
-  color: #FFFFFF;
-  font-weight: bold;
-}
-
-.check-item__cross {
-  font-size: 24rpx;
-  color: #C0C0BB;
-}
+.check-item__tick { font-size: 28rpx; color: #FFFFFF; font-weight: bold; }
+.check-item__cross { font-size: 24rpx; color: #6b8b6b; }
 
 .check-item__text {
   font-size: 28rpx;
-  color: #303028;
+  color: #1a2e1a;
   transition: all 200ms ease;
 }
 
@@ -239,27 +238,16 @@
   justify-content: center;
   gap: 10rpx;
   padding: 22rpx 28rpx;
-  border-top: 1rpx dashed #E0E0DB;
+  border-top: 1px dashed rgba(255,255,255,.2);
   transition: background 150ms ease;
 }
 
-.add-custom-btn:active {
-  background: #F5F5F0;
-}
+.add-custom-btn:active { background: rgba(255,255,255,.08); }
 
-.add-custom-btn__icon {
-  font-size: 32rpx;
-  color: #2E7D32;
-  font-weight: 700;
-}
+.add-custom-btn__icon { font-size: 32rpx; color: #2d6a4f; font-weight: 700; }
+.add-custom-btn__text { font-size: 26rpx; color: #2d6a4f; font-weight: 500; }
 
-.add-custom-btn__text {
-  font-size: 26rpx;
-  color: #2E7D32;
-  font-weight: 500;
-}
-
-/* 底部操作栏 */
+/* 底部操作栏 — 毛玻璃 */
 .bottom-bar {
   position: fixed;
   bottom: 0;
@@ -269,9 +257,11 @@
   gap: 16rpx;
   padding: 20rpx 24rpx;
   padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(12rpx);
-  box-shadow: 0 -4rpx 16rpx rgba(0, 0, 0, 0.06);
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(255,255,255,.2);
+  box-shadow: 0 -4rpx 16rpx rgba(31,38,50,.06);
   z-index: 100;
 }
 
@@ -292,21 +282,22 @@
   transition: transform 150ms ease;
 }
 
-.bottom-bar__btn:active {
-  transform: scale(0.96);
-}
-
+.bottom-bar__btn:active { transform: scale(0.96); }
 .bottom-bar__btn::after { border: none; }
 
 .bottom-bar__btn--reset {
-  background: #F5F5F0;
-  color: #616156;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: #4a6b4a;
+  border: 1px solid rgba(255,255,255,.2);
 }
 
 .bottom-bar__btn--share {
-  background: linear-gradient(135deg, #2E7D32 0%, #43A047 100%);
+  background: linear-gradient(135deg, rgba(46,125,50,.85) 0%, rgba(67,160,71,.85) 100%);
   color: #FFFFFF;
   box-shadow: 0 4rpx 16rpx rgba(46, 125, 50, 0.25);
+  border: 1px solid rgba(255,255,255,.2);
 }
 
 .share-canvas {

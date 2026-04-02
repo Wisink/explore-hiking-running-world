@@ -95,6 +95,26 @@ async function recommend(event) {
   }
 }
 
+/**
+ * 增加文章阅读次数
+ * 入参：{ action: "incrementView", articleId }
+ */
+async function incrementView(event) {
+  const { articleId } = event
+  if (!articleId) return fail('缺少文章ID')
+
+  try {
+    const res = await db.collection('articles').doc(articleId).update({
+      data: { viewCount: _.inc(1) }
+    })
+    console.log('[incrementView] articleId:', articleId, 'updated:', res.stats)
+    return success({ updated: res.stats.updated })
+  } catch (err) {
+    console.error('[incrementView] error:', articleId, err)
+    return fail('增加阅读次数失败：' + err.message)
+  }
+}
+
 // 云函数入口
 exports.main = async (event) => {
   const { action } = event
@@ -106,6 +126,8 @@ exports.main = async (event) => {
       return await detail(event)
     case 'recommend':
       return await recommend(event)
+    case 'incrementView':
+      return await incrementView(event)
     default:
       return fail('未知操作：' + action)
   }

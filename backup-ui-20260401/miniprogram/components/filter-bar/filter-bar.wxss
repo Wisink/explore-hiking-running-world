@@ -1,0 +1,100 @@
+/* 筛选栏组件 v2.0 - 横向滚动+下划线指示 */
+
+.filter-bar {
+  display: flex;
+  align-items: center;
+  background: #FFFFFF;
+  padding: 0;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  border-bottom: 1rpx solid rgba(0, 0, 0, 0.04);
+}
+
+.filter-bar__scroll {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.filter-bar__inner {
+  display: flex;
+  padding: 0 16rpx;
+}
+
+.filter-bar__item {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  padding: 24rpx 28rpx;
+  font-size: 28rpx;
+  color: #9E9E99;
+  transition: all 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  user-select: none;
+}
+
+.filter-bar__item:active {
+  transform: scale(0.95);
+}
+
+.filter-bar__item--active {
+  color: #2E7D32;
+  font-weight: 600;
+}
+
+.filter-bar__icon {
+  font-size: 24rpx;
+  margin-right: 6rpx;
+}
+
+.filter-bar__label {
+  font-weight: inherit;
+}
+
+/* 选中下划线指示器 */
+.filter-bar__indicator {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 36rpx;
+  height: 6rpx;
+  background: linear-gradient(90deg, #2E7D32, #43A047);
+  border-radius: 3rpx;
+  animation: indicatorIn 250ms cubic-bezier(0, 0, 0.2, 1) both;
+}
+
+@keyframes indicatorIn {
+  from {
+    width: 0;
+    opacity: 0;
+  }
+  to {
+    width: 36rpx;
+    opacity: 1;
+  }
+}
+
+/* 更多按钮 */
+.filter-bar__more {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 72rpx;
+  height: 80rpx;
+  border-left: 1rpx solid rgba(0, 0, 0, 0.04);
+}
+
+.filter-bar__more-icon {
+  display: flex;
+  gap: 5rpx;
+}
+
+.more-dot {
+  width: 8rpx;
+  height: 8rpx;
+  border-radius: 50%;
+  background: #C0C0BB;
+}

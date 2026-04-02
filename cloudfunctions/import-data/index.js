@@ -130,6 +130,39 @@ async function countCollection(event) {
   }
 }
 
+/**
+ * 批量更新路线数据
+ * 入参：{ action: "update-routes", data: [{_id, ...fields}, ...] }
+ * 按 _id 匹配，更新传入的字段
+ */
+async function updateRoutes(event) {
+  const { data } = event
+  if (!data || !Array.isArray(data) || data.length === 0) {
+    return fail('没有需要更新的数据')
+  }
+
+  let updated = 0
+  let failed = 0
+
+  for (let i = 0; i < data.length; i += MAX_BATCH) {
+    const batch = data.slice(i, i + MAX_BATCH)
+    try {
+      const tasks = batch.map(item => {
+        const { _id, ...fields } = item
+        if (!_id) return Promise.resolve()
+        return db.collection('routes').doc(_id).update({ data: fields })
+      })
+      await Promise.all(tasks)
+      updated += batch.length
+    } catch (err) {
+      failed += batch.length
+      console.error('批量更新失败:', err)
+    }
+  }
+
+  return success({ updated, failed }, `更新完成：成功${updated}条，失败${failed}条`)
+}
+
 // 云函数入口
 exports.main = async (event) => {
   const { action } = event
@@ -139,11 +172,13 @@ exports.main = async (event) => {
       return await importRoutes(event)
     case 'import-articles':
       return await importArticles(event)
+    case 'update-routes':
+      return await updateRoutes(event)
     case 'clear':
       return await clearCollection(event)
     case 'count':
       return await countCollection(event)
     default:
-      return fail('未知操作。支持：import-routes, import-articles, clear, count')
+      return fail('未知操作。支持：import-routes, import-articles, update-routes, clear, count')
   }
 }

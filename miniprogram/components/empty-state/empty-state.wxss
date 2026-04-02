@@ -54,13 +54,13 @@
 .empty-state__title {
   font-size: 32rpx;
   font-weight: 600;
-  color: #424240;
+  color: #1a2e1a;
   margin-bottom: 12rpx;
 }
 
 .empty-state__desc {
   font-size: 26rpx;
-  color: #9E9E99;
+  color: #6b8b6b;
   text-align: center;
   line-height: 1.6;
   margin-bottom: 40rpx;
@@ -72,7 +72,7 @@
   align-items: center;
   justify-content: center;
   padding: 18rpx 48rpx;
-  background: linear-gradient(135deg, #2E7D32 0%, #43A047 100%);
+  background: linear-gradient(135deg, #2d6a4f 0%, #40916c 100%);
   color: #FFFFFF;
   font-size: 28rpx;
   font-weight: 600;

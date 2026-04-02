@@ -1,22 +1,30 @@
+function showNiceToast(that, message, type = 'info', duration = 2000) {
+  that.setData({ showToast: true, toastMessage: message, toastType: type })
+  setTimeout(function() { that.setData({ showToast: false }) }, duration)
+}
 // pages/routes/routes.js
 const app = getApp()
 const cloudSync = require('../../utils/cloud-sync')
 
 // 筛选标签配置
+// 获取当前季节标签
+function getSeasonTag() {
+  const month = new Date().getMonth() + 1
+  if (month >= 3 && month <= 5) return { label: '春天去', icon: '🌸' }
+  if (month >= 6 && month <= 8) return { label: '夏天去', icon: '☀️' }
+  if (month >= 9 && month <= 11) return { label: '秋天去', icon: '🍂' }
+  return { label: '冬天去', icon: '❄️' }
+}
+
 const FILTER_TAGS = [
   { id: 'all', label: '全部', icon: '' },
   { id: 'beginner', label: '新手友好', icon: '⭐' },
   { id: 'family', label: '亲子推荐', icon: '👨‍👩‍👧' },
+  { id: 'season', label: getSeasonTag().label, icon: getSeasonTag().icon },
   { id: 'stream', label: '有溪流', icon: '🌊' },
   { id: 'waterfall', label: '有瀑布', icon: '💧' },
   { id: 'forest', label: '森林', icon: '🌲' },
-  { id: 'free', label: '免费路线', icon: '💰' },
-  { id: 'stone', label: '石阶路', icon: '🪨' },
-  { id: 'autumn', label: '秋天去', icon: '🍂' },
-  { id: 'hot', label: '本周热门', icon: '🔥' },
-  { id: 'east', label: '秦岭东线', icon: '' },
-  { id: 'center', label: '秦岭中线', icon: '' },
-  { id: 'west', label: '秦岭西线', icon: '' }
+  { id: 'free', label: '免费路线', icon: '💰' }
 ]
 
 // 难度映射
@@ -39,9 +47,15 @@ Page({
     searchKeyword: '',
     showSearch: false,
     // 高级筛选
+    showFavHint: false,
     showAdvancedFilter: false,
     activeDifficulty: '',
+    activeDistance: '',
+    activeElevation: '',
+    activeSurface: '',
+    activeScenery: '',
     activeCost: '',
+    activeSeason: '',
     // 路线列表
     routes: [],
     // 分页
@@ -84,36 +98,50 @@ Page({
 
     return new Promise((resolve) => {
       const timeoutId = setTimeout(() => {
-        console.warn('路线加载超时，使用本地数据')
-        const localData = this.getLocalRoutes()
-        this.processRoutes(localData, page, reset)
+        console.warn('路线加载超时')
+        if (reset) {
+          this.setData({ routes: [], loading: false })
+        }
+        showNiceToast(this, '加载超时，请重试', 'error', 2000)
         resolve()
       }, 8000)
+
+      // 如果已有全量缓存，直接筛选
+      if (!reset && this._allProcessedData) {
+        clearTimeout(timeoutId)
+        this.processRoutes(this._allProcessedData, page, false, true)
+        resolve()
+        return
+      }
 
       wx.cloud.callFunction({
         name: 'routes',
         data: {
           action: 'list',
-          filter: this.data.activeFilter,
-          keyword: this.data.searchKeyword,
-          page: page,
-          pageSize: PAGE_SIZE
+          filter: 'all',
+          keyword: '',
+          page: 0,
+          pageSize: 2000 // 拉取全量数据供客户端筛选
         },
         success: (res) => {
           clearTimeout(timeoutId)
           if (res.result && res.result.code === 0 && res.result.data && res.result.data.list) {
             this.processRoutes(res.result.data.list, page, reset)
           } else {
-            // 降级到本地数据
-            const localData = this.getLocalRoutes()
-            this.processRoutes(localData, page, reset)
+            // 数据加载异常
+            if (reset) {
+              this.setData({ routes: [], loading: false })
+            }
+            showNiceToast(this, '数据加载失败，请重试', 'error', 2000)
           }
           resolve()
         },
         fail: () => {
           clearTimeout(timeoutId)
-          const localData = this.getLocalRoutes()
-          this.processRoutes(localData, page, reset)
+          if (reset) {
+            this.setData({ routes: [], loading: false })
+          }
+          showNiceToast(this, '网络错误，请重试', 'error', 2000)
           resolve()
         }
       })
@@ -121,42 +149,30 @@ Page({
   },
 
   // 处理路线数据
-  processRoutes: function (data, page, reset) {
-    // 为每条路线添加展示信息
-    const processedData = data.map(item => this.processRouteItem(item))
-
-    // 根据筛选条件过滤
-    let filteredData = this.applyFilter(processedData)
-
-    // 根据搜索关键词过滤
-    if (this.data.searchKeyword) {
-      const keyword = this.data.searchKeyword.toLowerCase()
-      filteredData = filteredData.filter(item =>
-        (item.name && item.name.toLowerCase().includes(keyword)) ||
-        (item.location && item.location.toLowerCase().includes(keyword)) ||
-        (item.description && item.description.toLowerCase().includes(keyword))
-      )
+  processRoutes: function (data, page, reset, fromCache) {
+    // 为每条路线添加展示信息（首次处理后缓存）
+    if (!fromCache) {
+      const processedData = data.map(item => this.processRouteItem(item))
+      this._allProcessedData = processedData
     }
 
-    const routes = reset ? filteredData : [...this.data.routes, ...filteredData]
-    const hasMore = filteredData.length >= PAGE_SIZE
+    const allData = this._allProcessedData || []
+
+    // 根据筛选条件过滤（包含关键词、标签、高级筛选，统一处理）
+    let filteredData = this.applyFilter(allData)
+
+    // 分页：只显示当前页的数据
+    const showCount = (page + 1) * PAGE_SIZE
+    const visibleData = filteredData.slice(0, showCount)
+    const hasMore = visibleData.length < filteredData.length
 
     this.setData({
-      routes: routes,
+      routes: visibleData,
       page: page + 1,
       hasMore: hasMore,
       loading: false,
       showSkeleton: false
     })
-  },
-
-  // 获取当前季节emoji
-  getSeasonEmoji: function () {
-    const month = new Date().getMonth() + 1
-    if (month >= 3 && month <= 5) return '🌸'
-    if (month >= 6 && month <= 8) return '☀️'
-    if (month >= 9 && month <= 11) return '🍂'
-    return '❄️'
   },
 
   // 获取当前季节
@@ -196,21 +212,41 @@ Page({
       ? (item.cost.type === '免费' ? '免费' : `${item.cost.note || ''} ${item.cost.amount ? item.cost.amount + '元' : ''}`.trim())
       : (item.cost || '免费')
 
+    // scenery: 支持数组和字符串（"瀑布|溪流"）两种格式
+    let sceneryArr = []
+    if (Array.isArray(item.scenery)) {
+      sceneryArr = item.scenery
+    } else if (typeof item.scenery === 'string' && item.scenery) {
+      // 字符串格式，按 | 或 , 分割
+      sceneryArr = item.scenery.split(/[|,，、]/).map(s => s.trim()).filter(Boolean)
+    }
+
+    // sections: 云端是数组，供路面筛选用
+    const sectionsArr = Array.isArray(item.sections) ? item.sections : []
+
+    // suitableFor: 从 difficulty.suitableFor 提取，供family筛选用
+    const suitableForArr = (typeof item.difficulty === 'object' && item.difficulty.suitableFor)
+      ? item.difficulty.suitableFor
+      : []
+
+    // family_friendly: 检查suitableFor是否包含亲子
+    const isFamily = suitableForArr.some(s => s.includes('亲子'))
+
+    // location_direction: 从 location.direction 提取
+    const locationDirection = typeof item.location === 'object' ? (item.location.direction || '') : ''
+
     // 获取封面图
     let coverImage = item.image || item.coverImage || ''
-    if (!coverImage && item.features && item.features.length > 0) {
-      coverImage = this.getFeatureImage(item.features[0])
+    if (!coverImage && sceneryArr.length > 0) {
+      coverImage = this.getFeatureImage(sceneryArr[0])
     }
+
+    // bestSeason: 支持数组和字符串格式
+    const bestSeason = item.bestSeason || item.best_season || []
 
     // 检查收藏状态
     const favorites = cloudSync.getLocalFavorites()
     const isFavorited = favorites.includes(item._id)
-
-    // 当季推荐判断
-    const currentSeason = this.getCurrentSeason()
-    const bestSeason = item.best_season || item.bestSeason || []
-    const seasonStr = Array.isArray(bestSeason) ? bestSeason.join(',') : String(bestSeason)
-    const isCurrentSeason = seasonStr.includes(currentSeason)
 
     return {
       ...item,
@@ -225,8 +261,13 @@ Page({
       durationText: durationText,
       isFavorited: isFavorited,
       isFree: costStr.includes('免费'),
-      isCurrentSeason: isCurrentSeason,
-      seasonEmoji: this.getSeasonEmoji()
+
+      scenery: sceneryArr,
+      sections: sectionsArr,
+      suitableFor: suitableForArr,
+      bestSeason: bestSeason,
+      family_friendly: isFamily,
+      location_direction: locationDirection
     }
   },
 
@@ -257,39 +298,90 @@ Page({
     if (filter !== 'all') {
       result = data.filter(item => {
         switch (filter) {
-          case 'beginner':
-            return item.difficulty === '初级' || item.diffLevel <= 2
-          case 'family':
-            return item.family_friendly === true
+          case 'beginner': {
+            const dist = item.distance_km || parseFloat((item.distanceText || '').replace(/[^0-9.]/g, '')) || 0
+            return (item.diffLevel <= 2 || (item.suitableFor || []).some(s => s.includes('新人') || s.includes('新手')))
+              && (dist === 0 || dist <= 8)
+          }
+          case 'family': {
+            const dist = item.distance_km || parseFloat((item.distanceText || '').replace(/[^0-9.]/g, '')) || 0
+            return item.family_friendly === true && item.diffLevel <= 2
+              && (dist === 0 || dist <= 6)
+          }
           case 'stream':
-            return (item.features || []).some(f => f.includes('溪流'))
+            return (item.scenery || []).some(f => f.includes('溪流') || f.includes('溪水'))
           case 'waterfall':
-            return (item.features || []).some(f => f.includes('瀑布'))
+            return (item.scenery || []).some(f => f.includes('瀑布'))
           case 'forest':
-            return (item.features || []).some(f => f.includes('森林') || f.includes('树林'))
-          case 'stone':
-            return (item.features || []).some(f => f.includes('石阶')) || (item.road_type && item.road_type.includes('石阶'))
-          case 'autumn':
-            return (item.best_season && item.best_season.includes('秋')) || (item.season && item.season.includes('秋'))
+            return (item.scenery || []).some(f => f.includes('森林') || f.includes('山林'))
+          case 'season':
+            const curSeason = this.getCurrentSeason() // '春'/'夏'/'秋'/'冬'
+            const bestSeason = item.bestSeason || item.best_season || []
+            const seasonStr = Array.isArray(bestSeason) ? bestSeason.join(',') : String(bestSeason)
+            return seasonStr.includes(curSeason) || (curSeason === '秋' && (item.scenery || []).some(f => f.includes('红叶') || f.includes('银杏') || f.includes('金黄')))
           case 'free':
             return item.isFree
-          case 'hot':
-            return (item.likes_count || 0) >= 100 || (item.view_count || 0) >= 1000
-          case 'east':
-            return item.location && (item.location.includes('蓝田') || item.location.includes('临潼') || item.location.includes('华阴') || item.location.includes('渭南'))
-          case 'center':
-            return item.location && (item.location.includes('长安') || item.location.includes('鄠邑') || item.location.includes('周至'))
-          case 'west':
-            return item.location && (item.location.includes('眉县') || item.location.includes('宝鸡') || item.location.includes('太白'))
           default:
             return true
         }
       })
     }
 
-    // 高级筛选：难度
+    // 高级筛选：难度（基于 diffLevel 数值：轻松<=2, 适中3-4, 困难>=5）
     if (this.data.activeDifficulty) {
-      result = result.filter(item => item.difficulty === this.data.activeDifficulty)
+      result = result.filter(item => {
+        const level = item.diffLevel || 0
+        switch (this.data.activeDifficulty) {
+          case 'easy': return level > 0 && level <= 2
+          case 'medium': return level >= 3 && level <= 4
+          case 'hard': return level >= 5
+          default: return true
+        }
+      })
+    }
+
+    // 高级筛选：距离
+    if (this.data.activeDistance) {
+      result = result.filter(item => {
+        const dist = item.distance_km || parseFloat((item.distanceText || '').replace(/[^0-9.]/g, '')) || 0
+        switch (this.data.activeDistance) {
+          case '0-5': return dist > 0 && dist <= 5
+          case '5-10': return dist > 5 && dist <= 10
+          case '10-20': return dist > 10 && dist <= 20
+          case '20+': return dist > 20
+          default: return true
+        }
+      })
+    }
+
+    // 高级筛选：爬升
+    if (this.data.activeElevation) {
+      result = result.filter(item => {
+        const ele = item.elevation_gain_m || parseFloat((item.elevation || '').replace(/[^0-9.]/g, '')) || 0
+        switch (this.data.activeElevation) {
+          case '0-300': return ele >= 0 && ele <= 300
+          case '300-800': return ele > 300 && ele <= 800
+          case '800+': return ele > 800
+          default: return true
+        }
+      })
+    }
+
+    // 高级筛选：路面
+    if (this.data.activeSurface) {
+      result = result.filter(item => {
+        const surface = this.data.activeSurface
+        return (item.sections || []).some(s => s.road && s.road.includes(surface)) ||
+               (item.scenery || []).some(f => f.includes(surface))
+      })
+    }
+
+    // 高级筛选：风景
+    if (this.data.activeScenery) {
+      result = result.filter(item => {
+        const scenery = this.data.activeScenery
+        return (item.scenery || []).some(f => f.includes(scenery))
+      })
     }
 
     // 高级筛选：费用
@@ -297,6 +389,29 @@ Page({
       result = result.filter(item => item.isFree)
     } else if (this.data.activeCost === 'paid') {
       result = result.filter(item => !item.isFree)
+    }
+
+    // 高级筛选：季节
+    if (this.data.activeSeason) {
+      result = result.filter(item => {
+        if (this.data.activeSeason === '全年') return true
+        const bestSeason = item.best_season || item.bestSeason || []
+        const seasonStr = Array.isArray(bestSeason) ? bestSeason.join(',') : String(bestSeason)
+        return seasonStr.includes(this.data.activeSeason)
+      })
+    }
+
+    // 搜索关键词过滤（统一在这里处理，确保与标签/高级筛选一致）
+    if (this.data.searchKeyword) {
+      const keyword = this.data.searchKeyword.toLowerCase()
+      result = result.filter(item =>
+        (item.name && item.name.toLowerCase().includes(keyword)) ||
+        (item.location && item.location.toLowerCase().includes(keyword)) ||
+        (item.description && item.description.toLowerCase().includes(keyword)) ||
+        (item.scenery && item.scenery.some(s => s.includes(keyword))) ||
+        (item.features && item.features.some(f => f.includes(keyword))) ||
+        (item.bestSeason && (Array.isArray(item.bestSeason) ? item.bestSeason : [item.bestSeason]).some(s => s.includes(keyword)))
+      )
     }
 
     return result
@@ -331,11 +446,11 @@ Page({
     const key = `routes[${index}].isFavorited`
     this.setData({ [key]: !isFavorited })
 
-    wx.showToast({
-      title: !isFavorited ? '已收藏 ❤️' : '已取消收藏',
-      icon: 'none',
-      duration: 1200
-    })
+    if (!isFavorited) {
+      this.setData({ showFavHint: true })
+    } else {
+      showNiceToast(this, '已取消收藏', 'info', 2000)
+    }
 
     // 同步到云端
     try {
@@ -380,6 +495,33 @@ Page({
     this.setData({ showAdvancedFilter: !this.data.showAdvancedFilter })
   },
 
+  // 关闭收藏提示弹窗
+  onCloseFavHint: function () {
+    this.setData({ showFavHint: false })
+  },
+
+  // 重置所有筛选条件
+  onResetFilters: function () {
+    this.setData({
+      searchKeyword: '',
+      activeDifficulty: '',
+      activeDistance: '',
+      activeElevation: '',
+      activeSurface: '',
+      activeScenery: '',
+      activeCost: '',
+      activeSeason: ''
+    })
+    this.loadRoutes(true)
+    showNiceToast(this, '已重置所有筛选条件', 'success', 1500)
+  },
+
+  // 查看结果（收起高级筛选并刷新）
+  onViewResults: function () {
+    this.setData({ showAdvancedFilter: false })
+    this.loadRoutes(true)
+  },
+
   // 难度筛选
   onDifficultyFilter: function (e) {
     const value = e.currentTarget.dataset.value
@@ -394,6 +536,34 @@ Page({
     this.loadRoutes(true)
   },
 
+  // 距离筛选
+  onDistanceFilter: function (e) {
+    const value = e.currentTarget.dataset.value
+    this.setData({ activeDistance: value })
+    this.loadRoutes(true)
+  },
+
+  // 爬升筛选
+  onElevationFilter: function (e) {
+    const value = e.currentTarget.dataset.value
+    this.setData({ activeElevation: value })
+    this.loadRoutes(true)
+  },
+
+  // 路面筛选
+  onSurfaceFilter: function (e) {
+    const value = e.currentTarget.dataset.value
+    this.setData({ activeSurface: value })
+    this.loadRoutes(true)
+  },
+
+  // 风景筛选
+  onSceneryFilter: function (e) {
+    const value = e.currentTarget.dataset.value
+    this.setData({ activeScenery: value })
+    this.loadRoutes(true)
+  },
+
   // 刷新收藏状态
   refreshFavoriteStatus: function () {
     const favorites = cloudSync.getLocalFavorites()
@@ -402,67 +572,6 @@ Page({
       isFavorited: favorites.includes(item._id)
     }))
     this.setData({ routes })
-  },
-
-  // 获取本地路线数据（降级方案）
-  getLocalRoutes: function () {
-    try {
-      const allData = require('../../trails_data.json')
-      // 对本地数据做筛选和分页
-      let filtered = allData
-
-      // 应用筛选
-      const filter = this.data.activeFilter
-      if (filter && filter !== 'all') {
-        filtered = allData.filter(item => {
-          switch (filter) {
-            case 'beginner':
-              return item.difficulty === '初级'
-            case 'family':
-              return item.family_friendly === true
-            case 'stream':
-              return (item.features || []).some(f => f.includes('溪流'))
-            case 'waterfall':
-              return (item.features || []).some(f => f.includes('瀑布'))
-            case 'forest':
-              return (item.features || []).some(f => f.includes('森林') || f.includes('树林'))
-            case 'stone':
-              return (item.features || []).some(f => f.includes('石阶'))
-            case 'autumn':
-              return (item.best_season || []).some(s => s.includes('秋'))
-            case 'free':
-              return !item.cost || item.cost.includes('免费')
-            case 'hot':
-              return (item.likes_count || 0) >= 100 || (item.view_count || 0) >= 1000
-            case 'east':
-              return item.location && (item.location.includes('蓝田') || item.location.includes('临潼') || item.location.includes('华阴') || item.location.includes('渭南'))
-            case 'center':
-              return item.location && (item.location.includes('长安') || item.location.includes('鄠邑') || item.location.includes('周至'))
-            case 'west':
-              return item.location && (item.location.includes('眉县') || item.location.includes('宝鸡') || item.location.includes('太白'))
-            default:
-              return true
-          }
-        })
-      }
-
-      // 应用搜索
-      if (this.data.searchKeyword) {
-        const kw = this.data.searchKeyword.toLowerCase()
-        filtered = filtered.filter(item =>
-          (item.name && item.name.toLowerCase().includes(kw)) ||
-          (item.location && item.location.toLowerCase().includes(kw)) ||
-          (item.description && item.description.toLowerCase().includes(kw))
-        )
-      }
-
-      // 分页
-      const start = this.data.page * PAGE_SIZE
-      return filtered.slice(start, start + PAGE_SIZE)
-    } catch (e) {
-      console.error('读取本地数据失败:', e)
-      return this.getMockRoutes()
-    }
   },
 
   // 模拟数据

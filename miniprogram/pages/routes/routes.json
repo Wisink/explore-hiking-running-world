@@ -1,7 +1,7 @@
 {
   "usingComponents": {},
-  "navigationBarTitleText": "秦人徒步",
+  "navigationBarTitleText": "秦人徒步路线分享",
   "enablePullDownRefresh": true,
-  "backgroundColorTop": "#2E7D32",
+  "backgroundColorTop": "#2d6a4f",
   "backgroundColor": "#F5F5F5"
 }

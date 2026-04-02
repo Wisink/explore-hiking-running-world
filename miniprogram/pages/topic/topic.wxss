@@ -1,0 +1,224 @@
+/* pages/topic/topic.wxss - v3.0 自然清新风 + 毛玻璃 */
+
+.container {
+  min-height: 100vh;
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(129,199,132,.35) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(165,214,167,.25) 0%, transparent 50%),
+    radial-gradient(ellipse at 60% 80%, rgba(76,175,80,.2) 0%, transparent 50%),
+    linear-gradient(160deg, #e8f5e9 0%, #c8e6c9 25%, #a5d6a7 50%, #81c784 75%, #66bb6a 100%);
+}
+
+/* 自定义头部 — 毛玻璃 */
+.header {
+  padding-bottom: 40rpx;
+  border-radius: 0 0 40rpx 40rpx;
+  overflow: hidden;
+}
+
+.status-bar {
+  display: flex;
+  align-items: center;
+  padding: 20rpx 24rpx;
+}
+
+.back-btn {
+  display: flex;
+  align-items: center;
+  padding: 12rpx 20rpx;
+  border-radius: 40rpx;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,.25);
+}
+
+.back-icon {
+  color: #FFFFFF;
+  font-size: 32rpx;
+  font-weight: bold;
+  margin-right: 8rpx;
+}
+
+.back-text {
+  color: #FFFFFF;
+  font-size: 28rpx;
+}
+
+.header-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 30rpx 40rpx 40rpx;
+}
+
+.header-icon {
+  font-size: 80rpx;
+  margin-bottom: 16rpx;
+}
+
+.header-title {
+  color: #FFFFFF;
+  font-size: 44rpx;
+  font-weight: bold;
+  margin-bottom: 12rpx;
+  text-shadow: 0 1rpx 8rpx rgba(255,255,255,.4);
+}
+
+.header-subtitle {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 26rpx;
+}
+
+/* 文章列表 — 毛玻璃 */
+.article-list {
+  padding: 30rpx 24rpx;
+}
+
+.article-card {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255,255,255,.25);
+  border-radius: 20rpx;
+  padding: 28rpx 24rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 8rpx 32rpx rgba(31,38,50,.15);
+  transition: all .35s cubic-bezier(.4,0,.2,1);
+}
+
+.card-index {
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-right: 20rpx;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,.2);
+}
+
+.index-text {
+  color: #FFFFFF;
+  font-size: 26rpx;
+  font-weight: bold;
+}
+
+.card-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #1a2e1a;
+  margin-bottom: 8rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.card-summary {
+  font-size: 24rpx;
+  color: #6b8b6b;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.card-arrow {
+  font-size: 36rpx;
+  color: #6b8b6b;
+  margin-left: 16rpx;
+  flex-shrink: 0;
+}
+
+/* 空状态 */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 100rpx 0;
+}
+
+.empty-icon {
+  font-size: 80rpx;
+  margin-bottom: 20rpx;
+}
+
+.empty-text {
+  font-size: 28rpx;
+  color: #6b8b6b;
+}
+
+/* 加载 */
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40rpx 0;
+}
+
+.loading-spinner {
+  width: 36rpx;
+  height: 36rpx;
+  border: 4rpx solid rgba(255,255,255,.3);
+  border-top-color: #2d6a4f;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-right: 16rpx;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading-text {
+  font-size: 26rpx;
+  color: #6b8b6b;
+}
+
+/* 没有更多 */
+.no-more {
+  text-align: center;
+  padding: 40rpx 0;
+}
+
+.no-more-text {
+  font-size: 24rpx;
+  color: #6b8b6b;
+}
+
+/* 底部返回按钮 — 毛玻璃 */
+.bottom-back {
+  padding: 40rpx 0 60rpx;
+  display: flex;
+  justify-content: center;
+}
+
+.back-btn-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 400rpx;
+  height: 88rpx;
+  border-radius: 44rpx;
+  padding: 0;
+  font-size: 30rpx;
+  color: #FFFFFF;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,.2);
+}
+
+.back-btn-bottom::after { border: none; }
+.back-btn-icon { margin-right: 8rpx; font-size: 28rpx; }
+.back-btn-text { font-size: 28rpx; }

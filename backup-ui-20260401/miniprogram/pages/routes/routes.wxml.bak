@@ -1,0 +1,268 @@
+<!--pages/routes/routes.wxml-->
+<view class="routes-page">
+
+  <!-- 顶部标题栏 -->
+  <view class="header">
+    <view class="header__bg"></view>
+    <view class="header__content">
+      <view class="header__left">
+        <text class="header__emoji">🏔️</text>
+        <view class="header__text">
+          <text class="header__title">秦人徒步</text>
+          <text class="header__sub">发现秦岭好路线</text>
+        </view>
+      </view>
+      <view class="header__search" bindtap="onSearchTap">
+        <text class="header__search-icon">🔍</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 搜索栏（展开状态） -->
+  <view class="search-bar-row" wx:if="{{showSearch}}">
+    <view class="search-bar">
+      <view class="search-bar__input">
+        <text class="search-bar__icon">🔍</text>
+        <input
+          class="search-bar__field"
+          placeholder="试试搜峪口、山名、风景名"
+          value="{{searchKeyword}}"
+          bindinput="onSearchInput"
+          bindconfirm="onSearchConfirm"
+          confirm-type="search"
+          focus="{{showSearch}}"
+        />
+        <text class="search-bar__clear" wx:if="{{searchKeyword}}" bindtap="onSearchClear">✕</text>
+      </view>
+      <view class="filter-toggle" bindtap="onToggleAdvancedFilter">
+        <text>{{showAdvancedFilter ? '收起' : '高级筛选'}}</text>
+      </view>
+      <text class="search-bar__cancel" bindtap="onSearchCancel">取消</text>
+    </view>
+  </view>
+
+  <!-- 高级筛选 -->
+  <view class="advanced-filter" wx:if="{{showAdvancedFilter && showSearch}}">
+    <view class="advanced-filter__row">
+      <text class="advanced-filter__label">难度</text>
+      <view class="advanced-filter__options">
+        <text class="advanced-filter__option {{activeDifficulty === '' ? 'active' : ''}}" data-value="" bindtap="onDifficultyFilter">全部</text>
+        <text class="advanced-filter__option {{activeDifficulty === 'easy' ? 'active' : ''}}" data-value="easy" bindtap="onDifficultyFilter">轻松</text>
+        <text class="advanced-filter__option {{activeDifficulty === 'medium' ? 'active' : ''}}" data-value="medium" bindtap="onDifficultyFilter">适中</text>
+        <text class="advanced-filter__option {{activeDifficulty === 'hard' ? 'active' : ''}}" data-value="hard" bindtap="onDifficultyFilter">困难</text>
+      </view>
+    </view>
+    <view class="advanced-filter__row">
+      <text class="advanced-filter__label">距离</text>
+      <view class="advanced-filter__options">
+        <text class="advanced-filter__option {{activeDistance === '' ? 'active' : ''}}" data-value="" bindtap="onDistanceFilter">不限</text>
+        <text class="advanced-filter__option {{activeDistance === '0-5' ? 'active' : ''}}" data-value="0-5" bindtap="onDistanceFilter">0-5km</text>
+        <text class="advanced-filter__option {{activeDistance === '5-10' ? 'active' : ''}}" data-value="5-10" bindtap="onDistanceFilter">5-10km</text>
+        <text class="advanced-filter__option {{activeDistance === '10-20' ? 'active' : ''}}" data-value="10-20" bindtap="onDistanceFilter">10-20km</text>
+        <text class="advanced-filter__option {{activeDistance === '20+' ? 'active' : ''}}" data-value="20+" bindtap="onDistanceFilter">20km+</text>
+      </view>
+    </view>
+    <view class="advanced-filter__row">
+      <text class="advanced-filter__label">爬升</text>
+      <view class="advanced-filter__options">
+        <text class="advanced-filter__option {{activeElevation === '' ? 'active' : ''}}" data-value="" bindtap="onElevationFilter">不限</text>
+        <text class="advanced-filter__option {{activeElevation === '0-300' ? 'active' : ''}}" data-value="0-300" bindtap="onElevationFilter">0-300m</text>
+        <text class="advanced-filter__option {{activeElevation === '300-800' ? 'active' : ''}}" data-value="300-800" bindtap="onElevationFilter">300-800m</text>
+        <text class="advanced-filter__option {{activeElevation === '800+' ? 'active' : ''}}" data-value="800+" bindtap="onElevationFilter">800m+</text>
+      </view>
+    </view>
+    <view class="advanced-filter__row">
+      <text class="advanced-filter__label">路面</text>
+      <view class="advanced-filter__options">
+        <text class="advanced-filter__option {{activeSurface === '' ? 'active' : ''}}" data-value="" bindtap="onSurfaceFilter">不限</text>
+        <text class="advanced-filter__option {{activeSurface === '水泥路' ? 'active' : ''}}" data-value="水泥路" bindtap="onSurfaceFilter">水泥路</text>
+        <text class="advanced-filter__option {{activeSurface === '土路' ? 'active' : ''}}" data-value="土路" bindtap="onSurfaceFilter">土路</text>
+        <text class="advanced-filter__option {{activeSurface === '山间小道' ? 'active' : ''}}" data-value="山间小道" bindtap="onSurfaceFilter">山间小道</text>
+        <text class="advanced-filter__option {{activeSurface === '碎石路' ? 'active' : ''}}" data-value="碎石路" bindtap="onSurfaceFilter">碎石路</text>
+      </view>
+    </view>
+    <view class="advanced-filter__row">
+      <text class="advanced-filter__label">风景</text>
+      <view class="advanced-filter__options">
+        <text class="advanced-filter__option {{activeScenery === '' ? 'active' : ''}}" data-value="" bindtap="onSceneryFilter">不限</text>
+        <text class="advanced-filter__option {{activeScenery === '山林' ? 'active' : ''}}" data-value="山林" bindtap="onSceneryFilter">山林</text>
+        <text class="advanced-filter__option {{activeScenery === '草甸' ? 'active' : ''}}" data-value="草甸" bindtap="onSceneryFilter">草甸</text>
+        <text class="advanced-filter__option {{activeScenery === '溪流' ? 'active' : ''}}" data-value="溪流" bindtap="onSceneryFilter">溪流</text>
+        <text class="advanced-filter__option {{activeScenery === '瀑布' ? 'active' : ''}}" data-value="瀑布" bindtap="onSceneryFilter">瀑布</text>
+        <text class="advanced-filter__option {{activeScenery === '湖泊' ? 'active' : ''}}" data-value="湖泊" bindtap="onSceneryFilter">湖泊</text>
+        <text class="advanced-filter__option {{activeScenery === '峡谷' ? 'active' : ''}}" data-value="峡谷" bindtap="onSceneryFilter">峡谷</text>
+        <text class="advanced-filter__option {{activeScenery === '竹林' ? 'active' : ''}}" data-value="竹林" bindtap="onSceneryFilter">竹林</text>
+        <text class="advanced-filter__option {{activeScenery === '红叶' ? 'active' : ''}}" data-value="红叶" bindtap="onSceneryFilter">红叶</text>
+        <text class="advanced-filter__option {{activeScenery === '丹霞' ? 'active' : ''}}" data-value="丹霞" bindtap="onSceneryFilter">丹霞</text>
+        <text class="advanced-filter__option {{activeScenery === '云海' ? 'active' : ''}}" data-value="云海" bindtap="onSceneryFilter">云海</text>
+        <text class="advanced-filter__option {{activeScenery === '古迹' ? 'active' : ''}}" data-value="古迹" bindtap="onSceneryFilter">古迹</text>
+        <text class="advanced-filter__option {{activeScenery === '古寺' ? 'active' : ''}}" data-value="古寺" bindtap="onSceneryFilter">古寺</text>
+        <text class="advanced-filter__option {{activeScenery === '栈道' ? 'active' : ''}}" data-value="栈道" bindtap="onSceneryFilter">栈道</text>
+        <text class="advanced-filter__option {{activeScenery === '远眺' ? 'active' : ''}}" data-value="远眺" bindtap="onSceneryFilter">远眺</text>
+        <text class="advanced-filter__option {{activeScenery === '温泉' ? 'active' : ''}}" data-value="温泉" bindtap="onSceneryFilter">温泉</text>
+        <text class="advanced-filter__option {{activeScenery === '森林公园' ? 'active' : ''}}" data-value="森林公园" bindtap="onSceneryFilter">森林公园</text>
+        <text class="advanced-filter__option {{activeScenery === '日出日落' ? 'active' : ''}}" data-value="日出日落" bindtap="onSceneryFilter">日出日落</text>
+      </view>
+    </view>
+    <view class="advanced-filter__row">
+      <text class="advanced-filter__label">费用</text>
+      <view class="advanced-filter__options">
+        <text class="advanced-filter__option {{activeCost === '' ? 'active' : ''}}" data-value="" bindtap="onCostFilter">不限</text>
+        <text class="advanced-filter__option {{activeCost === 'free' ? 'active' : ''}}" data-value="free" bindtap="onCostFilter">免费</text>
+        <text class="advanced-filter__option {{activeCost === 'paid' ? 'active' : ''}}" data-value="paid" bindtap="onCostFilter">收费</text>
+      </view>
+    </view>
+    <!-- 季节筛选暂不可用（云端数据暂无季节字段） -->
+    <!--
+    <view class="advanced-filter__row">
+      <text class="advanced-filter__label">季节</text>
+      <view class="advanced-filter__options">
+        <text class="advanced-filter__option {{activeSeason === '' ? 'active' : ''}}" data-value="" bindtap="onSeasonFilter">不限</text>
+        <text class="advanced-filter__option {{activeSeason === '春' ? 'active' : ''}}" data-value="春" bindtap="onSeasonFilter">春季</text>
+        <text class="advanced-filter__option {{activeSeason === '夏' ? 'active' : ''}}" data-value="夏" bindtap="onSeasonFilter">夏季</text>
+        <text class="advanced-filter__option {{activeSeason === '秋' ? 'active' : ''}}" data-value="秋" bindtap="onSeasonFilter">秋季</text>
+        <text class="advanced-filter__option {{activeSeason === '冬' ? 'active' : ''}}" data-value="冬" bindtap="onSeasonFilter">冬季</text>
+        <text class="advanced-filter__option {{activeSeason === '全年' ? 'active' : ''}}" data-value="全年" bindtap="onSeasonFilter">全年</text>
+      </view>
+    </view>
+    -->
+    <view class="advanced-filter__collapse" bindtap="onToggleAdvancedFilter">
+      <text>收起</text>
+    </view>
+  </view>
+
+  <!-- 筛选标签栏 -->
+  <scroll-view class="filter-scroll" scroll-x enable-flex>
+    <view
+      class="filter-chip {{activeFilter === item.id ? 'filter-chip--active' : ''}}"
+      wx:for="{{filterTags}}"
+      wx:key="id"
+      data-filter="{{item.id}}"
+      bindtap="onFilterTap"
+      hover-class="filter-chip--hover"
+      hover-stay-time="80"
+    >
+      <text class="filter-chip__icon" wx:if="{{item.icon}}">{{item.icon}}</text>
+      <text class="filter-chip__text">{{item.label}}</text>
+    </view>
+  </scroll-view>
+
+  <!-- 骨架屏 -->
+  <view class="skeleton-wrap" wx:if="{{showSkeleton}}">
+    <view class="skel-card" wx:for="{{3}}" wx:key="index">
+      <view class="skel-cover skel-shimmer"></view>
+      <view class="skel-body">
+        <view class="skel-line skel-line--title skel-shimmer"></view>
+        <view class="skel-line skel-line--desc skel-shimmer"></view>
+        <view class="skel-row">
+          <view class="skel-chip skel-shimmer"></view>
+          <view class="skel-chip skel-shimmer"></view>
+          <view class="skel-chip skel-shimmer"></view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 路线卡片列表 -->
+  <view class="route-list" wx:if="{{!showSkeleton}}">
+    <view
+      class="route-card"
+      wx:for="{{routes}}"
+      wx:key="_id"
+      data-id="{{item._id}}"
+      data-index="{{index}}"
+      bindtap="onRouteTap"
+      hover-class="route-card--hover"
+      style="animation-delay: {{index * 80}}ms"
+    >
+      <!-- 封面图 -->
+      <view class="route-card__cover">
+        <image
+          class="route-card__image"
+          src="{{item.coverImage || '/images/scenery/scenery-general.jpg'}}"
+          mode="aspectFill"
+          lazy-load
+        />
+        <view class="route-card__overlay"></view>
+
+        <!-- 难度角标 -->
+        <view class="route-card__badge" style="background: {{item.diffColor}}">
+          {{item.diffText}}
+        </view>
+
+        <!-- 当季推荐角标 -->
+        <view class="route-card__season" wx:if="{{item.isCurrentSeason}}">
+          <text>{{item.seasonEmoji}} 当季推荐</text>
+        </view>
+
+        <!-- 免费角标 -->
+        <view class="route-card__free" wx:if="{{item.isFree}}">免费</view>
+
+        <!-- 收藏按钮 -->
+        <view
+          class="route-card__fav {{item.isFavorited ? 'route-card__fav--on' : ''}}"
+          data-id="{{item._id}}"
+          data-index="{{index}}"
+          catchtap="onFavoriteTap"
+        >
+          <text>{{item.isFavorited ? '❤️' : '🤍'}}</text>
+        </view>
+
+        <!-- 底部叠加信息 -->
+        <view class="route-card__hero">
+          <text class="route-card__name">{{item.name}}</text>
+          <view class="route-card__meta">
+            <view class="route-card__meta-item" wx:if="{{item.distanceText}}">
+              <text>📏 {{item.distanceText}}</text>
+            </view>
+            <view class="route-card__meta-item" wx:if="{{item.durationText}}">
+              <text>⏱ {{item.durationText}}</text>
+            </view>
+            <view class="route-card__meta-item" wx:if="{{item.cost}}">
+              <text>💰 {{item.isFree ? '免费' : item.cost}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 卡片内容 -->
+      <view class="route-card__body">
+        <text class="route-card__desc ellipsis">{{item.description || '探索这条美丽的路线'}}</text>
+
+        <!-- 风景标签 -->
+        <view class="route-card__tags" wx:if="{{item.features && item.features.length > 0}}">
+          <text class="route-card__tag" wx:for="{{item.features}}" wx:for-item="feat" wx:key="*this">{{feat}}</text>
+        </view>
+
+        <!-- 亲子标记 -->
+        <view class="route-card__family" wx:if="{{item.family_friendly}}">
+          <text>👨‍👩‍👧 亲子友好</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 空状态 -->
+    <view class="empty-wrap" wx:if="{{routes.length === 0 && !loading}}">
+      <view class="empty-visual">
+        <view class="empty-circle"></view>
+        <text class="empty-icon">🥾</text>
+      </view>
+      <text class="empty-title">暂无匹配路线</text>
+      <text class="empty-desc">试试其他筛选条件？</text>
+    </view>
+
+    <!-- 加载更多 -->
+    <view class="load-more" wx:if="{{loading}}">
+      <view class="load-spinner"></view>
+      <text class="load-text">加载中...</text>
+    </view>
+
+    <!-- 没有更多 -->
+    <view class="no-more" wx:if="{{!hasMore && routes.length > 0 && !loading}}">
+      <view class="no-more__line"></view>
+      <text class="no-more__text">已经到底啦</text>
+      <view class="no-more__line"></view>
+    </view>
+  </view>
+
+</view>

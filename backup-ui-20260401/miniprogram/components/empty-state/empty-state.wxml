@@ -1,0 +1,21 @@
+<!-- 空状态组件 v2.0 -->
+<view class="empty-state">
+  <!-- 装饰图标 -->
+  <view class="empty-state__visual">
+    <view class="empty-state__circle"></view>
+    <text class="empty-state__icon">{{icon}}</text>
+  </view>
+
+  <text class="empty-state__title">{{title}}</text>
+  <text class="empty-state__desc" wx:if="{{description}}">{{description}}</text>
+
+  <view
+    class="empty-state__btn"
+    wx:if="{{actionText}}"
+    bindtap="onAction"
+    hover-class="empty-state__btn--hover"
+    hover-stay-time="80"
+  >
+    <text class="empty-state__btn-text">{{actionText}}</text>
+  </view>
+</view>

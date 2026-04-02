@@ -1,0 +1,317 @@
+<!--pages/admin/route-edit.wxml-->
+<view class="edit-page">
+
+  <view class="loading-wrap" wx:if="{{loading}}">
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <!-- ========== 路线编辑 ========== -->
+  <block wx:elif="{{type === 'route'}}">
+    <view class="form-section">
+      <text class="form-section__title">基本信息</text>
+
+      <view class="form-item">
+        <text class="form-label">路线名称 *</text>
+        <input class="form-input" placeholder="请输入路线名称" value="{{form.name}}" data-field="name" bindinput="onFieldInput" />
+      </view>
+
+      <view class="form-item">
+        <text class="form-label">路线描述</text>
+        <textarea class="form-textarea" placeholder="请输入路线描述" value="{{form.description}}" data-field="description" bindinput="onFieldInput" maxlength="500" />
+      </view>
+
+      <view class="form-item">
+        <text class="form-label">封面图片 URL</text>
+        <input class="form-input" placeholder="请输入封面图片链接" value="{{form.coverImage}}" data-field="coverImage" bindinput="onFieldInput" />
+        <image wx:if="{{form.coverImage}}" class="form-preview" src="{{form.coverImage}}" mode="aspectFill" />
+      </view>
+
+      <view class="form-item">
+        <text class="form-label">区域方向</text>
+        <input class="form-input" placeholder="如：秦岭东线" value="{{form.location_direction}}" data-field="location_direction" bindinput="onFieldInput" />
+      </view>
+      <view class="form-item">
+        <text class="form-label">详细地址</text>
+        <input class="form-input" placeholder="请输入详细地址" value="{{form.location_address}}" data-field="location_address" bindinput="onFieldInput" />
+      </view>
+      <view class="form-item">
+        <text class="form-label">导航地址</text>
+        <input class="form-input" placeholder="导航搜索关键词" value="{{form.location_navAddress}}" data-field="location_navAddress" bindinput="onFieldInput" />
+      </view>
+      <view class="form-row">
+        <view class="form-item form-item--half">
+          <text class="form-label">自驾导航纬度</text>
+          <input class="form-input" type="digit" placeholder="如：34.2653" value="{{form.location_driveLat}}" data-field="location_driveLat" bindinput="onFieldInput" />
+        </view>
+        <view class="form-item form-item--half">
+          <text class="form-label">自驾导航经度</text>
+          <input class="form-input" type="digit" placeholder="如：108.9426" value="{{form.location_driveLng}}" data-field="location_driveLng" bindinput="onFieldInput" />
+        </view>
+      </view>
+      <view class="form-item">
+        <text class="form-label">公共交通</text>
+        <textarea class="form-textarea" placeholder="公共交通信息" value="{{form.location_publicTransport}}" data-field="location_publicTransport" bindinput="onFieldInput" />
+      </view>
+    </view>
+
+    <view class="form-section">
+      <text class="form-section__title">路线参数</text>
+
+      <view class="form-row">
+        <view class="form-item form-item--half">
+          <text class="form-label">距离 (km)</text>
+          <input class="form-input" type="digit" placeholder="0" value="{{form.distance_km}}" data-field="distance_km" bindinput="onFieldInput" />
+        </view>
+        <view class="form-item form-item--half">
+          <text class="form-label">时长 (h)</text>
+          <input class="form-input" type="digit" placeholder="0" value="{{form.duration_hours}}" data-field="duration_hours" bindinput="onFieldInput" />
+        </view>
+      </view>
+
+      <view class="form-row">
+        <view class="form-item form-item--half">
+          <text class="form-label">累计爬升 (m)</text>
+          <input class="form-input" type="digit" placeholder="0" value="{{form.elevation_gain_m}}" data-field="elevation_gain_m" bindinput="onFieldInput" />
+        </view>
+        <view class="form-item form-item--half">
+          <text class="form-label">排序序号</text>
+          <input class="form-input" type="number" placeholder="0" value="{{form.order}}" data-field="order" bindinput="onFieldInput" />
+        </view>
+      </view>
+
+      <view class="form-row">
+        <view class="form-item form-item--half">
+          <text class="form-label">难度等级</text>
+          <picker mode="selector" range="{{difficultyOptions}}" value="{{form.difficulty_level - 1}}" bindchange="onDifficultyChange">
+            <view class="form-picker">
+              <text>{{difficultyOptions[form.difficulty_level - 1] || '请选择'}}</text>
+              <text class="form-picker__arrow">▾</text>
+            </view>
+          </picker>
+        </view>
+        <view class="form-item form-item--half">
+          <text class="form-label">最佳季节</text>
+          <input class="form-input" placeholder="春/夏/秋/冬/全年" value="{{form.best_season}}" data-field="best_season" bindinput="onFieldInput" />
+        </view>
+      </view>
+
+      <view class="form-item">
+        <text class="form-label">难度标签</text>
+        <input class="form-input" placeholder="如：稍微有点挑战" value="{{form.difficulty_label}}" data-field="difficulty_label" bindinput="onFieldInput" />
+      </view>
+    </view>
+
+    <view class="form-section">
+      <text class="form-section__title">费用信息</text>
+      <view class="form-row">
+        <view class="form-item form-item--half">
+          <text class="form-label">费用类型</text>
+          <input class="form-input" placeholder="免费/收费" value="{{form.cost_type}}" data-field="cost_type" bindinput="onFieldInput" />
+        </view>
+        <view class="form-item form-item--half">
+          <text class="form-label">费用金额 (元)</text>
+          <input class="form-input" type="digit" placeholder="0" value="{{form.cost_amount}}" data-field="cost_amount" bindinput="onFieldInput" />
+        </view>
+      </view>
+      <view class="form-item">
+        <text class="form-label">费用备注</text>
+        <input class="form-input" placeholder="费用说明" value="{{form.cost_note}}" data-field="cost_note" bindinput="onFieldInput" />
+      </view>
+    </view>
+
+    <view class="form-section">
+      <text class="form-section__title">图片列表</text>
+      <view class="tag-list">
+        <view class="tag-item" wx:for="{{form.images}}" wx:key="*this">
+          <text>{{item}}</text>
+          <view class="tag-item__remove" bindtap="removeImage" data-index="{{index}}">
+            <text>✕</text>
+          </view>
+        </view>
+      </view>
+      <view class="tag-add">
+        <input class="form-input form-input--small" placeholder="输入图片URL" value="{{imagesInput}}" bindinput="onImagesInput" confirm-type="done" bindconfirm="addImage" />
+        <view class="tag-add__btn" bindtap="addImage">
+          <text>+ 添加</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="form-section">
+      <text class="form-section__title">适合人群</text>
+      <view class="tag-list">
+        <view class="tag-item" wx:for="{{form.difficulty_suitableFor}}" wx:key="*this">
+          <text>{{item}}</text>
+          <view class="tag-item__remove" bindtap="removeDifficultySuitableFor" data-index="{{index}}">
+            <text>✕</text>
+          </view>
+        </view>
+      </view>
+      <view class="tag-add">
+        <input class="form-input form-input--small" placeholder="如：新手/亲子8岁+" value="{{difficultySuitableForInput}}" bindinput="onDifficultySuitableForInput" confirm-type="done" bindconfirm="addDifficultySuitableFor" />
+        <view class="tag-add__btn" bindtap="addDifficultySuitableFor">
+          <text>+ 添加</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="form-section">
+      <text class="form-section__title">风景标签</text>
+      <view class="tag-list">
+        <view class="tag-item" wx:for="{{form.scenery}}" wx:key="*this">
+          <text>{{item}}</text>
+          <view class="tag-item__remove" bindtap="removeScenery" data-index="{{index}}">
+            <text>✕</text>
+          </view>
+        </view>
+      </view>
+      <view class="tag-add">
+        <input class="form-input form-input--small" placeholder="输入标签名称" value="{{sceneryInput}}" bindinput="onSceneryInput" confirm-type="done" bindconfirm="addScenery" />
+        <view class="tag-add__btn" bindtap="addScenery">
+          <text>+ 添加</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="form-section">
+      <text class="form-section__title">分段信息</text>
+      <view class="section-list">
+        <view class="section-item" wx:for="{{form.sections}}" wx:key="index">
+          <view class="section-item__header">
+            <text class="section-item__num">第 {{index + 1}} 段</text>
+            <view class="section-item__remove" bindtap="removeSection" data-index="{{index}}">
+              <text>删除</text>
+            </view>
+          </view>
+          <input class="form-input" placeholder="段落名称" value="{{item.name}}" data-index="{{index}}" data-field="name" bindinput="onSectionInput" />
+          <view class="form-row">
+            <input class="form-input form-input--half" placeholder="路面类型" value="{{item.road}}" data-index="{{index}}" data-field="road" bindinput="onSectionInput" />
+            <input class="form-input form-input--half" placeholder="距离(km)" value="{{item.distance}}" data-index="{{index}}" data-field="distance" bindinput="onSectionInput" type="digit" />
+          </view>
+          <input class="form-input" placeholder="段落描述" value="{{item.desc}}" data-index="{{index}}" data-field="desc" bindinput="onSectionInput" />
+        </view>
+      </view>
+      <view class="add-section-btn" bindtap="addSection">
+        <text>+ 添加分段</text>
+      </view>
+    </view>
+
+    <view class="form-section">
+      <text class="form-section__title">装备清单</text>
+
+      <text class="form-label">必带装备</text>
+      <view class="tag-list">
+        <view class="tag-item" wx:for="{{form.equipment_must}}" wx:key="*this">
+          <text>{{item}}</text>
+          <view class="tag-item__remove" bindtap="removeEquipmentMust" data-index="{{index}}">
+            <text>✕</text>
+          </view>
+        </view>
+      </view>
+      <view class="tag-add">
+        <input class="form-input form-input--small" placeholder="必带装备" value="{{equipmentMustInput}}" bindinput="onEquipmentMustInput" confirm-type="done" bindconfirm="addEquipmentMust" />
+        <view class="tag-add__btn" bindtap="addEquipmentMust">
+          <text>+ 添加</text>
+        </view>
+      </view>
+
+      <text class="form-label" style="margin-top:20rpx;">建议携带</text>
+      <view class="tag-list">
+        <view class="tag-item" wx:for="{{form.equipment_suggest}}" wx:key="*this">
+          <text>{{item}}</text>
+          <view class="tag-item__remove" bindtap="removeEquipmentSuggest" data-index="{{index}}">
+            <text>✕</text>
+          </view>
+        </view>
+      </view>
+      <view class="tag-add">
+        <input class="form-input form-input--small" placeholder="建议装备" value="{{equipmentSuggestInput}}" bindinput="onEquipmentSuggestInput" confirm-type="done" bindconfirm="addEquipmentSuggest" />
+        <view class="tag-add__btn" bindtap="addEquipmentSuggest">
+          <text>+ 添加</text>
+        </view>
+      </view>
+
+      <text class="form-label" style="margin-top:20rpx;">无需携带</text>
+      <view class="tag-list">
+        <view class="tag-item" wx:for="{{form.equipment_noNeed}}" wx:key="*this">
+          <text>{{item}}</text>
+          <view class="tag-item__remove" bindtap="removeEquipmentNoNeed" data-index="{{index}}">
+            <text>✕</text>
+          </view>
+        </view>
+      </view>
+      <view class="tag-add">
+        <input class="form-input form-input--small" placeholder="无需装备" value="{{equipmentNoNeedInput}}" bindinput="onEquipmentNoNeedInput" confirm-type="done" bindconfirm="addEquipmentNoNeed" />
+        <view class="tag-add__btn" bindtap="addEquipmentNoNeed">
+          <text>+ 添加</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="form-section">
+      <text class="form-section__title">安全信息</text>
+
+      <text class="form-label">安全警告</text>
+      <view class="tag-list">
+        <view class="tag-item" wx:for="{{form.safety_warnings}}" wx:key="*this">
+          <text>{{item}}</text>
+          <view class="tag-item__remove" bindtap="removeSafetyWarning" data-index="{{index}}">
+            <text>✕</text>
+          </view>
+        </view>
+      </view>
+      <view class="tag-add">
+        <input class="form-input form-input--small" placeholder="安全警告内容" value="{{safetyWarningInput}}" bindinput="onSafetyWarningInput" confirm-type="done" bindconfirm="addSafetyWarning" />
+        <view class="tag-add__btn" bindtap="addSafetyWarning">
+          <text>+ 添加</text>
+        </view>
+      </view>
+
+      <view class="form-item" style="margin-top:20rpx;">
+        <text class="form-label">紧急电话</text>
+        <input class="form-input" placeholder="如：当地县救援：119 / 110" value="{{form.safety_emergencyPhone}}" data-field="safety_emergencyPhone" bindinput="onFieldInput" />
+      </view>
+    </view>
+  </block>
+
+  <!-- ========== 文章编辑 ========== -->
+  <block wx:elif="{{type === 'article'}}">
+    <view class="form-section">
+      <text class="form-section__title">文章信息</text>
+
+      <view class="form-item">
+        <text class="form-label">标题 *</text>
+        <input class="form-input" placeholder="请输入文章标题" value="{{articleForm.title}}" data-field="title" bindinput="onArticleFieldInput" />
+      </view>
+
+      <view class="form-item">
+        <text class="form-label">分类</text>
+        <input class="form-input" placeholder="请输入分类" value="{{articleForm.category}}" data-field="category" bindinput="onArticleFieldInput" />
+      </view>
+
+      <view class="form-item">
+        <text class="form-label">作者</text>
+        <input class="form-input" placeholder="请输入作者" value="{{articleForm.author}}" data-field="author" bindinput="onArticleFieldInput" />
+      </view>
+
+      <view class="form-item">
+        <text class="form-label">内容</text>
+        <textarea class="form-textarea form-textarea--tall" placeholder="请输入文章内容" value="{{articleForm.content}}" data-field="content" bindinput="onArticleFieldInput" maxlength="10000" />
+      </view>
+    </view>
+  </block>
+
+  <!-- 底部操作栏 -->
+  <view class="save-bar">
+    <view class="save-bar__row">
+      <view class="delete-btn" wx:if="{{id}}" bindtap="onDelete">
+        <text>删除</text>
+      </view>
+      <view class="save-btn {{saving ? 'save-btn--disabled' : ''}}" bindtap="onSave">
+        <text>{{saving ? '保存中...' : '保存'}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="edit-toast edit-toast--{{toastType}} {{showToast ? 'edit-toast--show' : ''}}">{{toastMessage}}</view>
+</view>

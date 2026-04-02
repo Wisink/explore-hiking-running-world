@@ -29,7 +29,7 @@
   flex-shrink: 0;
   padding: 24rpx 28rpx;
   font-size: 28rpx;
-  color: #9E9E99;
+  color: #6b8b6b;
   transition: all 250ms cubic-bezier(0.4, 0, 0.2, 1);
   user-select: none;
 }
@@ -39,7 +39,7 @@
 }
 
 .filter-bar__item--active {
-  color: #2E7D32;
+  color: #2d6a4f;
   font-weight: 600;
 }
 
@@ -60,7 +60,7 @@
   transform: translateX(-50%);
   width: 36rpx;
   height: 6rpx;
-  background: linear-gradient(90deg, #2E7D32, #43A047);
+  background: linear-gradient(90deg, #2d6a4f, #40916c);
   border-radius: 3rpx;
   animation: indicatorIn 250ms cubic-bezier(0, 0, 0.2, 1) both;
 }

@@ -1,0 +1,578 @@
+<!--pages/admin/admin.wxml-->
+<view class="admin-page">
+
+  <!-- 未登录：密码验证 -->
+  <view class="login-wrap" wx:if="{{!isLoggedIn}}">
+    <view class="login-card">
+      <text class="login-icon">🔐</text>
+      <text class="login-title">后台管理</text>
+      <text class="login-desc">请输入管理员密码</text>
+      <input
+        class="login-input"
+        type="password"
+        placeholder="请输入密码"
+        value="{{passwordInput}}"
+        bindinput="onPasswordInput"
+        bindconfirm="onLogin"
+        password
+      />
+      <view class="login-btn" bindtap="onLogin">
+        <text>进入后台</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 已登录：管理面板 -->
+  <block wx:else>
+
+    <!-- 顶部标题 -->
+    <view class="page-header">
+      <view class="page-header__bg"></view>
+      <view class="page-header__content">
+        <text class="page-header__emoji">⚙️</text>
+        <text class="page-header__title">后台管理</text>
+        <text class="page-header__sub">秦人徒步 · 数据管理</text>
+      </view>
+    </view>
+
+    <!-- Tab 切换 -->
+    <view class="admin-tabs">
+      <view
+        class="admin-tabs__item {{activeTab === 'overview' ? 'admin-tabs__item--on' : ''}}"
+        bindtap="switchTab" data-tab="overview"
+      >
+        <text>📊 概览</text>
+      </view>
+      <view
+        class="admin-tabs__item {{activeTab === 'routes' ? 'admin-tabs__item--on' : ''}}"
+        bindtap="switchTab" data-tab="routes"
+      >
+        <text>🗺️ 路线</text>
+      </view>
+      <view
+        class="admin-tabs__item {{activeTab === 'users' ? 'admin-tabs__item--on' : ''}}"
+        bindtap="switchTab" data-tab="users"
+      >
+        <text>👥 用户</text>
+      </view>
+      <view
+        class="admin-tabs__item {{activeTab === 'articles' ? 'admin-tabs__item--on' : ''}}"
+        bindtap="switchTab" data-tab="articles"
+      >
+        <text>📝 文章</text>
+      </view>
+    </view>
+
+    <!-- ========== 概览 Tab ========== -->
+    <view class="tab-content" wx:if="{{activeTab === 'overview'}}">
+      <view class="stats-grid">
+        <view class="stats-item">
+          <text class="stats-item__num">{{stats.totalRoutes}}</text>
+          <text class="stats-item__label">🗺️ 路线总数</text>
+        </view>
+        <view class="stats-item">
+          <text class="stats-item__num">{{stats.totalUsers}}</text>
+          <text class="stats-item__label">👥 用户总数</text>
+        </view>
+        <view class="stats-item">
+          <text class="stats-item__num">{{stats.totalArticles}}</text>
+          <text class="stats-item__label">📝 文章总数</text>
+        </view>
+      </view>
+      <view class="loading-wrap" wx:if="{{statsLoading}}">
+        <text class="loading-text">加载中...</text>
+      </view>
+
+      <!-- 图表加载中 -->
+      <view class="loading-wrap" wx:if="{{chartLoading && !chartLoaded}}">
+        <text class="loading-text">📊 加载图表数据中...</text>
+      </view>
+
+      <!-- ========== 图表区域 ========== -->
+      <block wx:if="{{chartLoaded}}">
+
+        <!-- 时间维度选择器 -->
+        <view class="dim-selector">
+          <text class="dim-selector__label">时间维度：</text>
+          <view class="dim-selector__tabs">
+            <view
+              class="dim-selector__tab {{trendDimension === item.value ? 'dim-selector__tab--on' : ''}}"
+              wx:for="{{trendDimensions}}"
+              wx:key="value"
+              data-value="{{item.value}}"
+              catchtap="onTrendDimensionChange"
+            >
+              <text>{{item.label}}</text>
+            </view>
+          </view>
+        </view>
+
+        <!-- 1. 用户增长趋势 -->
+        <view class="chart-panel">
+          <view class="chart-panel__header" data-field="panelUserGrowth" catchtap="toggleChartPanel">
+            <text class="chart-panel__title">📈 用户增长趋势</text>
+            <text class="chart-panel__arrow">{{panelUserGrowth ? '▼' : '▶'}}</text>
+          </view>
+          <view class="chart-panel__body" wx:if="{{panelUserGrowth}}">
+            <view class="bar-chart" wx:if="{{userGrowthList.length > 0}}">
+              <view class="bar-row" wx:for="{{userGrowthList}}" wx:key="label">
+                <text class="bar-row__label">{{item.label}}</text>
+                <view class="bar-row__track">
+                  <view class="bar-row__fill bar-row__fill--green" style="width: {{item.barPct}}%"></view>
+                </view>
+                <text class="bar-row__value">{{item.value}}</text>
+              </view>
+            </view>
+            <view class="chart-empty" wx:else>
+              <text>暂无数据</text>
+            </view>
+          </view>
+        </view>
+
+        <!-- 2. 已走过趋势 -->
+        <view class="chart-panel">
+          <view class="chart-panel__header" data-field="panelCompletedTrend" catchtap="toggleChartPanel">
+            <text class="chart-panel__title">🥾 已走过趋势</text>
+            <text class="chart-panel__arrow">{{panelCompletedTrend ? '▼' : '▶'}}</text>
+          </view>
+          <view class="chart-panel__body" wx:if="{{panelCompletedTrend}}">
+            <view class="bar-chart" wx:if="{{completedTrendList.length > 0}}">
+              <view class="bar-row" wx:for="{{completedTrendList}}" wx:key="label">
+                <text class="bar-row__label">{{item.label}}</text>
+                <view class="bar-row__track">
+                  <view class="bar-row__fill bar-row__fill--orange" style="width: {{item.barPct}}%"></view>
+                </view>
+                <text class="bar-row__value">{{item.value}}</text>
+              </view>
+            </view>
+            <view class="chart-empty" wx:else>
+              <text>暂无数据</text>
+            </view>
+          </view>
+        </view>
+
+        <!-- 3. 收藏趋势（收藏无时间戳，按路线维度展示） -->
+        <view class="chart-panel">
+          <view class="chart-panel__header" data-field="panelFavoriteTrend" catchtap="toggleChartPanel">
+            <text class="chart-panel__title">⭐ 收藏趋势（路线维度）</text>
+            <text class="chart-panel__arrow">{{panelFavoriteTrend ? '▼' : '▶'}}</text>
+          </view>
+          <view class="chart-panel__body" wx:if="{{panelFavoriteTrend}}">
+            <view class="chart-note">
+              <text>ℹ️ 收藏数据无时间戳，按路线收藏量排序展示</text>
+            </view>
+            <view class="bar-chart" wx:if="{{favoriteTrendList.length > 0}}">
+              <view class="bar-row" wx:for="{{favoriteTrendList}}" wx:key="name">
+                <text class="bar-row__label bar-row__label--long">{{item.name || '未命名'}}</text>
+                <view class="bar-row__track">
+                  <view class="bar-row__fill bar-row__fill--yellow" style="width: {{item.barPct}}%"></view>
+                </view>
+                <text class="bar-row__value">{{item.favoriteCount}}</text>
+              </view>
+            </view>
+            <view class="chart-empty" wx:else>
+              <text>暂无数据</text>
+            </view>
+          </view>
+        </view>
+
+        <!-- 4. 收藏最多的 50 条路线 -->
+        <view class="chart-panel">
+          <view class="chart-panel__header" data-field="panelTopFavorited" catchtap="toggleChartPanel">
+            <text class="chart-panel__title">⭐ 收藏 Top 50 路线</text>
+            <text class="chart-panel__arrow">{{panelTopFavorited ? '▼' : '▶'}}</text>
+          </view>
+          <view class="chart-panel__body" wx:if="{{panelTopFavorited}}">
+            <view class="rank-chart" wx:if="{{topFavoritedRoutes.length > 0}}">
+              <view class="rank-row" wx:for="{{topFavoritedRoutes}}" wx:key="name">
+                <text class="rank-row__num {{index < 3 ? 'rank-row__num--top' : ''}}">{{index + 1}}</text>
+                <text class="rank-row__name">{{item.name || '未命名'}}</text>
+                <view class="rank-row__track">
+                  <view class="rank-row__fill rank-row__fill--yellow" style="width: {{item.barPct}}%"></view>
+                </view>
+                <text class="rank-row__value">{{item.favoriteCount}}</text>
+              </view>
+            </view>
+            <view class="chart-empty" wx:else>
+              <text>暂无收藏数据</text>
+            </view>
+          </view>
+        </view>
+
+        <!-- 5. 已走过最多的 50 条路线 -->
+        <view class="chart-panel">
+          <view class="chart-panel__header" data-field="panelTopCompleted" catchtap="toggleChartPanel">
+            <text class="chart-panel__title">🥾 已走过 Top 50 路线</text>
+            <text class="chart-panel__arrow">{{panelTopCompleted ? '▼' : '▶'}}</text>
+          </view>
+          <view class="chart-panel__body" wx:if="{{panelTopCompleted}}">
+            <view class="rank-chart" wx:if="{{topCompletedRoutes.length > 0}}">
+              <view class="rank-row" wx:for="{{topCompletedRoutes}}" wx:key="name">
+                <text class="rank-row__num {{index < 3 ? 'rank-row__num--top' : ''}}">{{index + 1}}</text>
+                <text class="rank-row__name">{{item.name || '未命名'}}</text>
+                <view class="rank-row__track">
+                  <view class="rank-row__fill rank-row__fill--green" style="width: {{item.barPct}}%"></view>
+                </view>
+                <text class="rank-row__value">{{item.completedCount}}</text>
+              </view>
+            </view>
+            <view class="chart-empty" wx:else>
+              <text>暂无数据</text>
+            </view>
+          </view>
+        </view>
+
+        <!-- 6. 阅读量最多的 50 篇文章 -->
+        <view class="chart-panel">
+          <view class="chart-panel__header" data-field="panelTopArticles" catchtap="toggleChartPanel">
+            <text class="chart-panel__title">📖 阅读量 Top 50 文章</text>
+            <text class="chart-panel__arrow">{{panelTopArticles ? '▼' : '▶'}}</text>
+          </view>
+          <view class="chart-panel__body" wx:if="{{panelTopArticles}}">
+            <view class="rank-chart" wx:if="{{topArticles.length > 0}}">
+              <view class="rank-row" wx:for="{{topArticles}}" wx:key="title">
+                <text class="rank-row__num {{index < 3 ? 'rank-row__num--top' : ''}}">{{index + 1}}</text>
+                <text class="rank-row__name">{{item.title || '无标题'}}</text>
+                <view class="rank-row__track">
+                  <view class="rank-row__fill rank-row__fill--blue" style="width: {{item.barPct}}%"></view>
+                </view>
+                <text class="rank-row__value">{{item.viewCount}}</text>
+              </view>
+            </view>
+            <view class="chart-empty" wx:else>
+              <text>暂无阅读数据</text>
+            </view>
+          </view>
+        </view>
+
+        <!-- 7. 最活跃的 100 位用户 -->
+        <view class="chart-panel">
+          <view class="chart-panel__header" data-field="panelTopUsers" catchtap="toggleChartPanel">
+            <text class="chart-panel__title">🏆 最活跃用户 Top 100</text>
+            <text class="chart-panel__arrow">{{panelTopUsers ? '▼' : '▶'}}</text>
+          </view>
+          <view class="chart-panel__body" wx:if="{{panelTopUsers}}">
+            <view class="chart-note">
+              <text>ℹ️ 按已走过记录数排序（小程序无独立访问日志）</text>
+            </view>
+            <view class="rank-chart" wx:if="{{topUsers.length > 0}}">
+              <view class="rank-row rank-row--user" wx:for="{{topUsers}}" wx:key="_openid">
+                <text class="rank-row__num {{index < 3 ? 'rank-row__num--top' : ''}}">{{index + 1}}</text>
+                <view class="rank-row__user-info">
+                  <text class="rank-row__name">{{item.nickName || '匿名用户'}}</text>
+                  <text class="rank-row__openid">{{item._openid}}</text>
+                </view>
+                <view class="rank-row__badges">
+                  <text class="rank-row__badge">🥾{{item.completedCount}}</text>
+                  <text class="rank-row__badge">⭐{{item.favoritesCount}}</text>
+                </view>
+              </view>
+            </view>
+            <view class="chart-empty" wx:else>
+              <text>暂无用户数据</text>
+            </view>
+          </view>
+        </view>
+
+      </block>
+    </view>
+
+    <!-- ========== 路线 Tab ========== -->
+    <view class="tab-content" wx:if="{{activeTab === 'routes'}}">
+      <view class="search-bar">
+        <input
+          class="search-bar__input"
+          placeholder="搜索路线名称或地点"
+          value="{{routesKeyword}}"
+          bindinput="onRoutesSearch"
+          bindconfirm="onRoutesSearchConfirm"
+          confirm-type="search"
+        />
+        <view class="search-bar__btn" bindtap="onRoutesSearchConfirm">
+          <text>🔍</text>
+        </view>
+      </view>
+
+      <view class="routes-header">
+        <view class="list-info">
+          <text>共 {{routesTotal}} 条路线</text>
+        </view>
+        <view class="add-route-btn" bindtap="onAddRoute">
+          <text>+ 添加路线</text>
+        </view>
+      </view>
+
+      <scroll-view
+        class="admin-scroll"
+        scroll-y
+        bindscrolltolower="onRoutesScrollToLower"
+        lower-threshold="100"
+      >
+        <view class="admin-list">
+          <view
+            class="admin-item"
+            wx:for="{{routes}}"
+            wx:key="_id"
+            bindtap="onRouteTap"
+            data-id="{{item._id}}"
+            hover-class="admin-item--hover"
+          >
+            <image
+              class="admin-item__cover"
+              src="{{item.coverImage || '/images/scenery/scenery-trail.jpg'}}"
+              mode="aspectFill"
+              lazy-load
+            />
+            <view class="admin-item__body">
+              <text class="admin-item__title">{{item.name}}</text>
+              <view class="admin-item__meta">
+                <text class="admin-item__tag" style="color: {{item.difficultyColor}}">
+                  {{item.difficultyLabel}}
+                </text>
+                <text class="admin-item__tag" wx:if="{{item.distance_km || item.distance}}">{{item.distance_km || item.distance}}km</text>
+                <text class="admin-item__tag" wx:if="{{(item.location && item.location.address) || item.location}}">📍 {{(item.location && item.location.address) || item.location}}</text>
+              </view>
+            </view>
+            <view class="admin-item__arrow">
+              <text>›</text>
+            </view>
+          </view>
+        </view>
+
+        <view class="loading-wrap" wx:if="{{routesLoading}}">
+          <text class="loading-text">加载中...</text>
+        </view>
+        <view class="list-end" wx:if="{{!routesHasMore && routes.length > 0}}">
+          <text>— 没有更多了 —</text>
+        </view>
+      </scroll-view>
+    </view>
+
+    <!-- ========== 用户 Tab ========== -->
+    <view class="tab-content" wx:if="{{activeTab === 'users'}}">
+      <view class="search-bar">
+        <input
+          class="search-bar__input"
+          placeholder="搜索昵称或OpenID"
+          value="{{usersKeyword}}"
+          bindinput="onUsersSearch"
+          bindconfirm="onUsersSearchConfirm"
+          confirm-type="search"
+        />
+        <view class="search-bar__btn" bindtap="onUsersSearchConfirm">
+          <text>🔍</text>
+        </view>
+      </view>
+
+      <view class="list-info">
+        <text>共 {{usersTotal}} 个用户</text>
+      </view>
+
+      <scroll-view
+        class="admin-scroll"
+        scroll-y
+        bindscrolltolower="onUsersScrollToLower"
+        lower-threshold="100"
+      >
+        <view class="admin-list">
+          <view
+            class="admin-item admin-item--user"
+            wx:for="{{users}}"
+            wx:key="_id"
+            bindtap="onUserTap"
+            data-id="{{item._id}}"
+            data-name="{{item.displayName}}"
+            hover-class="admin-item--hover"
+          >
+            <view class="admin-item__avatar">
+              <image
+                wx:if="{{item.avatarUrl}}"
+                class="admin-item__avatar-img"
+                src="{{item.avatarUrl}}"
+                mode="aspectFill"
+              />
+              <text class="admin-item__avatar-placeholder" wx:else>{{item.nickNameInitial}}</text>
+            </view>
+            <view class="admin-item__body">
+              <text class="admin-item__title">{{item.displayName}}</text>
+              <view class="admin-item__meta">
+                <text class="admin-item__openid">{{item._openid}}</text>
+              </view>
+              <view class="admin-item__meta">
+                <text class="admin-item__tag">📱 访问 {{item.visitCount}} 次</text>
+                <text class="admin-item__tag">👣 已走过 {{item.completedCount}} 条</text>
+                <text class="admin-item__tag" wx:if="{{item.favoritesCount > 0}}">⭐ 收藏 {{item.favoritesCount}} 条</text>
+              </view>
+            </view>
+            <view class="admin-item__arrow">
+              <text>›</text>
+            </view>
+          </view>
+        </view>
+
+        <view class="loading-wrap" wx:if="{{usersLoading}}">
+          <text class="loading-text">加载中...</text>
+        </view>
+        <view class="list-end" wx:if="{{!usersHasMore && users.length > 0}}">
+          <text>— 没有更多了 —</text>
+        </view>
+      </scroll-view>
+    </view>
+
+    <!-- ========== 文章 Tab ========== -->
+    <view class="tab-content" wx:if="{{activeTab === 'articles'}}">
+      <view class="search-bar">
+        <view class="search-bar__type-picker">
+          <picker mode="selector" range="{{articlesSearchTypes}}" range-key="label" bindchange="onArticlesSearchTypeChange">
+            <view class="search-bar__type-btn">
+              <text>{{articlesSearchTypeLabel}}</text>
+              <text class="search-bar__type-arrow">▾</text>
+            </view>
+          </picker>
+        </view>
+        <input
+          class="search-bar__input"
+          placeholder="搜索文章..."
+          value="{{articlesKeyword}}"
+          bindinput="onArticlesSearch"
+          bindconfirm="onArticlesSearchConfirm"
+          confirm-type="search"
+        />
+        <view class="search-bar__btn" bindtap="onArticlesSearchConfirm">
+          <text>🔍</text>
+        </view>
+      </view>
+
+      <view class="routes-header">
+        <view class="list-info">
+          <text>共 {{articlesTotal}} 篇文章</text>
+        </view>
+        <view class="add-route-btn" bindtap="onAddArticle">
+          <text>+ 添加文章</text>
+        </view>
+      </view>
+
+      <scroll-view
+        class="admin-scroll"
+        scroll-y
+        bindscrolltolower="onArticlesScrollToLower"
+        lower-threshold="100"
+      >
+        <view class="admin-list">
+          <view
+            class="admin-item"
+            wx:for="{{articles}}"
+            wx:key="_id"
+            bindtap="onArticleTap"
+            data-id="{{item._id}}"
+            hover-class="admin-item--hover"
+          >
+            <view class="admin-item__body">
+              <text class="admin-item__title">{{item.title}}</text>
+              <view class="admin-item__meta">
+                <text class="admin-item__tag" wx:if="{{item.category}}">📂 {{item.category}}</text>
+                <text class="admin-item__tag" wx:if="{{item.author}}">✍️ {{item.author}}</text>
+              </view>
+            </view>
+            <view class="admin-item__arrow">
+              <text>›</text>
+            </view>
+          </view>
+        </view>
+
+        <view class="loading-wrap" wx:if="{{articlesLoading}}">
+          <text class="loading-text">加载中...</text>
+        </view>
+        <view class="list-end" wx:if="{{!articlesHasMore && articles.length > 0}}">
+          <text>— 没有更多了 —</text>
+        </view>
+      </scroll-view>
+    </view>
+
+    <!-- ========== 用户详情弹窗（收藏 + 已走过） ========== -->
+    <view class="modal-overlay" wx:if="{{showUserDetailModal}}" bindtap="onCloseUserDetailModal">
+      <view class="modal-card" catchtap="noop">
+        <view class="modal-header">
+          <view class="modal-header__left">
+            <text class="modal-title">{{userDetailName}}</text>
+            <text class="modal-subtitle" wx:if="{{userDetailInfo.visitCount}}">📱 访问 {{userDetailInfo.visitCount}} 次</text>
+          </view>
+          <view class="modal-close" bindtap="onCloseUserDetailModal">
+            <text>✕</text>
+          </view>
+        </view>
+
+        <!-- Tab 切换 -->
+        <view class="detail-tabs">
+          <view class="detail-tab {{userDetailTab === 'favorites' ? 'detail-tab--on' : ''}}" bindtap="onUserDetailTabChange" data-tab="favorites">
+            <text>⭐ 收藏路线 ({{userFavoriteRoutes.length}})</text>
+          </view>
+          <view class="detail-tab {{userDetailTab === 'completed' ? 'detail-tab--on' : ''}}" bindtap="onUserDetailTabChange" data-tab="completed">
+            <text>👣 已走过 ({{userCompletedRoutes.length}})</text>
+          </view>
+        </view>
+
+        <scroll-view class="modal-scroll" scroll-y>
+          <view class="loading-wrap" wx:if="{{userDetailLoading}}">
+            <text class="loading-text">加载中...</text>
+          </view>
+
+          <block wx:elif="{{!userDetailLoading}}">
+
+            <!-- 收藏路线 Tab -->
+            <view wx:if="{{userDetailTab === 'favorites'}}">
+              <view class="detail-list" wx:if="{{userFavoriteRoutes.length > 0}}">
+                <view class="detail-card" wx:for="{{userFavoriteRoutes}}" wx:key="_id">
+                  <view class="detail-card__header">
+                    <text class="detail-card__name">{{item.name || '未知路线'}}</text>
+                  </view>
+                  <view class="detail-card__meta">
+                    <text wx:if="{{item.distance_km || item.distance}}">📏 {{item.distance_km || item.distance}}km</text>
+                    <text wx:if="{{item.difficultyLevel || (item.difficulty && item.difficulty.level)}}"> · {{item.difficultyLevel || (item.difficulty && item.difficulty.level)}}级难度</text>
+                    <text wx:if="{{(item.location && item.location.address) || item.location}}"> · 📍 {{(item.location && item.location.address) || item.location}}</text>
+                  </view>
+                </view>
+              </view>
+              <view class="modal-empty" wx:else>
+                <text>暂无收藏路线</text>
+              </view>
+            </view>
+
+            <!-- 已走过路线 Tab -->
+            <view wx:if="{{userDetailTab === 'completed'}}">
+              <view class="detail-list" wx:if="{{userCompletedRoutes.length > 0}}">
+                <view class="completed-card" wx:for="{{userCompletedRoutes}}" wx:key="routeId">
+                  <text class="completed-card__name">{{item.name || '未知路线'}}</text>
+                  <view class="completed-card__row">
+                    <text class="completed-card__tag" wx:if="{{item.userDate}}">📅 {{item.userDate}}</text>
+                    <text class="completed-card__tag" wx:if="{{item.userWeather}}">{{item.userWeather}}</text>
+                  </view>
+                  <view class="completed-card__row">
+                    <text class="completed-card__tag" wx:if="{{item.userDistance}}">📏 {{item.userDistance}}km</text>
+                    <text class="completed-card__tag" wx:if="{{item.userCompanions}}">👥 {{item.userCompanions}}</text>
+                  </view>
+                  <view class="completed-card__row" wx:if="{{item.userDifficulty}}">
+                    <text class="completed-card__tag">🏔️ 难度感受：{{item.userDifficulty}}</text>
+                  </view>
+                  <view class="completed-card__feeling" wx:if="{{item.userFeeling}}">
+                    <text>💪 {{item.userFeeling === 'easy' ? '轻松' : item.userFeeling === 'normal' ? '适中' : item.userFeeling === 'hard' ? '困难' : item.userFeeling}}</text>
+                  </view>
+                  <view class="completed-card__note" wx:if="{{item.userNote}}">
+                    <text>💭 {{item.userNote}}</text>
+                  </view>
+                </view>
+              </view>
+              <view class="modal-empty" wx:else>
+                <text>暂无徒步记录</text>
+              </view>
+            </view>
+
+          </block>
+        </scroll-view>
+      </view>
+    </view>
+
+  </block>
+
+  <view class="admin-toast admin-toast--{{toastType}} {{showToast ? 'admin-toast--show' : ''}}">{{toastMessage}}</view>
+</view>

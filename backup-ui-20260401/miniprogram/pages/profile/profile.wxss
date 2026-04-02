@@ -1,0 +1,498 @@
+/* pages/profile/profile.wxss - v2.0 */
+
+.profile-page {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #E8F5E9 0%, #FAFAF5 10%);
+  padding-bottom: 120rpx;
+}
+
+/* 顶部标题 */
+.page-header {
+  position: relative;
+  padding: 40rpx 32rpx 20rpx;
+  overflow: hidden;
+}
+
+.page-header__bg {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(135deg, rgba(46, 125, 50, 0.06) 0%, rgba(67, 160, 71, 0.04) 100%);
+}
+
+.page-header__content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.page-header__emoji {
+  font-size: 48rpx;
+  margin-bottom: 8rpx;
+}
+
+.page-header__title {
+  font-size: 44rpx;
+  font-weight: 800;
+  color: #1A1A1A;
+  letter-spacing: 1rpx;
+}
+
+.page-header__sub {
+  font-size: 26rpx;
+  color: #9E9E99;
+}
+
+/* 同步状态 */
+.sync-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+  padding: 12rpx 24rpx;
+  background: #E3F2FD;
+  border-bottom: 1rpx solid #BBDEFB;
+}
+
+.sync-bar--success {
+  background: #E8F5E9;
+  border-bottom-color: #C8E6C9;
+}
+
+.sync-bar--error {
+  background: #FFF3E0;
+  border-bottom-color: #FFE0B2;
+}
+
+.sync-bar__icon {
+  font-size: 24rpx;
+}
+
+.sync-bar__text {
+  font-size: 24rpx;
+  color: #555;
+}
+
+/* 统计卡片 */
+.stats-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  background: #FFFFFF;
+  margin: 16rpx 24rpx 24rpx;
+  padding: 36rpx 20rpx;
+  border-radius: 24rpx;
+  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.06);
+}
+
+.stats-card__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+
+.stats-card__num {
+  font-size: 52rpx;
+  font-weight: 800;
+  color: #2E7D32;
+  margin-bottom: 8rpx;
+  animation: countUp 500ms cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+}
+
+@keyframes countUp {
+  from { opacity: 0; transform: translateY(16rpx); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.stats-card__label {
+  font-size: 26rpx;
+  color: #757570;
+  font-weight: 500;
+}
+
+.stats-card__divider {
+  width: 1rpx;
+  height: 48rpx;
+  background: #F0F0EB;
+}
+
+/* Tab 切换 */
+.tab-bar {
+  display: flex;
+  background: #FFFFFF;
+  margin: 0 24rpx;
+  border-radius: 20rpx 20rpx 0 0;
+  overflow: hidden;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
+}
+
+.tab-bar__item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 28rpx 0 20rpx;
+  position: relative;
+  transition: all 250ms ease;
+}
+
+.tab-bar__item--on .tab-bar__text {
+  color: #2E7D32;
+  font-weight: 700;
+}
+
+.tab-bar__text {
+  font-size: 28rpx;
+  color: #9E9E99;
+  font-weight: 500;
+  transition: color 250ms ease;
+}
+
+.tab-bar__line {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 48rpx;
+  height: 6rpx;
+  background: linear-gradient(90deg, #2E7D32, #43A047);
+  border-radius: 3rpx;
+  animation: tabSlide 250ms cubic-bezier(0, 0, 0.2, 1) both;
+}
+
+@keyframes tabSlide {
+  from { width: 0; opacity: 0; }
+  to { width: 48rpx; opacity: 1; }
+}
+
+/* 列表区域 */
+.list-wrap {
+  margin: 0 24rpx;
+  background: #FFFFFF;
+  border-radius: 0 0 20rpx 20rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+  min-height: 400rpx;
+}
+
+/* 空状态 */
+.empty-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80rpx 40rpx;
+}
+
+.empty-visual {
+  position: relative;
+  width: 140rpx;
+  height: 140rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 28rpx;
+}
+
+.empty-circle {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
+  animation: emptyPulse 3s ease-in-out infinite;
+}
+
+@keyframes emptyPulse {
+  0%, 100% { transform: scale(1); opacity: 0.6; }
+  50% { transform: scale(1.08); opacity: 1; }
+}
+
+.empty-icon {
+  position: relative;
+  font-size: 64rpx;
+  animation: emptyFloat 3s ease-in-out infinite;
+}
+
+@keyframes emptyFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10rpx); }
+}
+
+.empty-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #303028;
+  margin-bottom: 12rpx;
+}
+
+.empty-desc {
+  font-size: 26rpx;
+  color: #9E9E99;
+  text-align: center;
+  line-height: 1.6;
+  margin-bottom: 32rpx;
+}
+
+.empty-btn {
+  background: linear-gradient(135deg, #2E7D32 0%, #43A047 100%);
+  padding: 18rpx 40rpx;
+  border-radius: 40rpx;
+  box-shadow: 0 4rpx 16rpx rgba(46, 125, 50, 0.3);
+  transition: transform 150ms ease;
+}
+
+.empty-btn:active {
+  transform: scale(0.95);
+}
+
+.empty-btn text {
+  font-size: 28rpx;
+  color: #FFFFFF;
+  font-weight: 600;
+}
+
+/* 路线卡片列表 */
+.route-list {
+  padding: 16rpx;
+}
+
+.route-card {
+  background: #FAFAF5;
+  border-radius: 16rpx;
+  overflow: hidden;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
+  border: 1rpx solid rgba(0, 0, 0, 0.03);
+  transition: all 200ms ease;
+  position: relative;
+}
+
+.route-card:last-child {
+  margin-bottom: 0;
+}
+
+.route-card--hover {
+  transform: scale(0.98);
+}
+
+/* 卡片封面 */
+.route-card__cover {
+  position: relative;
+  height: 200rpx;
+  overflow: hidden;
+}
+
+.route-card__img {
+  width: 100%;
+  height: 100%;
+  background: #E0E0DB;
+}
+
+.route-card__overlay {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 40%;
+  background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.3) 100%);
+  pointer-events: none;
+}
+
+.route-card__badge {
+  position: absolute;
+  top: 16rpx;
+  right: 16rpx;
+  padding: 6rpx 16rpx;
+  border-radius: 12rpx;
+  font-size: 22rpx;
+  color: #FFFFFF;
+  font-weight: 600;
+}
+
+.route-card__done {
+  position: absolute;
+  top: 16rpx;
+  right: 16rpx;
+  background: rgba(46, 125, 50, 0.85);
+  padding: 8rpx 18rpx;
+  border-radius: 12rpx;
+  font-size: 22rpx;
+  color: #FFFFFF;
+  font-weight: 600;
+  backdrop-filter: blur(8rpx);
+}
+
+/* 卡片内容 */
+.route-card__body {
+  padding: 20rpx 24rpx 24rpx;
+}
+
+.route-card__name {
+  display: block;
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #1A1A1A;
+  margin-bottom: 8rpx;
+}
+
+.route-card__desc {
+  display: block;
+  font-size: 24rpx;
+  color: #9E9E99;
+  margin-bottom: 14rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.route-card__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10rpx;
+}
+
+.route-card__tag {
+  padding: 6rpx 14rpx;
+  background: #F0F7F0;
+  border-radius: 8rpx;
+  font-size: 22rpx;
+  color: #2E7D32;
+  font-weight: 500;
+}
+
+/* 已走过信息 */
+.completed-info {
+  margin-top: 16rpx;
+  padding-top: 16rpx;
+  border-top: 1rpx dashed #E0E0DB;
+}
+
+.completed-info__date {
+  font-size: 24rpx;
+  color: #2E7D32;
+  font-weight: 600;
+  margin-bottom: 8rpx;
+}
+
+.completed-info__difficulty {
+  font-size: 24rpx;
+  color: #E65100;
+  font-weight: 500;
+  margin-bottom: 8rpx;
+  background: #FFF3E0;
+  padding: 8rpx 14rpx;
+  border-radius: 8rpx;
+  display: inline-block;
+}
+
+.completed-info__note {
+  background: #FFFDE7;
+  padding: 12rpx 16rpx;
+  border-radius: 10rpx;
+  margin-top: 8rpx;
+  font-size: 24rpx;
+  color: #5D4037;
+  line-height: 1.6;
+}
+
+/* 卡片操作 */
+.route-card__action {
+  position: absolute;
+  top: 16rpx;
+  left: 16rpx;
+  width: 48rpx;
+  height: 48rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+  backdrop-filter: blur(8rpx);
+  font-size: 28rpx;
+  color: #757570;
+}
+
+/* 已走过卡片特殊样式 */
+.route-card--completed {
+  border-left: 6rpx solid #2E7D32;
+}
+
+/* ===== 后台管理入口 ===== */
+.admin-entry {
+  display: flex;
+  align-items: center;
+  background: #FFFFFF;
+  margin: 0 24rpx;
+  padding: 28rpx 24rpx;
+  border-radius: 20rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
+}
+
+.admin-entry__icon {
+  font-size: 36rpx;
+  margin-right: 16rpx;
+}
+
+.admin-entry__text {
+  flex: 1;
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #1A1A1A;
+}
+
+.admin-entry__arrow {
+  font-size: 36rpx;
+  color: #C0C0BB;
+  font-weight: 300;
+}
+
+/* 底部 */
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40rpx 24rpx 32rpx;
+  gap: 10rpx;
+}
+
+.footer__icon {
+  font-size: 28rpx;
+}
+
+.footer__text {
+  font-size: 24rpx;
+  color: #C0C0BB;
+}
+
+/* 备案号 */
+.icp-footer {
+  text-align: center;
+  padding: 0 24rpx 48rpx;
+}
+
+.icp-footer__text {
+  font-size: 22rpx;
+  color: #AAAAAA;
+}
+
+/* ===== 收藏按钮 ===== */
+.route-card__fav {
+  position: absolute;
+  bottom: 16rpx;
+  right: 16rpx;
+  width: 64rpx;
+  height: 64rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.15);
+  font-size: 30rpx;
+  transition: transform 200ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 5;
+}
+
+.route-card__fav:active {
+  transform: scale(1.3);
+}

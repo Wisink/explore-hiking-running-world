@@ -1,0 +1,213 @@
+.container {
+  min-height: 100vh;
+  background-color: #F5F5F5;
+}
+
+/* 自定义头部 */
+.header {
+  padding-bottom: 40rpx;
+  border-radius: 0 0 40rpx 40rpx;
+  overflow: hidden;
+}
+
+.status-bar {
+  display: flex;
+  align-items: center;
+  padding: 20rpx 24rpx;
+}
+
+.back-btn {
+  display: flex;
+  align-items: center;
+  padding: 12rpx 20rpx;
+  border-radius: 40rpx;
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.back-icon {
+  color: #FFFFFF;
+  font-size: 32rpx;
+  font-weight: bold;
+  margin-right: 8rpx;
+}
+
+.back-text {
+  color: #FFFFFF;
+  font-size: 28rpx;
+}
+
+.header-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 30rpx 40rpx 40rpx;
+}
+
+.header-icon {
+  font-size: 80rpx;
+  margin-bottom: 16rpx;
+}
+
+.header-title {
+  color: #FFFFFF;
+  font-size: 44rpx;
+  font-weight: bold;
+  margin-bottom: 12rpx;
+}
+
+.header-subtitle {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 26rpx;
+}
+
+/* 文章列表 */
+.article-list {
+  padding: 30rpx 24rpx;
+}
+
+.article-card {
+  display: flex;
+  align-items: center;
+  background-color: #FFFFFF;
+  border-radius: 20rpx;
+  padding: 28rpx 24rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+}
+
+.card-index {
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-right: 20rpx;
+}
+
+.index-text {
+  color: #FFFFFF;
+  font-size: 26rpx;
+  font-weight: bold;
+}
+
+.card-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #333333;
+  margin-bottom: 8rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.card-summary {
+  font-size: 24rpx;
+  color: #999999;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.card-arrow {
+  font-size: 36rpx;
+  color: #CCCCCC;
+  margin-left: 16rpx;
+  flex-shrink: 0;
+}
+
+/* 空状态 */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 100rpx 0;
+}
+
+.empty-icon {
+  font-size: 80rpx;
+  margin-bottom: 20rpx;
+}
+
+.empty-text {
+  font-size: 28rpx;
+  color: #999999;
+}
+
+/* 加载 */
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40rpx 0;
+}
+
+.loading-spinner {
+  width: 36rpx;
+  height: 36rpx;
+  border: 4rpx solid #E0E0E0;
+  border-top-color: #2E7D32;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-right: 16rpx;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading-text {
+  font-size: 26rpx;
+  color: #999999;
+}
+
+/* 没有更多 */
+.no-more {
+  text-align: center;
+  padding: 40rpx 0;
+}
+
+.no-more-text {
+  font-size: 24rpx;
+  color: #CCCCCC;
+}
+
+/* 底部返回按钮 */
+.bottom-back {
+  padding: 40rpx 0 60rpx;
+  display: flex;
+  justify-content: center;
+}
+
+.back-btn-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 400rpx;
+  height: 88rpx;
+  border-radius: 44rpx;
+  padding: 0;
+  font-size: 30rpx;
+  color: #FFFFFF;
+}
+
+.back-btn-bottom::after {
+  border: none;
+}
+
+.back-btn-icon {
+  margin-right: 8rpx;
+  font-size: 28rpx;
+}
+
+.back-btn-text {
+  font-size: 28rpx;
+}

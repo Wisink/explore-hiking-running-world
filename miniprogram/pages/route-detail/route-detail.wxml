@@ -54,7 +54,7 @@
   <view class="info-card">
     <view class="info-card__name-row">
       <text class="info-card__name">{{trail.name}}</text>
-      <text class="info-card__completed-badge" wx:if="{{isCompleted}}">✅ 已走过</text>
+      <text class="info-card__completed-badge" wx:if="{{isCompleted}}">✅ 已走过{{completedCount > 1 ? completedCount + '次' : ''}}</text>
     </view>
     <view class="info-card__update-time" wx:if="{{trail.updatedAt}}">
       <text>数据更新于 {{trail.updatedAt}}</text>
@@ -88,6 +88,21 @@
         <text class="data-grid__icon">📈</text>
         <text class="data-grid__val">{{trail.elevation}}</text>
         <text class="data-grid__label">爬升</text>
+      </view>
+    </view>
+
+    <!-- 收藏 & 已走过统计 -->
+    <view class="stats-row">
+      <view class="stats-row__item">
+        <text class="stats-row__icon">❤️</text>
+        <text class="stats-row__val">{{trail.favoriteCount}}</text>
+        <text class="stats-row__label">人收藏</text>
+      </view>
+      <view class="stats-row__divider"></view>
+      <view class="stats-row__item">
+        <text class="stats-row__icon">👣</text>
+        <text class="stats-row__val">{{trail.completedCount_global}}</text>
+        <text class="stats-row__label">人走过</text>
       </view>
     </view>
 
@@ -135,10 +150,10 @@
     </view>
     <view class="action-bar__item" bindtap="onGoChecklist">
       <text class="action-bar__icon">📋</text>
-      <text class="action-bar__text">行前清单<text class="action-bar__badge" wx:if="{{checklistTotal > 0}}">{{checklistDone}}/{{checklistTotal}}</text></text>
+      <text class="action-bar__text">装备清单</text>
     </view>
     <view class="action-bar__item" bindtap="onNavTap">
-      <text class="action-bar__icon">📍</text>
+      <text class="action-bar__icon">🧭</text>
       <text class="action-bar__text">导航</text>
     </view>
   </view>
@@ -285,13 +300,13 @@
         </view>
       </view>
       <view class="equip-link" bindtap="onGoChecklist">
-        <text>📋 查看完整行前清单 →</text>
+        <text>📋 整理徒步装备清单 →</text>
       </view>
     </view>
   </view>
 
   <!-- 已走过记录列表 -->
-  <view class="completed-records" wx:if="{{isCompleted && completedRecords.length > 0}}">
+  <view class="completed-records" id="records-section" wx:if="{{isCompleted && completedRecords.length > 0}}">
     <view class="completed-records__head">
       <text class="completed-records__icon">👣</text>
       <text class="completed-records__title">我的徒步记录</text>
@@ -302,17 +317,21 @@
         <view class="completed-records__edit" data-index="{{index}}" data-item="{{item}}" bindtap="onEditCompletedRecord">✏️ 编辑</view>
       </view>
       <view class="completed-records__details">
+        <view class="completed-records__detail" wx:if="{{item.distance}}">
+          <text class="completed-records__detail-label">距离</text>
+          <text class="completed-records__detail-val">{{item.distance}}公里</text>
+        </view>
         <view class="completed-records__detail" wx:if="{{item.weather}}">
           <text class="completed-records__detail-label">天气</text>
           <text class="completed-records__detail-val">{{item.weather}}</text>
         </view>
+        <view class="completed-records__detail" wx:if="{{item.difficultyFeeling}}">
+          <text class="completed-records__detail-label">难度感受</text>
+          <text class="completed-records__detail-val">{{item.difficultyFeeling === 'easy' ? '轻松' : item.difficultyFeeling === 'normal' ? '适中' : item.difficultyFeeling === 'hard' ? '困难' : item.difficultyFeeling}}</text>
+        </view>
         <view class="completed-records__detail" wx:if="{{item.companions}}">
           <text class="completed-records__detail-label">同行人</text>
           <text class="completed-records__detail-val">{{item.companions}}</text>
-        </view>
-        <view class="completed-records__detail" wx:if="{{item.difficultyFeeling}}">
-          <text class="completed-records__detail-label">难度感受</text>
-          <text class="completed-records__detail-val">{{item.difficultyFeeling}}</text>
         </view>
         <view class="completed-records__detail" wx:if="{{item.feeling}}">
           <text class="completed-records__detail-label">感受</text>
@@ -329,8 +348,8 @@
       <text class="knowledge-links__title">出发前看看</text>
     </view>
     <view class="knowledge-links__list">
-      <view class="knowledge-links__item" bindtap="onGoKnowledge" data-category="装备选购">
-        <text>🥾 装备选购指南</text>
+      <view class="knowledge-links__item" bindtap="onGoKnowledge" data-category="装备推荐">
+        <text>🥾 装备推荐指南</text>
         <text class="knowledge-links__arrow">›</text>
       </view>
       <view class="knowledge-links__item" bindtap="onGoKnowledge" data-category="安全自救">
@@ -398,7 +417,7 @@
     </view>
     <view class="emergency-card__phone" bindtap="onCallEmergency">
       <text class="emergency-card__number">{{trail.emergencyPhone}}</text>
-      <text class="emergency-card__action">点击拨打 →</text>
+      <text class="emergency-card__action">点击拨打 📞</text>
     </view>
   </view>
 
@@ -415,17 +434,42 @@
   <view class="bottom-safe"></view>
 
   <!-- 分享图片 Canvas（隐藏） -->
-  <canvas type="2d" id="share-canvas" style="width: 600px; height: 800px; position: fixed; left: -9999px;"></canvas>
+  <canvas type="2d" id="share-canvas" style="width: 600px; height: 1500px; position: fixed; top: -9999px; left: 0; opacity: 0;"></canvas>
 
   </block>
+
+  <!-- ===== 今日已走过提示弹窗 ===== -->
+  <view class="today-hint-overlay" wx:if="{{showTodayHint}}" bindtap="onCloseTodayHint">
+    <view class="today-hint-popup" catchtap="">
+      <view class="today-hint__icon">🏕️</view>
+      <view class="today-hint__title">今天已经标记过了哦</view>
+      <view class="today-hint__desc">这条路线你今天已经标记过了，修改内容请在下方「我的徒步记录」中进行编辑～</view>
+      <view class="today-hint__arrow">
+        <text>↓</text>
+      </view>
+      <view class="today-hint__btn" bindtap="onCloseTodayHint">我知道了</view>
+    </view>
+  </view>
+
+  <!-- ===== 收藏成功提示弹窗 ===== -->
+  <view class="hint-overlay" wx:if="{{showFavHint}}" bindtap="onCloseFavHint">
+    <view class="hint-popup" catchtap="">
+      <view class="hint-popup__icon">❤️</view>
+      <view class="hint-popup__title">收藏成功！</view>
+      <view class="hint-popup__desc">这条路线收藏好了，你可以在「个人中心」-「我的收藏」中查看所有收藏的路线哦！</view>
+      <view class="hint-popup__btn" bindtap="onCloseFavHint">我知道了</view>
+    </view>
+  </view>
 
   <!-- ===== 固定底部操作栏（升级5） ===== -->
   <view class="fixed-bottom-bar" wx:if="{{!loading}}">
     <view
-      class="fixed-bottom-bar__btn {{isCompleted ? 'fixed-bottom-bar__btn--done' : ''}}"
+      class="fixed-bottom-bar__btn {{completedToday ? 'fixed-bottom-bar__btn--today' : ''}}"
       bindtap="onCompleteTrail"
     >
-      <text>{{isCompleted ? '✅ 已走过' : '✅ 标记为已走过'}}</text>
+      <text wx:if="{{completedToday}}">✅ 今日已走过</text>
+      <text wx:elif="{{isCompleted}}">✅ 标记为已走过（已走过{{completedCount}}次）</text>
+      <text wx:else>✅ 标记为已走过</text>
     </view>
   </view>
 
@@ -435,6 +479,18 @@
     <view class="complete-panel__head">
       <text class="complete-panel__title">{{isEditMode ? '✏️ 编辑记录' : '🎉 恭喜走完！'}}</text>
       <text class="complete-panel__close" bindtap="onCloseCompletePanel">✕</text>
+    </view>
+
+    <!-- 徒步距离 -->
+    <view class="complete-panel__section">
+      <view class="complete-panel__distance-row">
+        <text class="complete-panel__distance-label">徒步距离：</text>
+        <view class="complete-panel__distance-display" bindtap="onOpenDistancePicker">
+          <text class="complete-panel__distance-value">{{completeDistance || '0'}}</text>
+          <text class="complete-panel__distance-arrow">▼</text>
+        </view>
+        <text class="complete-panel__distance-unit">公里</text>
+      </view>
     </view>
 
     <!-- 难度感受 -->
@@ -495,22 +551,17 @@
     <view class="complete-panel__row">
       <view class="complete-panel__info-item">
         <text class="complete-panel__info-label">日期</text>
-        <picker mode="date" value="{{completeDate}}" end="{{today}}" bindchange="onDateChange">
-          <view class="complete-panel__picker">
-            <text class="complete-panel__picker-val">{{completeDate}}</text>
-            <text class="complete-panel__picker-arrow">📅</text>
-          </view>
-        </picker>
+        <view class="complete-panel__picker" bindtap="onOpenDatePicker">
+          <text class="complete-panel__picker-val">{{completeDate}}</text>
+          <text class="complete-panel__picker-arrow">📅</text>
+        </view>
       </view>
       <view class="complete-panel__info-item">
         <text class="complete-panel__info-label">天气</text>
-        <input
-          class="complete-panel__weather-input"
-          value="{{completeWeather}}"
-          placeholder="如：晴/多云/小雨"
-          bindinput="onInputWeather"
-          maxlength="10"
-        />
+        <view class="complete-panel__picker" bindtap="onOpenWeatherPicker">
+          <text class="complete-panel__picker-val">{{completeWeather || '请选择'}}</text>
+          <text class="complete-panel__picker-arrow">🌤️</text>
+        </view>
       </view>
     </view>
 
@@ -518,6 +569,68 @@
     <view class="complete-panel__save" bindtap="onSaveComplete">
       <text>{{isEditMode ? '✏️ 更新记录' : '✅ 保存记录'}}</text>
     </view>
+    <!-- 删除按钮（仅编辑模式） -->
+    <view class="complete-panel__delete" wx:if="{{isEditMode}}" bindtap="onDeleteCompletedRecord">
+      <text>🗑️ 删除记录</text>
+    </view>
   </view>
 
+  <!-- 距离选择器弹窗 -->
+  <view class="distance-picker-overlay" wx:if="{{showDistancePicker}}" bindtap="onCancelDistance"></view>
+  <view class="distance-picker-modal {{showDistancePicker ? 'distance-picker-modal--show' : ''}}">
+    <view class="distance-picker-header">
+      <text class="distance-picker-cancel" bindtap="onCancelDistance">取消</text>
+      <text class="distance-picker-title">选择徒步距离</text>
+      <text class="distance-picker-confirm" bindtap="onConfirmDistance">确定</text>
+    </view>
+    <picker-view indicator-class="distance-picker-indicator" mask-class="distance-picker-mask" value="{{distancePickerValue}}" bindchange="onDistancePickerChange" class="distance-picker-view">
+      <picker-view-column>
+        <view class="distance-picker-item" wx:for="{{[0,1,2,3,4,5,6,7,8,9]}}" wx:key="*this">{{item}}</view>
+      </picker-view-column>
+      <picker-view-column>
+        <view class="distance-picker-item" wx:for="{{[0,1,2,3,4,5,6,7,8,9]}}" wx:key="*this">{{item}}</view>
+      </picker-view-column>
+      <picker-view-column>
+        <view class="distance-picker-item" wx:for="{{['.0','.1','.2','.3','.4','.5','.6','.7','.8','.9']}}" wx:key="*this">{{item}}</view>
+      </picker-view-column>
+    </picker-view>
+  </view>
+
+  <!-- 天气选择器弹窗 -->
+  <view class="weather-picker-overlay" wx:if="{{showWeatherPicker}}" bindtap="onCancelWeather"></view>
+  <view class="weather-picker-modal {{showWeatherPicker ? 'weather-picker-modal--show' : ''}}">
+    <view class="weather-picker-header">
+      <text class="weather-picker-cancel" bindtap="onCancelWeather">取消</text>
+      <text class="weather-picker-title">选择天气</text>
+      <text class="weather-picker-confirm" bindtap="onConfirmWeather">确定</text>
+    </view>
+    <picker-view indicator-class="weather-picker-indicator" mask-class="weather-picker-mask" value="{{weatherPickerValue}}" bindchange="onWeatherPickerChange" class="weather-picker-view">
+      <picker-view-column>
+        <view class="weather-picker-item" wx:for="{{weatherOptions}}" wx:key="*this">{{item}}</view>
+      </picker-view-column>
+    </picker-view>
+  </view>
+
+  <!-- 日期选择器弹窗 -->
+  <view class="date-picker-overlay" wx:if="{{showDatePicker}}" bindtap="onCancelDate"></view>
+  <view class="date-picker-modal {{showDatePicker ? 'date-picker-modal--show' : ''}}">
+    <view class="date-picker-header">
+      <text class="date-picker-cancel" bindtap="onCancelDate">取消</text>
+      <text class="date-picker-title">选择日期</text>
+      <text class="date-picker-confirm" bindtap="onConfirmDate">确定</text>
+    </view>
+    <picker-view indicator-class="date-picker-indicator" mask-class="date-picker-mask" value="{{datePickerValue}}" bindchange="onDatePickerChange" class="date-picker-view">
+      <picker-view-column>
+        <view class="date-picker-item" wx:for="{{dateYears}}" wx:key="*this">{{item}}年</view>
+      </picker-view-column>
+      <picker-view-column>
+        <view class="date-picker-item" wx:for="{{dateMonths}}" wx:key="*this">{{item}}月</view>
+      </picker-view-column>
+      <picker-view-column>
+        <view class="date-picker-item" wx:for="{{dateDays}}" wx:key="*this">{{item}}日</view>
+      </picker-view-column>
+    </picker-view>
+  </view>
+
+  <view class="nice-toast nice-toast--{{toastType}} {{showToast ? 'nice-toast--show' : ''}}">{{toastMessage}}</view>
 </view>

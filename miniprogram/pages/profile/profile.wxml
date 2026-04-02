@@ -7,7 +7,11 @@
     <view class="page-header__content">
       <text class="page-header__emoji">🥾</text>
       <text class="page-header__title">我的徒步</text>
-      <text class="page-header__sub">记录每一步的风景</text>
+      <text class="page-header__sub" wx:if="{{userInfo}}">你好，{{userInfo.nickName}}！</text>
+      <text class="page-header__sub" wx:else>记录每一步的风景</text>
+      <view class="page-header__visit" wx:if="{{userInfo}}">
+        <text class="page-header__visit-text">🌍 已访问 {{userInfo.visitCount}} 次</text>
+      </view>
     </view>
   </view>
 
@@ -103,8 +107,13 @@
             <text class="route-card__tag" wx:if="{{item.location}}">📍 {{item.location}}</text>
           </view>
         </view>
-        <view class="route-card__action" catchlongpress="onRemoveFavorite" data-id="{{item._id}}" data-name="{{item.name}}">
-          <text>⋯</text>
+        <view
+          class="route-card__fav"
+          data-id="{{item._id}}"
+          data-index="{{index}}"
+          catchtap="onCancelFavorite"
+        >
+          <text>❤️</text>
         </view>
       </view>
     </view>
@@ -129,7 +138,7 @@
         class="route-card route-card--completed"
         wx:for="{{completedRoutes}}"
         wx:key="routeId"
-        bindtap="onRouteTap"
+        bindtap="onCompletedRouteTap"
         data-id="{{item._id}}"
         hover-class="route-card--hover"
         hover-stay-time="80"
@@ -138,7 +147,7 @@
           <image class="route-card__img" src="{{item.coverImage || '/images/scenery/scenery-trail.jpg'}}" mode="aspectFill" lazy-load></image>
           <view class="route-card__overlay"></view>
           <view class="route-card__done">
-            <text>✅ 已走过</text>
+            <text>✅ 已走过{{item.completedCount > 1 ? item.completedCount + '次' : ''}}</text>
           </view>
         </view>
         <view class="route-card__body">
@@ -154,18 +163,25 @@
               <text wx:if="{{item.weather}}"> {{item.weatherEmoji}} {{item.weather}}</text>
             </view>
             <view class="completed-info__difficulty" wx:if="{{item.difficultyFeeling}}">
-              <text>💪 难度感受：{{item.difficultyFeeling}}</text>
+              <text>💪 难度感受：{{item.difficultyFeeling === 'easy' ? '轻松' : item.difficultyFeeling === 'normal' ? '适中' : item.difficultyFeeling === 'hard' ? '困难' : item.difficultyFeeling}}</text>
+            </view>
+            <view class="completed-info__companion" wx:if="{{item.companion}}">
+              <text>👥 {{item.companion}}</text>
             </view>
             <view class="completed-info__note" wx:if="{{item.completedNote}}">
               <text>💭 {{item.completedNote}}</text>
             </view>
           </view>
         </view>
-        <view class="route-card__action" catchlongpress="onRemoveCompleted" data-id="{{item.routeId}}" data-name="{{item.name}}">
-          <text>⋯</text>
-        </view>
       </view>
     </view>
+  </view>
+
+  <!-- 后台管理入口（仅管理员可见） -->
+  <view class="admin-entry" wx:if="{{isAdmin}}" bindtap="goAdmin">
+    <text class="admin-entry__icon">⚙️</text>
+    <text class="admin-entry__text">后台管理</text>
+    <text class="admin-entry__arrow">›</text>
   </view>
 
   <!-- 底部 -->
@@ -173,5 +189,9 @@
     <text class="footer__icon">🌿</text>
     <text class="footer__text">安全出行，文明登山</text>
   </view>
+  <view class="icp-footer">
+    <text class="icp-footer__text" bindtap="onIcpTap">陕ICP备2026006901号</text>
+  </view>
 
+  <view class="nice-toast nice-toast--{{toastType}} {{showToast ? 'nice-toast--show' : ''}}">{{toastMessage}}</view>
 </view>

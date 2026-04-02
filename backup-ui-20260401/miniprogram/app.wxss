@@ -1,0 +1,687 @@
+/* ==========================================
+   「秦人徒步路线分享」全局样式 v2.0
+   Design System - Nature Outdoor Theme
+   ========================================== */
+
+/* ============================
+   CSS Variables
+   ============================ */
+page {
+  /* Colors */
+  --color-primary: #2E7D32;
+  --color-primary-light: #81C784;
+  --color-primary-dark: #1B5E20;
+  --color-primary-50: #E8F5E9;
+  --color-primary-100: #C8E6C9;
+
+  --color-accent: #FF8F00;
+  --color-accent-light: #FFD54F;
+  --color-accent-50: #FFF8E1;
+
+  --color-bg: #FAFAF5;
+  --color-bg-card: #FFFFFF;
+  --color-bg-soft: #F5F5F0;
+
+  --color-text: #212121;
+  --color-text-secondary: #616156;
+  --color-text-hint: #9E9E99;
+  --color-text-light: #C0C0BB;
+
+  --color-border: #E0E0DB;
+  --color-divider: #F0F0EB;
+
+  --color-success: #4CAF50;
+  --color-warning: #FF9800;
+  --color-danger: #F44336;
+  --color-info: #64B5F6;
+
+  /* Spacing */
+  --space-unit: 8rpx;
+  --space-xs: 8rpx;
+  --space-sm: 16rpx;
+  --space-md: 24rpx;
+  --space-lg: 32rpx;
+  --space-xl: 40rpx;
+  --space-2xl: 48rpx;
+
+  /* Border Radius */
+  --radius-sm: 8rpx;
+  --radius-md: 12rpx;
+  --radius-lg: 16rpx;
+  --radius-xl: 20rpx;
+  --radius-2xl: 24rpx;
+  --radius-full: 9999rpx;
+
+  /* Shadow */
+  --shadow-sm: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4rpx 16rpx rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8rpx 24rpx rgba(0, 0, 0, 0.10);
+  --shadow-card: 0 4rpx 20rpx rgba(0, 0, 0, 0.06);
+  --shadow-float: 0 8rpx 32rpx rgba(46, 125, 50, 0.15);
+
+  /* Typography */
+  --font-heading: 'PingFang SC', 'Noto Sans SC', -apple-system, sans-serif;
+  --font-body: 'PingFang SC', 'Noto Sans SC', -apple-system, sans-serif;
+
+  /* Animation */
+  --ease-default: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  --ease-natural: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+  /* Global page styles */
+  background-color: var(--color-bg);
+  font-family: var(--font-body);
+  font-size: 28rpx;
+  color: var(--color-text);
+  line-height: 1.6;
+}
+
+/* ============================
+   Base Styles
+   ============================ */
+view, text, image, button, input, textarea, scroll-view, swiper {
+  box-sizing: border-box;
+}
+
+image {
+  display: block;
+}
+
+button {
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  line-height: normal;
+  font-size: inherit;
+}
+
+button::after {
+  border: none;
+}
+
+/* ============================
+   Layout Utilities
+   ============================ */
+.flex { display: flex; }
+.flex-row { display: flex; flex-direction: row; }
+.flex-col { display: flex; flex-direction: column; }
+.flex-center { display: flex; align-items: center; justify-content: center; }
+.flex-between { display: flex; align-items: center; justify-content: space-between; }
+.flex-start { display: flex; align-items: center; justify-content: flex-start; }
+.flex-end { display: flex; align-items: center; justify-content: flex-end; }
+.flex-wrap { flex-wrap: wrap; }
+.flex-1 { flex: 1; }
+.items-center { align-items: center; }
+.justify-center { justify-content: center; }
+.justify-between { justify-content: space-between; }
+.gap-xs { gap: 8rpx; }
+.gap-sm { gap: 12rpx; }
+.gap-md { gap: 16rpx; }
+.gap-lg { gap: 24rpx; }
+
+/* ============================
+   Spacing Utilities
+   ============================ */
+/* Margin */
+.m-0 { margin: 0; }
+.m-xs { margin: 8rpx; }
+.m-sm { margin: 16rpx; }
+.m-md { margin: 24rpx; }
+.m-lg { margin: 32rpx; }
+.mx-auto { margin-left: auto; margin-right: auto; }
+.mt-xs { margin-top: 8rpx; }
+.mt-sm { margin-top: 16rpx; }
+.mt-md { margin-top: 24rpx; }
+.mt-lg { margin-top: 32rpx; }
+.mt-xl { margin-top: 40rpx; }
+.mb-xs { margin-bottom: 8rpx; }
+.mb-sm { margin-bottom: 16rpx; }
+.mb-md { margin-bottom: 24rpx; }
+.mb-lg { margin-bottom: 32rpx; }
+.ml-xs { margin-left: 8rpx; }
+.ml-sm { margin-left: 16rpx; }
+.mr-xs { margin-right: 8rpx; }
+.mr-sm { margin-right: 16rpx; }
+
+/* Padding */
+.p-0 { padding: 0; }
+.p-xs { padding: 8rpx; }
+.p-sm { padding: 16rpx; }
+.p-md { padding: 24rpx; }
+.p-lg { padding: 32rpx; }
+.px-sm { padding-left: 16rpx; padding-right: 16rpx; }
+.px-md { padding-left: 24rpx; padding-right: 24rpx; }
+.px-lg { padding-left: 32rpx; padding-right: 32rpx; }
+.py-sm { padding-top: 16rpx; padding-bottom: 16rpx; }
+.py-md { padding-top: 24rpx; padding-bottom: 24rpx; }
+.py-lg { padding-top: 32rpx; padding-bottom: 32rpx; }
+
+/* ============================
+   Typography Utilities
+   ============================ */
+.text-xs { font-size: 20rpx; }
+.text-sm { font-size: 24rpx; }
+.text-base { font-size: 28rpx; }
+.text-md { font-size: 30rpx; }
+.text-lg { font-size: 32rpx; }
+.text-xl { font-size: 36rpx; }
+.text-2xl { font-size: 40rpx; }
+.text-3xl { font-size: 44rpx; }
+.text-hero { font-size: 52rpx; }
+
+.font-light { font-weight: 300; }
+.font-normal { font-weight: 400; }
+.font-medium { font-weight: 500; }
+.font-semibold { font-weight: 600; }
+.font-bold { font-weight: 700; }
+.font-extrabold { font-weight: 800; }
+
+.text-primary { color: var(--color-primary); }
+.text-accent { color: var(--color-accent); }
+.text-main { color: var(--color-text); }
+.text-secondary { color: var(--color-text-secondary); }
+.text-hint { color: var(--color-text-hint); }
+.text-white { color: #FFFFFF; }
+.text-success { color: var(--color-success); }
+.text-warning { color: var(--color-warning); }
+.text-danger { color: var(--color-danger); }
+
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+
+.leading-tight { line-height: 1.3; }
+.leading-normal { line-height: 1.5; }
+.leading-relaxed { line-height: 1.65; }
+
+/* ============================
+   Text Overflow
+   ============================ */
+.ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ellipsis-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.ellipsis-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ============================
+   Background Utilities
+   ============================ */
+.bg-white { background-color: #FFFFFF; }
+.bg-page { background-color: var(--color-bg); }
+.bg-soft { background-color: var(--color-bg-soft); }
+.bg-primary { background-color: var(--color-primary); }
+.bg-primary-50 { background-color: var(--color-primary-50); }
+.bg-accent-50 { background-color: var(--color-accent-50); }
+
+/* ============================
+   Border Radius Utilities
+   ============================ */
+.rounded-sm { border-radius: 8rpx; }
+.rounded-md { border-radius: 12rpx; }
+.rounded-lg { border-radius: 16rpx; }
+.rounded-xl { border-radius: 20rpx; }
+.rounded-2xl { border-radius: 24rpx; }
+.rounded-full { border-radius: 9999rpx; }
+
+/* ============================
+   Shadow Utilities
+   ============================ */
+.shadow-sm { box-shadow: var(--shadow-sm); }
+.shadow-md { box-shadow: var(--shadow-md); }
+.shadow-lg { box-shadow: var(--shadow-lg); }
+.shadow-card { box-shadow: var(--shadow-card); }
+.shadow-float { box-shadow: var(--shadow-float); }
+.shadow-none { box-shadow: none; }
+
+/* ============================
+   Card Base
+   ============================ */
+.card {
+  background-color: #FFFFFF;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+}
+
+.card-soft {
+  background-color: #FFFFFF;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  border: 1rpx solid var(--color-border);
+  overflow: hidden;
+}
+
+/* ============================
+   Button Styles
+   ============================ */
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 88rpx;
+  border-radius: var(--radius-md);
+  font-size: 30rpx;
+  font-weight: 600;
+  transition: all 200ms var(--ease-default);
+  user-select: none;
+}
+
+.btn:active {
+  transform: scale(0.96);
+  opacity: 0.9;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #2E7D32 0%, #43A047 100%);
+  color: #FFFFFF;
+  box-shadow: 0 4rpx 16rpx rgba(46, 125, 50, 0.3);
+}
+
+.btn-primary:active {
+  box-shadow: 0 2rpx 8rpx rgba(46, 125, 50, 0.2);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--color-primary);
+  border: 2rpx solid var(--color-primary);
+}
+
+.btn-accent {
+  background: linear-gradient(135deg, #FF8F00 0%, #FFA726 100%);
+  color: #FFFFFF;
+}
+
+.btn-sm {
+  height: 64rpx;
+  font-size: 26rpx;
+  padding: 0 24rpx;
+  border-radius: var(--radius-sm);
+}
+
+.btn-block {
+  width: 100%;
+}
+
+.btn-ghost {
+  background: rgba(255, 255, 255, 0.15);
+  color: #FFFFFF;
+  backdrop-filter: blur(10rpx);
+}
+
+/* ============================
+   Image Utilities
+   ============================ */
+.img-cover {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.img-placeholder {
+  background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ============================
+   ANIMATIONS - 8 Natural Motions
+   ============================ */
+
+/* 1. Fade In Up - Cards entering */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(40rpx);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in-up {
+  animation: fadeInUp 400ms var(--ease-natural) both;
+}
+
+/* 2. Fade In - Simple reveal */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.fade-in {
+  animation: fadeIn 300ms var(--ease-default) both;
+}
+
+/* 3. Slide Up - Bottom sheets / panels */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.slide-up {
+  animation: slideUp 350ms var(--ease-out) both;
+}
+
+/* 4. Slide Down - Dropdowns / search bar */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30rpx);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.slide-down {
+  animation: slideDown 250ms var(--ease-out) both;
+}
+
+/* 5. Scale Bounce - Favorite / like animation */
+@keyframes scaleBounce {
+  0% { transform: scale(1); }
+  30% { transform: scale(1.3); }
+  50% { transform: scale(0.9); }
+  70% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+.scale-bounce {
+  animation: scaleBounce 500ms var(--ease-bounce);
+}
+
+/* 6. Leaf Spin - Pull to refresh / loading */
+@keyframes leafSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.leaf-spin {
+  animation: leafSpin 2s linear infinite;
+}
+
+/* 7. Pulse Glow - Attention / live indicator */
+@keyframes pulseGlow {
+  0%, 100% {
+    opacity: 1;
+    box-shadow: 0 0 0 0 rgba(46, 125, 50, 0.4);
+  }
+  50% {
+    opacity: 0.8;
+    box-shadow: 0 0 0 12rpx rgba(46, 125, 50, 0);
+  }
+}
+
+.pulse-glow {
+  animation: pulseGlow 2s var(--ease-natural) infinite;
+}
+
+/* 8. Shimmer - Skeleton loading */
+@keyframes shimmer {
+  0% { background-position: -400rpx 0; }
+  100% { background-position: 400rpx 0; }
+}
+
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    #F0F0EB 25%,
+    #E8E8E3 37%,
+    #F0F0EB 63%
+  );
+  background-size: 400rpx 100%;
+  animation: shimmer 1.8s var(--ease-default) infinite;
+}
+
+/* 9. Tab Underline Slide */
+@keyframes tabSlide {
+  from {
+    width: 0;
+    opacity: 0;
+  }
+  to {
+    width: 48rpx;
+    opacity: 1;
+  }
+}
+
+.tab-slide {
+  animation: tabSlide 250ms var(--ease-out) both;
+}
+
+/* 10. Count Up - Number animation visual */
+@keyframes countUp {
+  from { opacity: 0; transform: translateY(20rpx); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.count-up {
+  animation: countUp 400ms var(--ease-spring) both;
+}
+
+/* ============================
+   Transition Helpers
+   ============================ */
+.transition-all {
+  transition: all 200ms var(--ease-default);
+}
+
+.transition-fast {
+  transition: all 150ms var(--ease-default);
+}
+
+.transition-slow {
+  transition: all 400ms var(--ease-natural);
+}
+
+.hover-scale:active {
+  transform: scale(0.97);
+  opacity: 0.92;
+}
+
+/* ============================
+   Outdoor Decorative Elements
+   ============================ */
+/* Mountain silhouette decoration */
+.deco-mountains {
+  position: relative;
+}
+
+.deco-mountains::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60rpx;
+  background: linear-gradient(135deg,
+    transparent 33%,
+    rgba(46, 125, 50, 0.03) 33%,
+    rgba(46, 125, 50, 0.03) 66%,
+    transparent 66%
+  );
+  pointer-events: none;
+}
+
+/* Leaf pattern background */
+.bg-leaf-pattern {
+  background-image:
+    radial-gradient(circle at 20% 30%, rgba(129, 199, 132, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(200, 230, 201, 0.06) 0%, transparent 40%);
+}
+
+/* Nature gradient header */
+.header-nature {
+  background: linear-gradient(135deg, #2E7D32 0%, #388E3C 40%, #43A047 100%);
+}
+
+/* ============================
+   Mask & Overlay
+   ============================ */
+.mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 190;
+}
+
+.gradient-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.55) 100%);
+  pointer-events: none;
+}
+
+/* ============================
+   Difficulty Colors
+   ============================ */
+.diff-1 { background-color: #4CAF50; }
+.diff-2 { background-color: #8BC34A; }
+.diff-3 { background-color: #FFC107; color: #333 !important; }
+.diff-4 { background-color: #FF9800; }
+.diff-5 { background-color: #F44336; }
+
+/* ============================
+   Safe Area
+   ============================ */
+.safe-bottom {
+  padding-bottom: calc(24rpx + env(safe-area-inset-bottom));
+}
+
+.safe-bottom-large {
+  padding-bottom: calc(120rpx + env(safe-area-inset-bottom));
+}
+
+/* ============================
+   Divider
+   ============================ */
+.divider {
+  height: 1rpx;
+  background: var(--color-divider);
+  margin: 20rpx 0;
+}
+
+.divider-space {
+  height: 16rpx;
+  background: var(--color-bg);
+}
+
+/* ===== 全局浮动提示 ===== */
+.nice-toast {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.9);
+  z-index: 10000;
+  padding: 16px 24px;
+  border-radius: 14px;
+  font-size: 15px;
+  color: #fff;
+  text-align: center;
+  max-width: 70%;
+  line-height: 1.6;
+  opacity: 0;
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  pointer-events: none;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+}
+
+.nice-toast--show {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.nice-toast--success {
+  background: linear-gradient(135deg, #66BB6A, #43A047);
+}
+
+.nice-toast--error {
+  background: linear-gradient(135deg, #EF5350, #E53935);
+}
+
+.nice-toast--info {
+  background: linear-gradient(135deg, #42A5F5, #1E88E5);
+}
+
+/* ===== 通用提示弹窗 ===== */
+.hint-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.2s ease;
+}
+
+.hint-popup {
+  width: 80%;
+  max-width: 320px;
+  background: #fff;
+  border-radius: 20px;
+  padding: 36px 28px 24px;
+  text-align: center;
+  animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.hint-popup__icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+.hint-popup__title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #2E3A2E;
+  margin-bottom: 12px;
+}
+
+.hint-popup__desc {
+  font-size: 14px;
+  color: #6B7B6B;
+  line-height: 1.7;
+  margin-bottom: 20px;
+}
+
+.hint-popup__btn {
+  display: inline-block;
+  padding: 12px 40px;
+  background: linear-gradient(135deg, #81C784, #4CAF50);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 28px;
+  letter-spacing: 2px;
+}

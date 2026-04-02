@@ -1,0 +1,11 @@
+<!-- 标签组件 v2.0 -->
+<view
+  class="tag tag--{{type}} tag--{{size}} {{selected ? 'tag--selected' : ''}} {{disabled ? 'tag--disabled' : ''}}"
+  bindtap="onTap"
+  hover-class="{{disabled ? '' : 'tag--hover'}}"
+  hover-stay-time="80"
+>
+  <text class="tag__icon" wx:if="{{icon}}">{{icon}}</text>
+  <text class="tag__text">{{text}}</text>
+  <view class="tag__ripple" wx:if="{{showRipple}}"></view>
+</view>

@@ -1,8 +1,8 @@
 {
   "usingComponents": {},
   "navigationBarTitleText": "路线详情",
-  "navigationBarBackgroundColor": "#FFFFFF",
-  "navigationBarTextStyle": "black",
+  "navigationBarBackgroundColor": "#2d6a4f",
+  "navigationBarTextStyle": "white",
   "enablePullDownRefresh": true,
   "backgroundColor": "#F5F5F5"
 }

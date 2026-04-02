@@ -1,0 +1,175 @@
+{
+  "meta": {
+    "name": "秦人徒步 Design System",
+    "version": "2.0.0",
+    "description": "Outdoor hiking theme with nature-inspired colors and organic feel"
+  },
+  "colors": {
+    "primary": {
+      "50": "#E8F5E9",
+      "100": "#C8E6C9",
+      "200": "#A5D6A7",
+      "300": "#81C784",
+      "400": "#66BB6A",
+      "500": "#2E7D32",
+      "600": "#27692A",
+      "700": "#1B5E20",
+      "800": "#145218",
+      "900": "#0D3B10"
+    },
+    "accent": {
+      "50": "#FFF8E1",
+      "100": "#FFECB3",
+      "200": "#FFE082",
+      "300": "#FFD54F",
+      "400": "#FFCA28",
+      "500": "#FF8F00",
+      "600": "#E65100",
+      "700": "#BF360C",
+      "800": "#8D2404",
+      "900": "#5D1800"
+    },
+    "earth": {
+      "sand": "#D4C4A8",
+      "clay": "#B5651D",
+      "brown": "#8B6914",
+      "stone": "#9C8B7A",
+      "cream": "#FAF8F0"
+    },
+    "sky": {
+      "light": "#E3F2FD",
+      "blue": "#64B5F6",
+      "deep": "#1565C0"
+    },
+    "neutral": {
+      "white": "#FFFFFF",
+      "cream": "#FAFAF5",
+      "light": "#F5F5F0",
+      "gray-100": "#F0F0EB",
+      "gray-200": "#E0E0DB",
+      "gray-300": "#C0C0BB",
+      "gray-400": "#9E9E99",
+      "gray-500": "#757570",
+      "gray-600": "#616156",
+      "gray-700": "#424240",
+      "gray-800": "#303028",
+      "gray-900": "#212121",
+      "black": "#1A1A1A"
+    },
+    "status": {
+      "success": "#4CAF50",
+      "warning": "#FF9800",
+      "danger": "#F44336",
+      "info": "#2196F3"
+    },
+    "difficulty": {
+      "1": "#4CAF50",
+      "2": "#8BC34A",
+      "3": "#FFC107",
+      "4": "#FF9800",
+      "5": "#F44336"
+    },
+    "gradient": {
+      "forest": "linear-gradient(135deg, #2E7D32 0%, #388E3C 50%, #43A047 100%)",
+      "sunset": "linear-gradient(135deg, #FF8F00 0%, #FF6D00 100%)",
+      "sky": "linear-gradient(180deg, #E3F2FD 0%, #BBDEFB 100%)",
+      "hero": "linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.6) 100%)",
+      "leaf": "linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%)"
+    }
+  },
+  "typography": {
+    "fontFamily": {
+      "heading": "'PingFang SC', 'Noto Sans SC', -apple-system, sans-serif",
+      "body": "'PingFang SC', 'Noto Sans SC', -apple-system, sans-serif",
+      "mono": "'SF Mono', 'Fira Code', monospace"
+    },
+    "fontSize": {
+      "xs": "20rpx",
+      "sm": "24rpx",
+      "base": "28rpx",
+      "md": "30rpx",
+      "lg": "32rpx",
+      "xl": "36rpx",
+      "2xl": "40rpx",
+      "3xl": "44rpx",
+      "4xl": "52rpx",
+      "hero": "64rpx"
+    },
+    "fontWeight": {
+      "light": 300,
+      "normal": 400,
+      "medium": 500,
+      "semibold": 600,
+      "bold": 700,
+      "extrabold": 800
+    },
+    "lineHeight": {
+      "tight": 1.3,
+      "normal": 1.5,
+      "relaxed": 1.65,
+      "loose": 1.8
+    }
+  },
+  "spacing": {
+    "unit": 8,
+    "scale": {
+      "0": "0rpx",
+      "1": "8rpx",
+      "2": "16rpx",
+      "3": "24rpx",
+      "4": "32rpx",
+      "5": "40rpx",
+      "6": "48rpx",
+      "7": "56rpx",
+      "8": "64rpx",
+      "10": "80rpx",
+      "12": "96rpx",
+      "16": "128rpx"
+    }
+  },
+  "borderRadius": {
+    "none": "0rpx",
+    "sm": "8rpx",
+    "md": "12rpx",
+    "lg": "16rpx",
+    "xl": "20rpx",
+    "2xl": "24rpx",
+    "3xl": "32rpx",
+    "full": "9999rpx"
+  },
+  "shadow": {
+    "none": "none",
+    "sm": "0 2rpx 8rpx rgba(0, 0, 0, 0.06)",
+    "md": "0 4rpx 16rpx rgba(0, 0, 0, 0.08)",
+    "lg": "0 8rpx 24rpx rgba(0, 0, 0, 0.10)",
+    "xl": "0 12rpx 36rpx rgba(0, 0, 0, 0.12)",
+    "card": "0 4rpx 20rpx rgba(0, 0, 0, 0.06)",
+    "float": "0 8rpx 32rpx rgba(46, 125, 50, 0.15)"
+  },
+  "animation": {
+    "duration": {
+      "instant": "100ms",
+      "fast": "200ms",
+      "normal": "300ms",
+      "slow": "500ms",
+      "gentle": "800ms"
+    },
+    "easing": {
+      "default": "cubic-bezier(0.4, 0, 0.2, 1)",
+      "in": "cubic-bezier(0.4, 0, 1, 1)",
+      "out": "cubic-bezier(0, 0, 0.2, 1)",
+      "bounce": "cubic-bezier(0.34, 1.56, 0.64, 1)",
+      "spring": "cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+      "natural": "cubic-bezier(0.25, 0.46, 0.45, 0.94)"
+    }
+  },
+  "zIndex": {
+    "base": 0,
+    "card": 10,
+    "sticky": 50,
+    "overlay": 100,
+    "modal": 200,
+    "toast": 300,
+    "top": 999
+  }
+}

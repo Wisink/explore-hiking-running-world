@@ -53,7 +53,7 @@
 
 .tag--cost-free {
   background: rgba(76, 175, 80, 0.1);
-  color: #2E7D32;
+  color: #2d6a4f;
   border: 1rpx solid rgba(76, 175, 80, 0.15);
 }
 
@@ -78,12 +78,12 @@
 
 .tag--scenery {
   background: rgba(129, 199, 132, 0.15);
-  color: #2E7D32;
+  color: #2d6a4f;
   border: 1rpx solid rgba(129, 199, 132, 0.2);
 }
 
 .tag--scenery.tag--selected {
-  background: linear-gradient(135deg, #81C784 0%, #A5D6A7 100%);
+  background: linear-gradient(135deg, #74c69d 0%, #A5D6A7 100%);
   color: #FFFFFF;
   border-color: transparent;
 }
@@ -102,12 +102,12 @@
 
 .tag--default {
   background: #F5F5F0;
-  color: #757570;
+  color: #4a6b4a;
   border: 1rpx solid var(--color-border, #E0E0DB);
 }
 
 .tag--default.tag--selected {
-  background: linear-gradient(135deg, #2E7D32 0%, #43A047 100%);
+  background: linear-gradient(135deg, #2d6a4f 0%, #40916c 100%);
   color: #FFFFFF;
   border-color: transparent;
   box-shadow: 0 2rpx 8rpx rgba(46, 125, 50, 0.3);
@@ -115,12 +115,12 @@
 
 .tag--primary {
   background: rgba(46, 125, 50, 0.08);
-  color: #2E7D32;
+  color: #2d6a4f;
   border: 1rpx solid rgba(46, 125, 50, 0.12);
 }
 
 .tag--primary.tag--selected {
-  background: linear-gradient(135deg, #2E7D32 0%, #43A047 100%);
+  background: linear-gradient(135deg, #2d6a4f 0%, #40916c 100%);
   color: #FFFFFF;
   border-color: transparent;
 }

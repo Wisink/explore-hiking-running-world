@@ -1,8 +1,16 @@
+function showNiceToast(that, message, type = 'info', duration = 2000) {
+  that.setData({ showToast: true, toastMessage: message, toastType: type })
+  setTimeout(function() { that.setData({ showToast: false }) }, duration)
+}
 // pages/profile/profile.js
 const app = getApp()
 
 Page({
   data: {
+    // 用户信息（编号、昵称、访问次数）
+    userInfo: null,
+    // 管理员权限
+    isAdmin: false,
     // 当前激活的Tab
     activeTab: 'favorites',
     // 收藏路线列表
@@ -18,13 +26,34 @@ Page({
   },
 
   onLoad() {
-    // 页面加载
+    // 检查管理员权限
+    wx.cloud.callFunction({
+      name: 'admin-api',
+      data: { module: 'check-admin' }
+    }).then(res => {
+      if (res.result && res.result.data && res.result.data.isAdmin) {
+        this.setData({ isAdmin: true })
+      }
+    }).catch(() => {})
   },
 
   onShow() {
     // 每次页面显示时刷新数据（从TabBar切换回来时触发）
     this.loadData()
     this.syncFromCloud()
+
+    // 从全局数据加载用户信息（等待 app.js initUser 完成）
+    const app = getApp()
+    if (app.globalData && app.globalData.userInfo) {
+      this.setData({ userInfo: app.globalData.userInfo })
+    } else if (app._userReady) {
+      // initUser 已有结果（含失败），监听就绪回调
+      app._userReady.then(() => {
+        if (app.globalData && app.globalData.userInfo) {
+          this.setData({ userInfo: app.globalData.userInfo })
+        }
+      }).catch(() => {})
+    }
   },
 
   onPullDownRefresh() {
@@ -62,14 +91,35 @@ Page({
         return
       }
 
-      // 从缓存中获取路线详情，或者使用基本信息
-      const routes = []
-      for (const id of favoriteIds) {
-        const route = this.getRouteById(id)
-        if (route) {
-          routes.push(route)
+      // 从云端批量获取路线详情
+      const db = wx.cloud.database()
+      const _ = db.command
+      const MAX = 20
+      let allRoutes = []
+
+      // 分批查询（云数据库_.in限制20条）
+      for (let i = 0; i < favoriteIds.length; i += MAX) {
+        const batchIds = favoriteIds.slice(i, i + MAX)
+        try {
+          const res = await db.collection('routes').where({
+            _id: _.in(batchIds)
+          }).field({
+            _id: true, name: true, description: true, coverImage: true,
+            difficulty: true, distance_km: true, distance: true, duration_hours: true,
+            cost: true, scenery: true, location: true
+          }).get()
+          allRoutes = allRoutes.concat(res.data)
+        } catch (e) {
+          console.warn('批量获取收藏路线失败:', e)
         }
       }
+
+      // 按收藏顺序排列
+      const routes = favoriteIds.map(id => {
+        const r = allRoutes.find(t => t._id === id)
+        if (r) return this.normalizeRoute(r)
+        return { _id: id, name: '路线详情', description: '', coverImage: '', location: '', distance: '', duration: '', difficulty: '', difficultyLevel: 0 }
+      })
 
       this.setData({ favoriteRoutes: routes })
     } catch (err) {
@@ -79,8 +129,8 @@ Page({
   },
 
   /**
-   * 从本地缓存加载已走过列表
-   * 已走过数据结构: { completed: [{ routeId, date, weather, feeling, difficultyFeeling }] }
+   * 加载已走过列表
+   * 已走过数据: { completed: [{ routeId, date, weather, feeling, difficultyFeeling, companions }] }
    */
   async loadCompleted() {
     try {
@@ -94,11 +144,58 @@ Page({
         return
       }
 
-      // 合并路线详情和已走过信息，并计算总里程
+      // 从云端批量获取路线详情
+      const routeIds = completedList.map(item => item.routeId).filter(Boolean)
+      const db = wx.cloud.database()
+      const _ = db.command
+      let allRoutes = []
+
+      for (let i = 0; i < routeIds.length; i += 20) {
+        try {
+          const res = await db.collection('routes').where({
+            _id: _.in(routeIds.slice(i, i + 20))
+          }).field({
+            _id: true, name: true, description: true, coverImage: true,
+            difficulty: true, distance_km: true, distance: true, duration_hours: true,
+            cost: true, scenery: true, location: true
+          }).get()
+          allRoutes = allRoutes.concat(res.data)
+        } catch (e) {
+          console.warn('批量获取已走过路线失败:', e)
+        }
+      }
+
+      // 合并路线详情和已走过信息，计算总里程，并统计每条路线走过次数
       const routes = []
+      // 先按 routeId 分组统计
+      const routeCountMap = {}
+      for (const item of completedList) {
+        if (item.routeId) {
+          routeCountMap[item.routeId] = (routeCountMap[item.routeId] || 0) + 1
+        }
+      }
+      // 先算总里程：优先用用户填写的徒步距离，没有则用路线数据库距离
       let totalDistance = 0
       for (const item of completedList) {
-        const route = this.getRouteById(item.routeId)
+        if (item.distance && item.distance > 0) {
+          totalDistance += parseFloat(item.distance) || 0
+        } else {
+          const cloudRoute = allRoutes.find(t => t._id === item.routeId)
+          if (cloudRoute) {
+            const route = this.normalizeRoute(cloudRoute)
+            const distStr = String(route.distance || route.distance_km || '0')
+            const distMatch = distStr.match(/[\d.]+/)
+            totalDistance += distMatch ? parseFloat(distMatch[0]) : 0
+          }
+        }
+      }
+      // 去重：每条路线只保留最新一次的记录用于展示
+      const seen = new Set()
+      for (const item of completedList) {
+        if (seen.has(item.routeId)) continue
+        seen.add(item.routeId)
+        const cloudRoute = allRoutes.find(t => t._id === item.routeId)
+        const route = cloudRoute ? this.normalizeRoute(cloudRoute) : null
         if (route) {
           routes.push({
             ...route,
@@ -108,11 +205,10 @@ Page({
             weather: item.weather || '',
             weatherEmoji: this.getWeatherEmoji(item.weather),
             feeling: item.feeling || '',
-            difficultyFeeling: item.difficultyFeeling || ''
+            difficultyFeeling: item.difficultyFeeling || '',
+            companion: item.companion || item.companions || '',
+            completedCount: routeCountMap[item.routeId] || 1
           })
-          // 提取数值距离
-          const distNum = parseFloat(route.distance) || 0
-          totalDistance += distNum
         } else {
           routes.push({
             _id: item.routeId,
@@ -128,7 +224,9 @@ Page({
             weather: item.weather || '',
             weatherEmoji: this.getWeatherEmoji(item.weather),
             feeling: item.feeling || '',
-            difficultyFeeling: item.difficultyFeeling || ''
+            difficultyFeeling: item.difficultyFeeling || '',
+            companion: item.companion || item.companions || '',
+            completedCount: routeCountMap[item.routeId] || 1
           })
         }
       }
@@ -137,42 +235,6 @@ Page({
     } catch (err) {
       console.error('加载已走过列表失败：', err)
       this.setData({ completedRoutes: [], completedCount: 0, totalDistance: 0 })
-    }
-  },
-
-  /**
-   * 根据ID获取路线详情
-   * 优先从本地缓存的路线数据中查找
-   */
-  getRouteById(id) {
-    // 先尝试从全局缓存的路线数据中查找
-    const allTrails = wx.getStorageSync('allTrails') || []
-    const trail = allTrails.find(t => t._id === id)
-    if (trail) {
-      return this.normalizeRoute(trail)
-    }
-
-    // 尝试从 app.globalData 中查找
-    if (app.globalData && app.globalData.trails) {
-      const trail2 = app.globalData.trails.find(t => t._id === id)
-      if (trail2) {
-        return this.normalizeRoute(trail2)
-      }
-    }
-
-    // 返回基本信息（使用缓存中可能存在的路线名称）
-    const cachedName = wx.getStorageSync('routeName_' + id)
-    return {
-      _id: id,
-      name: cachedName || '路线详情',
-      description: '',
-      coverImage: '',
-      location: '',
-      distance: '',
-      duration: '',
-      difficulty: '',
-      difficultyLevel: 0,
-      sceneryTags: []
     }
   },
 
@@ -261,6 +323,13 @@ Page({
 
   // ========== 路线操作 ==========
 
+  // 备案号查询
+  onIcpTap: function () {
+    wx.setClipboardData({
+      data: '陕ICP备2026006901号'
+    })
+  },
+
   /**
    * 点击路线卡片 -> 进入详情页
    */
@@ -278,6 +347,49 @@ Page({
         url: `/pages/route-detail/route-detail?id=${id}`
       })
     }
+  },
+
+  // 已走过卡片点击 -> 进入详情页并自动滚动到徒步记录
+  onCompletedRouteTap(e) {
+    const id = e.currentTarget.dataset.id
+    if (id) {
+      const route = this.data.completedRoutes.find(r => r._id === id)
+      if (route && route.name) {
+        wx.setStorageSync('routeName_' + id, route.name)
+      }
+      wx.navigateTo({
+        url: `/pages/route-detail/route-detail?id=${id}&scrollToRecords=1`
+      })
+    }
+  },
+
+  // 点击爱心取消收藏（带确认弹窗）
+  onCancelFavorite(e) {
+    const id = e.currentTarget.dataset.id
+    const route = this.data.favoriteRoutes.find(r => r._id === id)
+    const name = route ? route.name : '该路线'
+
+    wx.showModal({
+      title: '取消收藏',
+      content: `你确认要取消收藏「${name}」吗？`,
+      confirmText: '确认取消',
+      confirmColor: '#FF4D4F',
+      success: (res) => {
+        if (res.confirm) {
+          try {
+            const cloudSync = require('../../utils/cloud-sync.js')
+            cloudSync.removeFavorite(id)
+            // 隐藏该卡片
+            const favoriteRoutes = this.data.favoriteRoutes.filter(r => r._id !== id)
+            this.setData({ favoriteRoutes })
+            showNiceToast(this, '已取消收藏', 'success', 2000)
+          } catch (err) {
+            console.error('取消收藏失败：', err)
+            showNiceToast(this, '操作失败', 'error', 2000)
+          }
+        }
+      }
+    })
   },
 
   /**
@@ -337,11 +449,11 @@ Page({
       const cloudSync = require('../../utils/cloud-sync.js')
       cloudSync.removeFavorite(id)
 
-      wx.showToast({ title: '已取消收藏', icon: 'success' })
+      showNiceToast(this, '已取消收藏', 'success', 2000)
       this.loadFavorites()
     } catch (err) {
       console.error('取消收藏失败：', err)
-      wx.showToast({ title: '操作失败', icon: 'none' })
+      showNiceToast(this, '操作失败', 'error', 2000)
     }
   },
 
@@ -362,15 +474,21 @@ Page({
       const cloudSync = require('../../utils/cloud-sync.js')
       cloudSync.removeCompleted(routeId)
 
-      wx.showToast({ title: '已删除记录', icon: 'success' })
+      showNiceToast(this, '已删除记录', 'success', 2000)
       this.loadCompleted()
     } catch (err) {
       console.error('删除记录失败：', err)
-      wx.showToast({ title: '操作失败', icon: 'none' })
+      showNiceToast(this, '操作失败', 'error', 2000)
     }
   },
 
   // ========== 导航 ==========
+
+  // ========== 后台管理 ==========
+
+  goAdmin() {
+    wx.navigateTo({ url: '/pages/admin/admin' })
+  },
 
   // ========== 工具方法 ==========
 

@@ -11,7 +11,7 @@
       "200": "#A5D6A7",
       "300": "#81C784",
       "400": "#66BB6A",
-      "500": "#2E7D32",
+      "500": "#2d6a4f",
       "600": "#27692A",
       "700": "#1B5E20",
       "800": "#145218",
@@ -70,7 +70,7 @@
       "5": "#F44336"
     },
     "gradient": {
-      "forest": "linear-gradient(135deg, #2E7D32 0%, #388E3C 50%, #43A047 100%)",
+      "forest": "linear-gradient(135deg, #2d6a4f 0%, #52b788 50%, #40916c 100%)",
       "sunset": "linear-gradient(135deg, #FF8F00 0%, #FF6D00 100%)",
       "sky": "linear-gradient(180deg, #E3F2FD 0%, #BBDEFB 100%)",
       "hero": "linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.6) 100%)",
