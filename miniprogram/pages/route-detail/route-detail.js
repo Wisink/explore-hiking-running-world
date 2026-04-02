@@ -410,7 +410,10 @@ Page({
       favoriteCount: data.favoriteCount || 0,
       completedCount_global: data.completedCount || 0,
       timeplanAdvice: timeplanAdvice,
-      updatedAt: data.updatedAt ? (typeof data.updatedAt === 'string' ? data.updatedAt.split('T')[0] : '') : ''
+      updatedAt: data.updatedAt ? (typeof data.updatedAt === 'string' ? data.updatedAt.split('T')[0] : '') : '',
+      // 经纬度（由 geocoding 脚本批量解析写入）
+      latitude: data.latitude || null,
+      longitude: data.longitude || null
     }
   },
 
