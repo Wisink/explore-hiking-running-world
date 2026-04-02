@@ -78,9 +78,7 @@
       "emergencyPhone": "当地县救援：119 / 110"
     },
     "order": 1,
-    "createdAt": "2026-03-29",
-    "latitude": 34.367,
-    "longitude": 109.214
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_002",
@@ -152,9 +150,7 @@
       "emergencyPhone": "蓝田县救援：119 / 110"
     },
     "order": 2,
-    "createdAt": "2026-03-29",
-    "latitude": 34.153,
-    "longitude": 109.324
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_003",
@@ -235,9 +231,7 @@
       "emergencyPhone": "渭南县救援：119 / 110"
     },
     "order": 3,
-    "createdAt": "2026-03-29",
-    "latitude": 35.237,
-    "longitude": 110.148
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_004",
@@ -309,9 +303,7 @@
       "emergencyPhone": "渭南县救援：119 / 110"
     },
     "order": 4,
-    "createdAt": "2026-03-29",
-    "latitude": 34.54,
-    "longitude": 110.06
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_005",
@@ -382,9 +374,7 @@
       "emergencyPhone": "蓝田县救援：119 / 110"
     },
     "order": 5,
-    "createdAt": "2026-03-29",
-    "latitude": 34.153,
-    "longitude": 109.324
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_006",
@@ -460,9 +450,7 @@
       "emergencyPhone": "蓝田县救援：119 / 110"
     },
     "order": 6,
-    "createdAt": "2026-03-29",
-    "latitude": 34.153,
-    "longitude": 109.324
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_007",
@@ -537,9 +525,7 @@
       "emergencyPhone": "蓝田县救援：119 / 110"
     },
     "order": 7,
-    "createdAt": "2026-03-29",
-    "latitude": 34.12,
-    "longitude": 109.35
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_008",
@@ -608,9 +594,7 @@
       "emergencyPhone": "蓝田县救援：119 / 110"
     },
     "order": 8,
-    "createdAt": "2026-03-29",
-    "latitude": 34.153,
-    "longitude": 109.324
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_009",
@@ -678,9 +662,7 @@
       "emergencyPhone": "当地县救援：119 / 110"
     },
     "order": 9,
-    "createdAt": "2026-03-29",
-    "latitude": 34.367,
-    "longitude": 109.214
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_010",
@@ -748,9 +730,7 @@
       "emergencyPhone": "渭南县救援：119 / 110"
     },
     "order": 10,
-    "createdAt": "2026-03-29",
-    "latitude": 35.477,
-    "longitude": 110.443
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_011",
@@ -819,9 +799,7 @@
       "emergencyPhone": "渭南县救援：119 / 110"
     },
     "order": 11,
-    "createdAt": "2026-03-29",
-    "latitude": 35.237,
-    "longitude": 110.148
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_012",
@@ -889,9 +867,7 @@
       "emergencyPhone": "蓝田县救援：119 / 110"
     },
     "order": 12,
-    "createdAt": "2026-03-29",
-    "latitude": 34.153,
-    "longitude": 109.324
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_013",
@@ -967,9 +943,7 @@
       "emergencyPhone": "渭南县救援：119 / 110"
     },
     "order": 13,
-    "createdAt": "2026-03-29",
-    "latitude": 34.493,
-    "longitude": 109.764
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_014",
@@ -1044,9 +1018,7 @@
       "emergencyPhone": "蓝田县救援：119 / 110"
     },
     "order": 14,
-    "createdAt": "2026-03-29",
-    "latitude": 34.153,
-    "longitude": 109.324
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_015",
@@ -1115,9 +1087,7 @@
       "emergencyPhone": "蓝田县救援：119 / 110"
     },
     "order": 15,
-    "createdAt": "2026-03-29",
-    "latitude": 34.153,
-    "longitude": 109.324
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_016",
@@ -1185,9 +1155,7 @@
       "emergencyPhone": "咸阳县救援：119 / 110"
     },
     "order": 16,
-    "createdAt": "2026-03-29",
-    "latitude": 34.339,
-    "longitude": 108.738
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_017",
@@ -1262,9 +1230,7 @@
       "emergencyPhone": "咸阳县救援：119 / 110"
     },
     "order": 17,
-    "createdAt": "2026-03-29",
-    "latitude": 34.802,
-    "longitude": 108.583
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_018",
@@ -1341,9 +1307,7 @@
       "emergencyPhone": "咸阳县救援：119 / 110"
     },
     "order": 18,
-    "createdAt": "2026-03-29",
-    "latitude": 35.112,
-    "longitude": 108.334
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_019",
@@ -1424,9 +1388,7 @@
       "emergencyPhone": "咸阳县救援：119 / 110"
     },
     "order": 19,
-    "createdAt": "2026-03-29",
-    "latitude": 35.112,
-    "longitude": 108.334
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_020",
@@ -1507,9 +1469,7 @@
       "emergencyPhone": "咸阳县救援：119 / 110"
     },
     "order": 20,
-    "createdAt": "2026-03-29",
-    "latitude": 34.37,
-    "longitude": 108.72
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_021",
@@ -1578,9 +1538,7 @@
       "emergencyPhone": "咸阳县救援：119 / 110"
     },
     "order": 21,
-    "createdAt": "2026-03-29",
-    "latitude": 34.482,
-    "longitude": 108.426
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_022",
@@ -1649,9 +1607,7 @@
       "emergencyPhone": "咸阳县救援：119 / 110"
     },
     "order": 22,
-    "createdAt": "2026-03-29",
-    "latitude": 34.535,
-    "longitude": 108.76
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_023",
@@ -1720,9 +1676,7 @@
       "emergencyPhone": "铜川县救援：119 / 110"
     },
     "order": 23,
-    "createdAt": "2026-03-29",
-    "latitude": 35.06,
-    "longitude": 108.84
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_024",
@@ -1799,9 +1753,7 @@
       "emergencyPhone": "铜川县救援：119 / 110"
     },
     "order": 24,
-    "createdAt": "2026-03-29",
-    "latitude": 34.912,
-    "longitude": 108.969
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_025",
@@ -1869,9 +1821,7 @@
       "emergencyPhone": "咸阳县救援：119 / 110"
     },
     "order": 25,
-    "createdAt": "2026-03-29",
-    "latitude": 35.039,
-    "longitude": 108.081
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_026",
@@ -1942,9 +1892,7 @@
       "emergencyPhone": "鄠邑县救援：119 / 110"
     },
     "order": 26,
-    "createdAt": "2026-03-29",
-    "latitude": 34.04,
-    "longitude": 108.79
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_027",
@@ -2020,9 +1968,7 @@
       "emergencyPhone": "长安县救援：119 / 110"
     },
     "order": 27,
-    "createdAt": "2026-03-29",
-    "latitude": 34.168,
-    "longitude": 108.942
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_028",
@@ -2095,9 +2041,7 @@
       "emergencyPhone": "长安县救援：119 / 110"
     },
     "order": 28,
-    "createdAt": "2026-03-29",
-    "latitude": 34.168,
-    "longitude": 108.942
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_029",
@@ -2168,9 +2112,7 @@
       "emergencyPhone": "长安县救援：119 / 110"
     },
     "order": 29,
-    "createdAt": "2026-03-29",
-    "latitude": 34.168,
-    "longitude": 108.942
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_030",
@@ -2246,9 +2188,7 @@
       "emergencyPhone": "长安县救援：119 / 110"
     },
     "order": 30,
-    "createdAt": "2026-03-29",
-    "latitude": 34.168,
-    "longitude": 108.942
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_031",
@@ -2317,9 +2257,7 @@
       "emergencyPhone": "鄠邑县救援：119 / 110"
     },
     "order": 31,
-    "createdAt": "2026-03-29",
-    "latitude": 34.109,
-    "longitude": 108.605
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_032",
@@ -2391,9 +2329,7 @@
       "emergencyPhone": "长安县救援：119 / 110"
     },
     "order": 32,
-    "createdAt": "2026-03-29",
-    "latitude": 34.168,
-    "longitude": 108.942
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_033",
@@ -2470,9 +2406,7 @@
       "emergencyPhone": "长安县救援：119 / 110"
     },
     "order": 33,
-    "createdAt": "2026-03-29",
-    "latitude": 34.168,
-    "longitude": 108.942
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_034",
@@ -2548,9 +2482,7 @@
       "emergencyPhone": "长安县救援：119 / 110"
     },
     "order": 34,
-    "createdAt": "2026-03-29",
-    "latitude": 34.168,
-    "longitude": 108.942
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_035",
@@ -2619,9 +2551,7 @@
       "emergencyPhone": "鄠邑县救援：119 / 110"
     },
     "order": 35,
-    "createdAt": "2026-03-29",
-    "latitude": 34.109,
-    "longitude": 108.605
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_036",
@@ -2699,9 +2629,7 @@
       "emergencyPhone": "长安县救援：119 / 110"
     },
     "order": 36,
-    "createdAt": "2026-03-29",
-    "latitude": 34.168,
-    "longitude": 108.942
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_037",
@@ -2770,9 +2698,7 @@
       "emergencyPhone": "鄠邑县救援：119 / 110"
     },
     "order": 37,
-    "createdAt": "2026-03-29",
-    "latitude": 34.109,
-    "longitude": 108.605
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_038",
@@ -2840,9 +2766,7 @@
       "emergencyPhone": "鄠邑县救援：119 / 110"
     },
     "order": 38,
-    "createdAt": "2026-03-29",
-    "latitude": 34.109,
-    "longitude": 108.605
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_039",
@@ -2918,9 +2842,7 @@
       "emergencyPhone": "长安县救援：119 / 110"
     },
     "order": 39,
-    "createdAt": "2026-03-29",
-    "latitude": 34.02,
-    "longitude": 109
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_040",
@@ -2988,9 +2910,7 @@
       "emergencyPhone": "鄠邑县救援：119 / 110"
     },
     "order": 40,
-    "createdAt": "2026-03-29",
-    "latitude": 34.109,
-    "longitude": 108.605
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_041",
@@ -3060,9 +2980,7 @@
       "emergencyPhone": "长安县救援：119 / 110"
     },
     "order": 41,
-    "createdAt": "2026-03-29",
-    "latitude": 34.168,
-    "longitude": 108.942
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_042",
@@ -3136,9 +3054,7 @@
       "emergencyPhone": "鄠邑县救援：119 / 110"
     },
     "order": 42,
-    "createdAt": "2026-03-29",
-    "latitude": 34.109,
-    "longitude": 108.605
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_043",
@@ -3214,9 +3130,7 @@
       "emergencyPhone": "鄠邑县救援：119 / 110"
     },
     "order": 43,
-    "createdAt": "2026-03-29",
-    "latitude": 34.109,
-    "longitude": 108.605
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_044",
@@ -3291,9 +3205,7 @@
       "emergencyPhone": "长安县救援：119 / 110"
     },
     "order": 44,
-    "createdAt": "2026-03-29",
-    "latitude": 34.168,
-    "longitude": 108.942
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_045",
@@ -3367,9 +3279,7 @@
       "emergencyPhone": "长安县救援：119 / 110"
     },
     "order": 45,
-    "createdAt": "2026-03-29",
-    "latitude": 34.168,
-    "longitude": 108.942
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_046",
@@ -3444,9 +3354,7 @@
       "emergencyPhone": "长安县救援：119 / 110"
     },
     "order": 46,
-    "createdAt": "2026-03-29",
-    "latitude": 34.168,
-    "longitude": 108.942
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_047",
@@ -3520,9 +3428,7 @@
       "emergencyPhone": "鄠邑县救援：119 / 110"
     },
     "order": 47,
-    "createdAt": "2026-03-29",
-    "latitude": 34.109,
-    "longitude": 108.605
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_048",
@@ -3597,9 +3503,7 @@
       "emergencyPhone": "长安县救援：119 / 110"
     },
     "order": 48,
-    "createdAt": "2026-03-29",
-    "latitude": 34.01,
-    "longitude": 108.92
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_049",
@@ -3670,9 +3574,7 @@
       "emergencyPhone": "长安县救援：119 / 110"
     },
     "order": 49,
-    "createdAt": "2026-03-29",
-    "latitude": 34.168,
-    "longitude": 108.942
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_050",
@@ -3740,9 +3642,7 @@
       "emergencyPhone": "长安县救援：119 / 110"
     },
     "order": 50,
-    "createdAt": "2026-03-29",
-    "latitude": 34.168,
-    "longitude": 108.942
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_051",
@@ -3818,9 +3718,7 @@
       "emergencyPhone": "周至县救援：119 / 110"
     },
     "order": 51,
-    "createdAt": "2026-03-29",
-    "latitude": 34.06,
-    "longitude": 108.04
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_052",
@@ -3888,9 +3786,7 @@
       "emergencyPhone": "周至县救援：119 / 110"
     },
     "order": 52,
-    "createdAt": "2026-03-29",
-    "latitude": 34.162,
-    "longitude": 108.223
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_053",
@@ -3968,9 +3864,7 @@
       "emergencyPhone": "周至县救援：119 / 110"
     },
     "order": 53,
-    "createdAt": "2026-03-29",
-    "latitude": 34.162,
-    "longitude": 108.223
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_054",
@@ -4045,9 +3939,7 @@
       "emergencyPhone": "周至县救援：119 / 110"
     },
     "order": 54,
-    "createdAt": "2026-03-29",
-    "latitude": 34.162,
-    "longitude": 108.223
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_055",
@@ -4117,9 +4009,7 @@
       "emergencyPhone": "周至县救援：119 / 110"
     },
     "order": 55,
-    "createdAt": "2026-03-29",
-    "latitude": 33.88,
-    "longitude": 107.87
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_056",
@@ -4189,9 +4079,7 @@
       "emergencyPhone": "周至县救援：119 / 110"
     },
     "order": 56,
-    "createdAt": "2026-03-29",
-    "latitude": 34.162,
-    "longitude": 108.223
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_057",
@@ -4259,9 +4147,7 @@
       "emergencyPhone": "眉县县救援：119 / 110"
     },
     "order": 57,
-    "createdAt": "2026-03-29",
-    "latitude": 34.15,
-    "longitude": 107.87
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_058",
@@ -4330,9 +4216,7 @@
       "emergencyPhone": "周至县救援：119 / 110"
     },
     "order": 58,
-    "createdAt": "2026-03-29",
-    "latitude": 34.08,
-    "longitude": 108.33
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_059",
@@ -4401,9 +4285,7 @@
       "emergencyPhone": "周至县救援：119 / 110"
     },
     "order": 59,
-    "createdAt": "2026-03-29",
-    "latitude": 34.162,
-    "longitude": 108.223
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_060",
@@ -4473,9 +4355,7 @@
       "emergencyPhone": "周至县救援：119 / 110"
     },
     "order": 60,
-    "createdAt": "2026-03-29",
-    "latitude": 34.162,
-    "longitude": 108.223
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_061",
@@ -4543,9 +4423,7 @@
       "emergencyPhone": "周至县救援：119 / 110"
     },
     "order": 61,
-    "createdAt": "2026-03-29",
-    "latitude": 34.162,
-    "longitude": 108.223
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_062",
@@ -4613,9 +4491,7 @@
       "emergencyPhone": "周至县救援：119 / 110"
     },
     "order": 62,
-    "createdAt": "2026-03-29",
-    "latitude": 34.162,
-    "longitude": 108.223
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_063",
@@ -4683,9 +4559,7 @@
       "emergencyPhone": "周至县救援：119 / 110"
     },
     "order": 63,
-    "createdAt": "2026-03-29",
-    "latitude": 34.162,
-    "longitude": 108.223
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_064",
@@ -4756,9 +4630,7 @@
       "emergencyPhone": "周至县救援：119 / 110"
     },
     "order": 64,
-    "createdAt": "2026-03-29",
-    "latitude": 34.162,
-    "longitude": 108.223
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_065",
@@ -4826,9 +4698,7 @@
       "emergencyPhone": "周至县救援：119 / 110"
     },
     "order": 65,
-    "createdAt": "2026-03-29",
-    "latitude": 34.162,
-    "longitude": 108.223
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_066",
@@ -4896,9 +4766,7 @@
       "emergencyPhone": "眉县县救援：119 / 110"
     },
     "order": 66,
-    "createdAt": "2026-03-29",
-    "latitude": 34.275,
-    "longitude": 107.752
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_067",
@@ -4966,9 +4834,7 @@
       "emergencyPhone": "周至县救援：119 / 110"
     },
     "order": 67,
-    "createdAt": "2026-03-29",
-    "latitude": 34.162,
-    "longitude": 108.223
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_068",
@@ -5042,9 +4908,7 @@
       "emergencyPhone": "周至县救援：119 / 110"
     },
     "order": 68,
-    "createdAt": "2026-03-29",
-    "latitude": 34.162,
-    "longitude": 108.223
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_069",
@@ -5118,9 +4982,7 @@
       "emergencyPhone": "周至县救援：119 / 110"
     },
     "order": 69,
-    "createdAt": "2026-03-29",
-    "latitude": 34.162,
-    "longitude": 108.223
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_070",
@@ -5196,9 +5058,7 @@
       "emergencyPhone": "周至县救援：119 / 110"
     },
     "order": 70,
-    "createdAt": "2026-03-29",
-    "latitude": 34.162,
-    "longitude": 108.223
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_071",
@@ -5271,9 +5131,7 @@
       "emergencyPhone": "周至县救援：119 / 110"
     },
     "order": 71,
-    "createdAt": "2026-03-29",
-    "latitude": 34.162,
-    "longitude": 108.223
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_072",
@@ -5346,9 +5204,7 @@
       "emergencyPhone": "周至县救援：119 / 110"
     },
     "order": 72,
-    "createdAt": "2026-03-29",
-    "latitude": 34.162,
-    "longitude": 108.223
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_073",
@@ -5421,9 +5277,7 @@
       "emergencyPhone": "周至县救援：119 / 110"
     },
     "order": 73,
-    "createdAt": "2026-03-29",
-    "latitude": 34.162,
-    "longitude": 108.223
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_074",
@@ -5499,9 +5353,7 @@
       "emergencyPhone": "周至县救援：119 / 110"
     },
     "order": 74,
-    "createdAt": "2026-03-29",
-    "latitude": 34.162,
-    "longitude": 108.223
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_075",
@@ -5569,9 +5421,7 @@
       "emergencyPhone": "眉县县救援：119 / 110"
     },
     "order": 75,
-    "createdAt": "2026-03-29",
-    "latitude": 34.275,
-    "longitude": 107.752
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_076",
@@ -5647,9 +5497,7 @@
       "emergencyPhone": "太白县救援：119 / 110"
     },
     "order": 76,
-    "createdAt": "2026-03-29",
-    "latitude": 34.06,
-    "longitude": 107.315
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_077",
@@ -5721,9 +5569,7 @@
       "emergencyPhone": "宝鸡县救援：119 / 110"
     },
     "order": 77,
-    "createdAt": "2026-03-29",
-    "latitude": 34.893,
-    "longitude": 106.865
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_078",
@@ -5792,9 +5638,7 @@
       "emergencyPhone": "凤县县救援：119 / 110"
     },
     "order": 78,
-    "createdAt": "2026-03-29",
-    "latitude": 33.695,
-    "longitude": 110.328
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_079",
@@ -5862,9 +5706,7 @@
       "emergencyPhone": "宝鸡县救援：119 / 110"
     },
     "order": 79,
-    "createdAt": "2026-03-29",
-    "latitude": 34.444,
-    "longitude": 107.621
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_080",
@@ -5934,9 +5776,7 @@
       "emergencyPhone": "宝鸡县救援：119 / 110"
     },
     "order": 80,
-    "createdAt": "2026-03-29",
-    "latitude": 34.893,
-    "longitude": 106.865
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_081",
@@ -6004,9 +5844,7 @@
       "emergencyPhone": "凤县县救援：119 / 110"
     },
     "order": 81,
-    "createdAt": "2026-03-29",
-    "latitude": 33.914,
-    "longitude": 106.523
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_082",
@@ -6076,9 +5914,7 @@
       "emergencyPhone": "凤县县救援：119 / 110"
     },
     "order": 82,
-    "createdAt": "2026-03-29",
-    "latitude": 33.695,
-    "longitude": 110.328
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_083",
@@ -6148,9 +5984,7 @@
       "emergencyPhone": "宝鸡县救援：119 / 110"
     },
     "order": 83,
-    "createdAt": "2026-03-29",
-    "latitude": 34.354,
-    "longitude": 107.387
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_084",
@@ -6218,9 +6052,7 @@
       "emergencyPhone": "凤县县救援：119 / 110"
     },
     "order": 84,
-    "createdAt": "2026-03-29",
-    "latitude": 33.695,
-    "longitude": 110.328
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_085",
@@ -6288,9 +6120,7 @@
       "emergencyPhone": "凤县县救援：119 / 110"
     },
     "order": 85,
-    "createdAt": "2026-03-29",
-    "latitude": 33.695,
-    "longitude": 110.328
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_086",
@@ -6358,9 +6188,7 @@
       "emergencyPhone": "宝鸡县救援：119 / 110"
     },
     "order": 86,
-    "createdAt": "2026-03-29",
-    "latitude": 34.444,
-    "longitude": 107.621
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_087",
@@ -6428,9 +6256,7 @@
       "emergencyPhone": "宝鸡县救援：119 / 110"
     },
     "order": 87,
-    "createdAt": "2026-03-29",
-    "latitude": 34.643,
-    "longitude": 107.132
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_088",
@@ -6498,9 +6324,7 @@
       "emergencyPhone": "宝鸡县救援：119 / 110"
     },
     "order": 88,
-    "createdAt": "2026-03-29",
-    "latitude": 34.522,
-    "longitude": 107.397
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_089",
@@ -6569,9 +6393,7 @@
       "emergencyPhone": "宝鸡县救援：119 / 110"
     },
     "order": 89,
-    "createdAt": "2026-03-29",
-    "latitude": 34.678,
-    "longitude": 107.794
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_090",
@@ -6639,9 +6461,7 @@
       "emergencyPhone": "宝鸡县救援：119 / 110"
     },
     "order": 90,
-    "createdAt": "2026-03-29",
-    "latitude": 34.372,
-    "longitude": 107.15
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_091",
@@ -6711,9 +6531,7 @@
       "emergencyPhone": "宝鸡县救援：119 / 110"
     },
     "order": 91,
-    "createdAt": "2026-03-29",
-    "latitude": 34.87,
-    "longitude": 106.82
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_092",
@@ -6781,9 +6599,7 @@
       "emergencyPhone": "宝鸡县救援：119 / 110"
     },
     "order": 92,
-    "createdAt": "2026-03-29",
-    "latitude": 34.83,
-    "longitude": 106.78
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_093",
@@ -6851,9 +6667,7 @@
       "emergencyPhone": "太白县救援：119 / 110"
     },
     "order": 93,
-    "createdAt": "2026-03-29",
-    "latitude": 34.06,
-    "longitude": 107.315
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_094",
@@ -6922,9 +6736,7 @@
       "emergencyPhone": "宝鸡县救援：119 / 110"
     },
     "order": 94,
-    "createdAt": "2026-03-29",
-    "latitude": 34.522,
-    "longitude": 107.397
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_095",
@@ -6992,9 +6804,7 @@
       "emergencyPhone": "宝鸡县救援：119 / 110"
     },
     "order": 95,
-    "createdAt": "2026-03-29",
-    "latitude": 34.678,
-    "longitude": 107.794
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_096",
@@ -7062,9 +6872,7 @@
       "emergencyPhone": "汉中县救援：119 / 110"
     },
     "order": 96,
-    "createdAt": "2026-03-29",
-    "latitude": 33.618,
-    "longitude": 106.92
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_097",
@@ -7134,9 +6942,7 @@
       "emergencyPhone": "汉中县救援：119 / 110"
     },
     "order": 97,
-    "createdAt": "2026-03-29",
-    "latitude": 33.618,
-    "longitude": 106.92
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_098",
@@ -7216,9 +7022,7 @@
       "emergencyPhone": "安康县救援：119 / 110"
     },
     "order": 98,
-    "createdAt": "2026-03-29",
-    "latitude": 32.387,
-    "longitude": 109.362
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_099",
@@ -7296,9 +7100,7 @@
       "emergencyPhone": "安康县救援：119 / 110"
     },
     "order": 99,
-    "createdAt": "2026-03-29",
-    "latitude": 31.884,
-    "longitude": 109.526
+    "createdAt": "2026-03-29"
   },
   {
     "_id": "route_100",
@@ -7375,8 +7177,6 @@
       "emergencyPhone": "汉中县救援：119 / 110"
     },
     "order": 100,
-    "createdAt": "2026-03-29",
-    "latitude": 33.618,
-    "longitude": 106.92
+    "createdAt": "2026-03-29"
   }
 ]
