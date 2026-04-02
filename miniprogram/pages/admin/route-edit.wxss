@@ -215,6 +215,13 @@
 
 .tag-item__remove text { font-size: 18rpx; color: #F44336; }
 
+.tag-item__url {
+  max-width: 400rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .tag-add {
   display: flex;
   gap: 12rpx;

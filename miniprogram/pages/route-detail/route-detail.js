@@ -117,6 +117,7 @@ Page({
       if (cached && cached.data) {
         const trail = this.processTrailDetail(cached.data)
         this.setData({ trail, loading: false, isOffline: true, fromCache: true })
+        this._resolveCloudImages()
         showNiceToast(this, '当前为离线数据', 'info', 2000)
       } else {
         this.setData({ loading: false })
@@ -149,6 +150,7 @@ Page({
         if (cached && cached.data) {
           const trail = this.processTrailDetail(cached.data)
           this.setData({ trail, loading: false, isOffline: true, fromCache: true })
+          this._resolveCloudImages()
           hasShownCache = true
         }
       } catch (e) {}
@@ -192,6 +194,7 @@ Page({
             if (cacheIsStale || !hasShownCache) {
               // 云端有更新 或 首次加载 → 显示最新数据
               this.setData({ trail, loading: false, isOffline: false, fromCache: false })
+              this._resolveCloudImages()
               if (hasShownCache && cacheIsStale) {
                 showNiceToast(this, '已更新为最新数据', 'success', 1500)
               }
@@ -277,13 +280,42 @@ Page({
       timeplanAdvice = { depart: '8:00 - 9:00', return: '14:00 前', tip: '春秋舒适，建议按计划出发' }
     }
 
-    // 获取图片列表
+    // 获取图片列表 — 支持 URL / 云存储路径 / cloud fileID 多种格式
     let images = []
-    if (data.image) images.push(data.image)
-    if (data.images && Array.isArray(data.images)) {
-      images = images.concat(data.images)
+    let cloudPaths = [] // 需要通过 getTempFileURL 转换的路径
+
+    // 判断值是直接可用的URL还是云存储路径
+    const isDirectUrl = (val) => typeof val === 'string' && (val.startsWith('http://') || val.startsWith('https://') || val.startsWith('/'))
+    const isCloudPath = (val) => typeof val === 'string' && val.startsWith('cloud://')
+
+    // 处理单图字段 image / imageUrl / imagePath
+    if (data.imageUrl && isDirectUrl(data.imageUrl)) {
+      images.push(data.imageUrl)
+    } else if (data.image && isDirectUrl(data.image)) {
+      images.push(data.image)
     }
-    if (images.length === 0) {
+    if (data.imagePath && isCloudPath(data.imagePath)) {
+      cloudPaths.push(data.imagePath)
+    } else if (data.image && isCloudPath(data.image)) {
+      cloudPaths.push(data.image)
+    }
+
+    // 处理多图字段 images / imageUrls / imagePaths (数组)
+    const imageArrays = [data.images, data.imageUrls, data.imagePaths]
+    imageArrays.forEach(arr => {
+      if (arr && Array.isArray(arr)) {
+        arr.forEach(item => {
+          if (isDirectUrl(item)) {
+            images.push(item)
+          } else if (isCloudPath(item)) {
+            cloudPaths.push(item)
+          }
+        })
+      }
+    })
+
+    // 默认图片
+    if (images.length === 0 && cloudPaths.length === 0) {
       images = ['/images/scenery/scenery-general.jpg']
     }
 
@@ -350,6 +382,7 @@ Page({
       name: data.name,
       description: data.description || '',
       images: images,
+      _cloudPaths: cloudPaths, // 待解析的云存储路径
       difficulty: difficultyStr,
       diffStars: diffInfo.stars,
       diffColor: diffInfo.color,
@@ -415,6 +448,38 @@ Page({
       latitude: data.latitude || null,
       longitude: data.longitude || null
     }
+  },
+
+  // 解析云存储路径为临时URL
+  _resolveCloudImages: function () {
+    const trail = this.data.trail
+    if (!trail._cloudPaths || trail._cloudPaths.length === 0) return
+
+    wx.cloud.getTempFileURL({
+      fileList: trail._cloudPaths,
+      success: (res) => {
+        if (res.fileList && res.fileList.length > 0) {
+          const resolvedUrls = res.fileList
+            .filter(f => f.tempFileURL)
+            .map(f => f.tempFileURL)
+          if (resolvedUrls.length > 0) {
+            const newImages = trail.images.concat(resolvedUrls)
+            // 过滤掉默认图片（如果有真实图片的话）
+            const hasDefault = newImages.includes('/images/scenery/scenery-general.jpg')
+            const finalImages = (hasDefault && newImages.length > 1)
+              ? newImages.filter(img => img !== '/images/scenery/scenery-general.jpg')
+              : newImages
+            this.setData({
+              'trail.images': finalImages,
+              'trail._cloudPaths': []
+            })
+          }
+        }
+      },
+      fail: (err) => {
+        console.warn('云存储图片路径解析失败:', err)
+      }
+    })
   },
 
   // 轮播切换

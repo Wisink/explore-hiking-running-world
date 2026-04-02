@@ -111,6 +111,7 @@ Page({
 
     // 封面图上传状态
     coverUploading: false,
+    routeCoverUploading: false,
 
     // scenery 编辑
     sceneryInput: '',
@@ -381,6 +382,110 @@ Page({
       this.showToast('上传失败', 'error')
     }
     this.setData({ coverUploading: false })
+  },
+
+  // ========== 路线封面图上传 ==========
+  onChooseRouteCover() {
+    if (this.data.routeCoverUploading) return
+    wx.chooseImage({
+      count: 1,
+      sizeType: ['compressed'],
+      sourceType: ['album', 'camera'],
+      success: (res) => {
+        this.setData({ routeCoverUploading: true })
+        this._compressAndUpload(res.tempFilePaths[0], 'route-covers')
+          .then(fileID => {
+            this.setData({ 'form.coverImage': fileID })
+            this.showToast('封面图上传成功', 'success')
+          })
+          .catch(e => {
+            console.error('封面图上传失败:', e)
+            this.showToast('上传失败', 'error')
+          })
+          .finally(() => this.setData({ routeCoverUploading: false }))
+      }
+    })
+  },
+
+  // ========== 路线多图上传 ==========
+  imagesUploading: false,
+  onChooseImages() {
+    if (this.imagesUploading) return
+    wx.chooseImage({
+      count: 9,
+      sizeType: ['compressed'],
+      sourceType: ['album', 'camera'],
+      success: (res) => {
+        this.imagesUploading = true
+        this.showToast('上传中...', 'info', 10000)
+        const tasks = res.tempFilePaths.map(p =>
+          this._compressAndUpload(p, 'route-images')
+        )
+        Promise.all(tasks)
+          .then(fileIDs => {
+            const images = this.data.form.images.concat(fileIDs)
+            this.setData({ 'form.images': images })
+            this.showToast(`成功上传${fileIDs.length}张图片`, 'success')
+          })
+          .catch(e => {
+            console.error('图片上传失败:', e)
+            this.showToast('部分图片上传失败', 'error')
+          })
+          .finally(() => { this.imagesUploading = false })
+      }
+    })
+  },
+
+  // ========== 通用：压缩并上传 ==========
+  async _compressAndUpload(filePath, folder) {
+    // 第一步：用 wx.compressImage 二次压缩
+    const compressed = await new Promise((resolve, reject) => {
+      wx.compressImage({
+        src: filePath,
+        quality: 70,
+        success: res => resolve(res.tempFilePath),
+        fail: () => resolve(filePath) // 压缩失败则用原图
+      })
+    })
+
+    // 检查文件大小，若 > 500KB 则继续压缩
+    try {
+      const fileInfo = await new Promise((resolve, reject) => {
+        wx.getFileInfo({
+          filePath: compressed,
+          success: resolve,
+          fail: reject
+        })
+      })
+      if (fileInfo.size > 500 * 1024) {
+        // 再次压缩
+        const again = await new Promise((resolve) => {
+          wx.compressImage({
+            src: compressed,
+            quality: 50,
+            success: res => resolve(res.tempFilePath),
+            fail: () => resolve(compressed)
+          })
+        })
+        return this._uploadToCloud(again, folder)
+      }
+    } catch (e) {
+      // getFileInfo 失败不影响上传
+    }
+
+    return this._uploadToCloud(compressed, folder)
+  },
+
+  _uploadToCloud(filePath, folder) {
+    const ext = filePath.split('.').pop() || 'jpg'
+    const cloudPath = `${folder}/${Date.now()}_${Math.random().toString(36).substr(2, 8)}.${ext}`
+    return wx.cloud.uploadFile({
+      cloudPath,
+      filePath
+    }).then(res => {
+      if (!res.fileID) throw new Error('上传失败')
+      return res.fileID
+    })
   },
 
   onDifficultyChange(e) {

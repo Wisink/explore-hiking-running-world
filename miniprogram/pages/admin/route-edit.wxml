@@ -32,8 +32,11 @@
       </view>
 
       <view class="form-item">
-        <text class="form-label">封面图片 URL</text>
-        <input class="form-input" placeholder="请输入封面图片链接" value="{{form.coverImage}}" data-field="coverImage" bindinput="onFieldInput" />
+        <text class="form-label">封面图片</text>
+        <input class="form-input" placeholder="输入封面图片链接或上传" value="{{form.coverImage}}" data-field="coverImage" bindinput="onFieldInput" />
+        <view class="cover-upload-btn" bindtap="onChooseRouteCover">
+          <text>{{routeCoverUploading ? '上传中...' : '📷 本地上传封面图'}}</text>
+        </view>
         <image wx:if="{{form.coverImage}}" class="form-preview" src="{{form.coverImage}}" mode="aspectFill" />
       </view>
 
@@ -134,7 +137,7 @@
       <text class="form-section__title">图片列表</text>
       <view class="tag-list">
         <view class="tag-item" wx:for="{{form.images}}" wx:key="*this">
-          <text>{{item}}</text>
+          <text class="tag-item__url">{{item}}</text>
           <view class="tag-item__remove" bindtap="removeImage" data-index="{{index}}">
             <text>✕</text>
           </view>
@@ -145,6 +148,9 @@
         <view class="tag-add__btn" bindtap="addImage">
           <text>+ 添加</text>
         </view>
+      </view>
+      <view class="cover-upload-btn" style="margin-top:12rpx;" bindtap="onChooseImages">
+        <text>📷 本地上传图片（支持多选）</text>
       </view>
     </view>
 
