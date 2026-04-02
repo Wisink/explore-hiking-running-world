@@ -1,5 +1,7 @@
 {
   "dependencies": {
-    "@cloudbase/node-sdk": "^3.18.1"
+    "@cloudbase/node-sdk": "^3.18.1",
+    "echarts": "^6.0.0",
+    "echarts-for-weixin": "^1.0.2"
   }
 }
