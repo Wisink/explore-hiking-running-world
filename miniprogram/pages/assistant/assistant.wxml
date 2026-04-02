@@ -113,19 +113,19 @@
       <view class="option-card" data-value="half" bindtap="onStep3Tap">
         <view class="option-card__icon">⏰</view>
         <view class="option-card__title">半天</view>
-        <view class="option-card__desc">5km以内<br/>轻松半天搞定</view>
+        <view class="option-card__desc">时间紧张那就少走一点</view>
       </view>
 
       <view class="option-card" data-value="most" bindtap="onStep3Tap">
         <view class="option-card__icon">☀️</view>
         <view class="option-card__title">大半天</view>
-        <view class="option-card__desc">5-10km<br/>时间充裕慢慢走</view>
+        <view class="option-card__desc">时间充裕那就慢慢赏景</view>
       </view>
 
       <view class="option-card" data-value="all" bindtap="onStep3Tap">
         <view class="option-card__icon">🌅</view>
         <view class="option-card__title">一整天</view>
-        <view class="option-card__desc">10km以上<br/>一日徒步充实满满</view>
+        <view class="option-card__desc">把一整天的时光全都交给山野</view>
       </view>
 
       <view class="option-card" data-value="flexible" bindtap="onStep3Tap">
