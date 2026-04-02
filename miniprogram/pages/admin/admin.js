@@ -115,8 +115,9 @@ Page({
         setTimeout(() => wx.navigateBack(), 1500)
         return
       }
-      // 管理员验证通过，检查密码登录状态
-      const isLoggedIn = wx.getStorageSync('admin_logged_in')
+      // 管理员验证通过，检查密码登录状态（2小时过期）
+      const loginTime = wx.getStorageSync('admin_login_time')
+      const isLoggedIn = wx.getStorageSync('admin_logged_in') && loginTime && (Date.now() - loginTime < 2 * 60 * 60 * 1000)
       if (isLoggedIn) {
         this.setData({ isLoggedIn: true })
         this.loadAllData()
@@ -174,6 +175,7 @@ Page({
 
       if (res.result && res.result.code === 0) {
         wx.setStorageSync('admin_logged_in', true)
+        wx.setStorageSync('admin_login_time', Date.now())
         wx.setStorageSync('admin_token', res.result.data.token)
         this.setData({ isLoggedIn: true, passwordInput: '' })
         this.loadAllData()
