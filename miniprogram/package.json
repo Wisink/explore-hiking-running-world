@@ -1,0 +1,9 @@
+{
+  "name": "miniprogram",
+  "version": "1.0.0",
+  "description": "秦人户外小程序npm依赖",
+  "dependencies": {
+    "echarts": "^5.5.0",
+    "echarts-for-weixin": "^1.0.2"
+  }
+}
