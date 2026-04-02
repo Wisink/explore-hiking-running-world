@@ -539,15 +539,38 @@ Page({
   // 打开微信内置地图导航
   openNavigation: function () {
     const trail = this.data.trail
-    // 如果有经纬度，直接打开微信内置地图
     if (trail.latitude && trail.longitude) {
-      wx.openLocation({
-        latitude: trail.latitude,
-        longitude: trail.longitude,
-        name: trail.name,
-        address: trail.navAddress || trail.location,
-        scale: 15
-      })
+      // 优先使用 wx.openRoute 直接调起导航
+      if (wx.openRoute) {
+        wx.openRoute({
+          destination: {
+            latitude: trail.latitude,
+            longitude: trail.longitude,
+            name: trail.name
+          },
+          mode: 'driving',
+          success: () => {},
+          fail: () => {
+            // openRoute 失败时降级为 openLocation
+            wx.openLocation({
+              latitude: trail.latitude,
+              longitude: trail.longitude,
+              name: trail.name,
+              address: trail.navAddress || trail.location,
+              scale: 15
+            })
+          }
+        })
+      } else {
+        // 不支持 openRoute，使用 openLocation
+        wx.openLocation({
+          latitude: trail.latitude,
+          longitude: trail.longitude,
+          name: trail.name,
+          address: trail.navAddress || trail.location,
+          scale: 15
+        })
+      }
     } else {
       // 没有经纬度，用地址打开
       wx.openLocation({
