@@ -13,7 +13,8 @@ Page({
     categories: [
       { key: '装备推荐', icon: '🥾', name: '装备推荐' },
       { key: '安全自救', icon: '🆘', name: '安全自救' },
-      { key: '户外礼仪', icon: '🤝', name: '户外礼仪' }
+      { key: '户外礼仪', icon: '🤝', name: '户外礼仪' },
+      { key: '其他', icon: '📖', name: '其他' }
     ],
     categorizedArticles: {},
     showAll: {},
@@ -143,7 +144,8 @@ Page({
     const categoryCount = {
       equipment: (grouped['装备推荐'] || []).length,
       safety: (grouped['安全自救'] || []).length,
-      etiquette: (grouped['户外礼仪'] || []).length
+      etiquette: (grouped['户外礼仪'] || []).length,
+      other: (grouped['其他'] || []).length
     }
 
     this.setData({
@@ -200,41 +202,62 @@ Page({
     })
   },
 
-  // 新的推荐逻辑：从每个子分类取1篇优先级最高的
+  // 推荐逻辑：优先推荐新手入门系列（priority=0），其次从各子分类取最优
   getRecommendedArticles(articles) {
-    const subcategoryMap = {}
     const recommended = []
 
+    // 1. 优先推荐新手入门系列（priority === 0 且 difficulty === beginner）
+    const newbieArticles = articles.filter(a =>
+      a.difficulty === 'beginner' && (a.priority === 0 || a.priority === 0)
+    ).sort((a, b) => {
+      // 新手系列文章（article_050-054）优先
+      const aId = parseInt((a._id || '').replace('article_', '')) || 0
+      const bId = parseInt((b._id || '').replace('article_', '')) || 0
+      if (aId >= 50 && bId >= 50) return aId - bId
+      if (aId >= 50) return -1
+      if (bId >= 50) return 1
+      return 0
+    })
+
+    // 取3篇新手系列作为首页推荐
+    const newbiePicks = newbieArticles.slice(0, 3)
+    recommended.push(...newbiePicks)
+
+    // 2. 补充其他分类的优质文章（从各子分类取priority最高的）
+    const subcategoryMap = {}
     articles.forEach(article => {
+      // 跳过已推荐的
+      if (recommended.find(r => r._id === article._id)) return
       const sub = article.subcategory || '其他'
-      if (!subcategoryMap[sub]) {
-        subcategoryMap[sub] = []
-      }
+      if (!subcategoryMap[sub]) subcategoryMap[sub] = []
       subcategoryMap[sub].push(article)
     })
 
-    // 每个子分类按priority排序，取第一篇
     Object.keys(subcategoryMap).forEach(sub => {
       subcategoryMap[sub].sort((a, b) => (a.priority || 99) - (b.priority || 99))
-      if (subcategoryMap[sub][0]) {
+      if (subcategoryMap[sub][0] && recommended.length < 6) {
         recommended.push(subcategoryMap[sub][0])
       }
     })
 
-    // 最多取6篇，确保覆盖面
     return recommended.slice(0, 6)
   },
 
   // 新手入门路径点击
   onStepTap(e) {
-    const category = e.currentTarget.dataset.category
-    if (category === '实践') {
+    const dataset = e.currentTarget.dataset
+    // 第三步和第四步：跳转到路线查询页
+    if (dataset.type === 'routes') {
       wx.switchTab({ url: '/pages/routes/routes' })
       return
     }
-    wx.navigateTo({
-      url: `/pages/topic/topic?category=${encodeURIComponent(category)}`
-    })
+    // 第一步和第二步：跳转到对应分类
+    const category = dataset.category
+    if (category) {
+      wx.navigateTo({
+        url: `/pages/topic/topic?category=${encodeURIComponent(category)}`
+      })
+    }
   },
 
   // 根据showAll状态构建显示列表
