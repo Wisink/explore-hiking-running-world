@@ -60,6 +60,7 @@ Page({
       const allArticles = []
       const fetchPage = (skip) => {
         db.collection('articles')
+          .where({ isActive: true })
           .orderBy('order', 'asc')
           .skip(skip)
           .limit(MAX)

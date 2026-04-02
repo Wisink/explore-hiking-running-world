@@ -16,8 +16,10 @@ function fail(message) { return { code: -1, message, data: null } }
 const SALT = 'qinren_salt_2026'
 const ADMIN_PASSWORD_HASH = '6534131ffb8b1048830bda34f8dae1d7058ea46952f139c3c73ba2be92e1bc80'
 
-// Token 存储（云函数冷启动会清空，生产环境应存数据库）
-const validTokens = new Map()
+// 固定Token — 云函数冷启动不丢失，解决"token无效"问题
+const FIXED_TOKEN = crypto.createHash('sha256')
+  .update(SALT + 'admin-qr-2026')
+  .digest('hex')
 
 // ===== 认证模块 =====
 function handleAuth(action, params) {
@@ -30,28 +32,15 @@ function handleAuth(action, params) {
         .update(SALT + password)
         .digest('hex')
       if (hashed === ADMIN_PASSWORD_HASH) {
-        // 生成 token 并存储（24小时有效期）
-        const token = crypto.createHash('sha256')
-          .update(Date.now().toString() + Math.random().toString())
-          .digest('hex')
-        validTokens.set(token, { createdAt: Date.now(), expiresAt: Date.now() + 24 * 60 * 60 * 1000 })
-        // 清理过期 token
-        for (const [key, val] of validTokens) {
-          if (val.expiresAt < Date.now()) validTokens.delete(key)
-        }
-        return success({ token, loginTime: Date.now() }, '登录成功')
+        // 返回固定 token，不受云函数重启影响
+        return success({ token: FIXED_TOKEN, loginTime: Date.now() }, '登录成功')
       }
       return fail('口令错误')
     }
     case 'verify': {
       const { token } = params || {}
       if (!token) return fail('缺少 token')
-      const tokenData = validTokens.get(token)
-      if (!tokenData) return fail('token 无效')
-      if (tokenData.expiresAt < Date.now()) {
-        validTokens.delete(token)
-        return fail('token 已过期')
-      }
+      if (token !== FIXED_TOKEN) return fail('token 无效')
       return success({ valid: true }, 'token 有效')
     }
     default: return fail('未知操作')
@@ -62,12 +51,7 @@ function handleAuth(action, params) {
 function verifyToken(params) {
   const { token } = params || {}
   if (!token) return { valid: false, message: '缺少 token' }
-  const tokenData = validTokens.get(token)
-  if (!tokenData) return { valid: false, message: 'token 无效' }
-  if (tokenData.expiresAt < Date.now()) {
-    validTokens.delete(token)
-    return { valid: false, message: 'token 已过期' }
-  }
+  if (token !== FIXED_TOKEN) return { valid: false, message: 'token 无效' }
   return { valid: true }
 }
 
@@ -168,14 +152,20 @@ async function handleUsers(action, params) {
         if (metas.length > 0) userMeta = metas[0]
       }
 
-      // 获取收藏路线详情
-      const favorites = (userData.favorites && Array.isArray(userData.favorites.favorites))
-        ? userData.favorites.favorites
-        : (Array.isArray(userData.favorites) ? userData.favorites : [])
+      // 获取收藏路线详情（兼容新旧格式）
+      const rawFavorites = userData.favorites || []
+      let favoriteIds = []
+      if (Array.isArray(rawFavorites)) {
+        favoriteIds = rawFavorites.map(item => {
+          if (typeof item === 'string') return item
+          if (item && item.routeId) return item.routeId
+          return null
+        }).filter(Boolean)
+      }
       let favoriteRoutes = []
-      if (favorites.length > 0) {
+      if (favoriteIds.length > 0) {
         const { data: routes } = await db.collection('routes')
-          .where({ _id: _.in(favorites) }).get()
+          .where({ _id: _.in(favoriteIds) }).get()
         favoriteRoutes = routes
       }
 
@@ -554,21 +544,50 @@ async function handleStats(action, params) {
       return success({ list: res.list, dimension })
     }
 
-    // 收藏趋势（按 routeId 聚合，每个用户收藏数 = favorites 数组长度）
-    // 注意：收藏没有时间戳，所以趋势图按路线维度展示
-    // 此接口返回收藏最多的路线（同 topFavoritedRoutes，方便趋势 tab 直接用）
+    // 收藏趋势（按收藏日期分组统计）
+    // 新数据格式：favorites = [{ routeId, date }]
+    // 旧数据格式：favorites = ["route_001"]（无日期，跳过）
     case 'favoriteTrend': {
-      const res = await db.collection('routes').aggregate()
-        .match({ favoriteCount: _.gt(0) })
-        .project({
-          name: 1,
-          favoriteCount: $.ifNull(['$favoriteCount', 0])
+      const { dimension = 'month' } = params || {}
+      const now = new Date()
+      let startDate, dateFormat
+
+      if (dimension === 'day') {
+        startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 29)
+        dateFormat = '%Y-%m-%d'
+      } else if (dimension === 'week') {
+        startDate = new Date(now.getTime() - 29 * 7 * 86400000)
+        dateFormat = '%Y-W%V'
+      } else if (dimension === 'month') {
+        startDate = new Date(now.getFullYear(), now.getMonth() - 11, 1)
+        dateFormat = '%Y-%m'
+      } else {
+        startDate = new Date(now.getFullYear() - 4, 0, 1)
+        dateFormat = '%Y'
+      }
+
+      // 展开 favorites 数组，按 date 字段聚合
+      const res = await db.collection('user_data').aggregate()
+        .unwind('$favorites')
+        .match({
+          'favorites.date': _.exists(true),
+          'favorites.date': _.gte(startDate.toISOString())
         })
-        .sort({ favoriteCount: -1 })
-        .limit(50)
+        .project({
+          dateStr: $.dateToString({
+            date: $.toDate('$favorites.date'),
+            format: dateFormat,
+            timezone: '+08:00'
+          })
+        })
+        .group({
+          _id: '$dateStr',
+          count: $.sum(1)
+        })
+        .sort({ _id: 1 })
         .end()
 
-      return success({ list: res.list })
+      return success({ list: res.list, dimension })
     }
 
     // 已走过趋势（按 completedAt 时间戳聚合）
@@ -712,7 +731,9 @@ async function handleStats(action, params) {
 
       for (const user of allUserData) {
         const favorites = user.favorites || []
-        for (const routeId of favorites) {
+        for (const item of favorites) {
+          // 兼容新旧格式
+          const routeId = typeof item === 'string' ? item : (item && item.routeId ? item.routeId : null)
           if (routeId) {
             favoriteCountMap[routeId] = (favoriteCountMap[routeId] || 0) + 1
             totalFavorites++

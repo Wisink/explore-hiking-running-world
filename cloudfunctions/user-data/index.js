@@ -89,32 +89,43 @@ async function getUserData(openid) {
 async function syncFavorites(openid, favorites) {
   const res = await db.collection('user_data').where({ _openid: openid }).get()
 
-  let oldFavorites = []
+  let oldFavoriteIds = []
   if (res.data.length === 0) {
-    // 创建新记录
+    // 创建新记录 — favorites 传入的应为 routeId 数组，转为对象数组
+    const favObjects = (favorites || []).map(id => {
+      if (typeof id === 'object' && id.routeId) return id
+      return { routeId: id, date: new Date().toISOString() }
+    })
     await db.collection('user_data').add({
       data: {
         _openid: openid,
-        favorites: favorites || [],
+        favorites: favObjects,
         completed: [],
         updatedAt: db.serverDate()
       }
     })
   } else {
-    oldFavorites = res.data[0].favorites || []
-    // 更新现有记录
+    oldFavoriteIds = extractFavoriteIds(res.data[0].favorites || [])
+    // 转为对象数组
+    const favObjects = (favorites || []).map(id => {
+      if (typeof id === 'object' && id.routeId) return id
+      return { routeId: id, date: new Date().toISOString() }
+    })
     await db.collection('user_data').where({ _openid: openid }).update({
       data: {
-        favorites: favorites || [],
+        favorites: favObjects,
         updatedAt: db.serverDate()
       }
     })
   }
 
   // 计算差异并更新路线收藏计数
-  const newFavorites = favorites || []
-  const added = newFavorites.filter(id => !oldFavorites.includes(id))
-  const removed = oldFavorites.filter(id => !newFavorites.includes(id))
+  const newFavoriteIds = (favorites || []).map(id => {
+    if (typeof id === 'object' && id.routeId) return id.routeId
+    return id
+  })
+  const added = newFavoriteIds.filter(id => !oldFavoriteIds.includes(id))
+  const removed = oldFavoriteIds.filter(id => !newFavoriteIds.includes(id))
 
   for (const routeId of added) {
     try {
@@ -191,31 +202,52 @@ async function syncCompleted(openid, completed) {
   return { code: 0, message: '已走过同步成功' }
 }
 
+// 辅助函数：从收藏数组中提取 routeId（兼容新旧格式）
+function extractFavoriteIds(favorites) {
+  if (!Array.isArray(favorites)) return []
+  return favorites.map(item => {
+    if (typeof item === 'string') return item
+    if (item && item.routeId) return item.routeId
+    return null
+  }).filter(Boolean)
+}
+
+// 辅助函数：检查收藏数组中是否包含某路线（兼容新旧格式）
+function hasFavorite(favorites, routeId) {
+  if (!Array.isArray(favorites)) return false
+  return favorites.some(item => {
+    if (typeof item === 'string') return item === routeId
+    if (item && item.routeId) return item.routeId === routeId
+    return false
+  })
+}
+
 // 添加收藏
 async function addFavorite(openid, routeId) {
   const res = await db.collection('user_data').where({ _openid: openid }).get()
 
   let shouldIncCount = true
+  const favoriteItem = { routeId: routeId, date: new Date().toISOString() }
 
   if (res.data.length === 0) {
     await db.collection('user_data').add({
       data: {
         _openid: openid,
-        favorites: [routeId],
+        favorites: [favoriteItem],
         completed: [],
         updatedAt: db.serverDate()
       }
     })
   } else {
-    // 检查是否已收藏，避免重复计数
-    const alreadyFavorited = (res.data[0].favorites || []).includes(routeId)
-    if (alreadyFavorited) {
+    // 检查是否已收藏（兼容新旧格式），避免重复计数
+    const currentFavorites = res.data[0].favorites || []
+    if (hasFavorite(currentFavorites, routeId)) {
       shouldIncCount = false
     }
-    // 使用 addToSet 避免重复
+    // 添加收藏对象（用 push，addToSet 对对象无法深层比较）
     await db.collection('user_data').where({ _openid: openid }).update({
       data: {
-        favorites: _.addToSet(routeId),
+        favorites: _.push([favoriteItem]),
         updatedAt: db.serverDate()
       }
     })
@@ -239,11 +271,19 @@ async function addFavorite(openid, routeId) {
 async function removeFavorite(openid, routeId) {
   // 检查是否确实收藏过，避免错误减计数
   const res = await db.collection('user_data').where({ _openid: openid }).get()
-  const wasFavorited = res.data.length > 0 && (res.data[0].favorites || []).includes(routeId)
+  const wasFavorited = res.data.length > 0 && hasFavorite(res.data[0].favorites || [], routeId)
+
+  // 兼容新旧格式：过滤掉匹配的 routeId（字符串或对象）
+  const currentFavorites = res.data.length > 0 ? (res.data[0].favorites || []) : []
+  const newFavorites = currentFavorites.filter(item => {
+    if (typeof item === 'string') return item !== routeId
+    if (item && item.routeId) return item.routeId !== routeId
+    return true
+  })
 
   await db.collection('user_data').where({ _openid: openid }).update({
     data: {
-      favorites: _.pull(routeId),
+      favorites: newFavorites,
       updatedAt: db.serverDate()
     }
   })

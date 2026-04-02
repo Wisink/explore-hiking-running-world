@@ -24,9 +24,18 @@ async function pullFromCloud() {
   if (res.code === 0 && res.data) {
     const { favorites, completed } = res.data
 
+    // 兼容新旧格式：将收藏统一转为 routeId 数组供本地使用
+    const favoriteIds = (favorites || []).map(item => {
+      if (typeof item === 'string') return item
+      if (item && item.routeId) return item.routeId
+      return null
+    }).filter(Boolean)
+
     // 总是覆盖本地（包括空数组，确保云端删除同步到本地）
-    wx.setStorageSync('route_favorites', favorites || [])
-    wx.setStorageSync('favorites', favorites || [])
+    wx.setStorageSync('route_favorites', favoriteIds)
+    wx.setStorageSync('favorites', favoriteIds)
+    // 保存完整收藏数据（含时间戳），供 profile 页使用
+    wx.setStorageSync('favorites_full', favorites || [])
     wx.setStorageSync('completed', completed || [])
 
     // 同步清单勾选状态到本地缓存
@@ -38,7 +47,7 @@ async function pullFromCloud() {
       })
     }
 
-    return { favorites: favorites || [], completed: completed || [] }
+    return { favorites: favoriteIds, completed: completed || [] }
   }
 
   return { favorites: [], completed: [] }
@@ -56,12 +65,18 @@ async function syncCompletedToCloud(completed) {
 
 // 添加收藏（本地+云端）
 async function addFavorite(routeId) {
-  // 更新本地
+  // 更新本地（routeId 数组，供快速判断）
   let favorites = wx.getStorageSync('route_favorites') || []
   if (!favorites.includes(routeId)) {
     favorites.push(routeId)
     wx.setStorageSync('route_favorites', favorites)
     wx.setStorageSync('favorites', favorites)
+  }
+  // 同时更新完整数据（含时间戳）
+  let favoritesFull = wx.getStorageSync('favorites_full') || []
+  if (!favoritesFull.some(item => (typeof item === 'string' ? item === routeId : item.routeId === routeId))) {
+    favoritesFull.push({ routeId: routeId, date: new Date().toISOString() })
+    wx.setStorageSync('favorites_full', favoritesFull)
   }
 
   // 同步到云端
@@ -75,6 +90,14 @@ async function removeFavorite(routeId) {
   favorites = favorites.filter(id => id !== routeId)
   wx.setStorageSync('route_favorites', favorites)
   wx.setStorageSync('favorites', favorites)
+  // 同时更新完整数据
+  let favoritesFull = wx.getStorageSync('favorites_full') || []
+  favoritesFull = favoritesFull.filter(item => {
+    if (typeof item === 'string') return item !== routeId
+    if (item && item.routeId) return item.routeId !== routeId
+    return true
+  })
+  wx.setStorageSync('favorites_full', favoritesFull)
 
   // 同步到云端
   return await callUserDataAPI('remove-favorite', { routeId })
@@ -158,9 +181,14 @@ function deleteCompleted(routeId, completedAt) {
   return true
 }
 
-// 获取本地收藏列表
+// 获取本地收藏列表（routeId 数组）
 function getLocalFavorites() {
   return wx.getStorageSync('route_favorites') || wx.getStorageSync('favorites') || []
+}
+
+// 获取本地收藏完整数据（含时间戳）
+function getLocalFavoritesFull() {
+  return wx.getStorageSync('favorites_full') || []
 }
 
 // 获取本地已走过列表
@@ -213,6 +241,7 @@ module.exports = {
   removeCompleted,
   deleteCompleted,
   getLocalFavorites,
+  getLocalFavoritesFull,
   getLocalCompleted,
   isFavorited,
   isCompleted,

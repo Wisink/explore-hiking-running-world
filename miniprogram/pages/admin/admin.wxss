@@ -1104,24 +1104,43 @@
   color: #F44336 !important;
 }
 
-/* ===== migrate ===== */
-.migrate-wrap {
-  padding: 20rpx 0;
+/* ===== 筛选 Tab ===== */
+.filter-tabs {
+  display: flex;
+  gap: 12rpx;
+  margin: 16rpx 0;
 }
 
-.migrate-btn {
-  padding: 20rpx 24rpx;
-  background: #fff8e1;
-  border: 1rpx solid #ffe082;
+.filter-tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16rpx 0;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,.18);
   border-radius: 12rpx;
-  text-align: center;
+  transition: all 200ms ease;
 }
 
-.migrate-btn text {
+.filter-tab:active {
+  transform: scale(0.97);
+}
+
+.filter-tab text {
   font-size: 24rpx;
-  color: #f57f17;
+  color: #6b8b6b;
+  font-weight: 500;
 }
 
-.migrate-btn:active {
-  background: #fff3e0;
+.filter-tab--on {
+  background: rgba(76, 175, 80, 0.2);
+  border-color: rgba(76, 175, 80, 0.3);
+}
+
+.filter-tab--on text {
+  color: #1a2e1a;
+  font-weight: 700;
 }

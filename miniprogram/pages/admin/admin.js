@@ -58,11 +58,13 @@ Page({
 
     // 路线
     routes: [],
+    routesFiltered: [],
     routesLoading: false,
     routesPage: 1,
     routesTotal: 0,
     routesKeyword: '',
     routesHasMore: true,
+    routesActiveFilter: 'all', // all | published | draft
 
     // 用户
     users: [],
@@ -74,10 +76,12 @@ Page({
 
     // 文章
     articles: [],
+    articlesFiltered: [],
     articlesLoading: false,
     articlesPage: 1,
     articlesTotal: 0,
     articlesHasMore: true,
+    articlesActiveFilter: 'all', // all | published | draft
     articlesKeyword: '',
     articlesSearchType: 'all', // all | category | content
     articlesSearchTypes: [
@@ -258,7 +262,7 @@ Page({
     try {
       const [growth, favTrend, compTrend, topFav, topComp, articles, users] = await Promise.all([
         this.callAdminApi('stats', 'userGrowth', { dimension: dim }),
-        this.callAdminApi('stats', 'favoriteTrend'),
+        this.callAdminApi('stats', 'favoriteTrend', { dimension: dim }),
         this.callAdminApi('stats', 'completedTrend', { dimension: dim }),
         this.callAdminApi('stats', 'topFavoritedRoutes'),
         this.callAdminApi('stats', 'topCompletedRoutes'),
@@ -276,7 +280,7 @@ Page({
       this.setData({
         userGrowthList: growth.code === 0 ? (growth.data.list || []).map(i => ({ label: i._id, value: i.count, barPct: 0 })) : [],
         completedTrendList: compTrend.code === 0 ? (compTrend.data.list || []).map(i => ({ label: i._id, value: i.count, barPct: 0 })) : [],
-        favoriteTrendList: favTrend.code === 0 ? calcBarPct(favTrend.data.list || [], 'favoriteCount') : [],
+        favoriteTrendList: favTrend.code === 0 ? (favTrend.data.list || []).map(i => ({ label: i._id, value: i.count, barPct: 0 })) : [],
         topFavoritedRoutes: topFav.code === 0 ? calcBarPct(topFav.data.list || [], 'favoriteCount') : [],
         topCompletedRoutes: topComp.code === 0 ? calcBarPct(topComp.data.list || [], 'completedCount') : [],
         topArticles: articles.code === 0 ? calcBarPct(articles.data.list || [], 'viewCount') : [],
@@ -288,6 +292,7 @@ Page({
       // 重新计算趋势图的 barPct（需要特殊处理）
       this._calcTrendBarPct('userGrowthList', 'value')
       this._calcTrendBarPct('completedTrendList', 'value')
+      this._calcTrendBarPct('favoriteTrendList', 'value')
     } catch (e) {
       console.error('加载图表失败:', e)
       this.setData({ chartLoading: false })
@@ -351,6 +356,7 @@ Page({
         const list = append ? this.data.routes.concat(rawList) : rawList
         this.setData({
           routes: list,
+          routesFiltered: this._filterRoutes(list, this.data.routesActiveFilter),
           routesTotal: res.data.total,
           routesPage: page,
           routesHasMore: list.length < res.data.total,
@@ -373,6 +379,23 @@ Page({
 
   onRoutesScrollToLower() {
     if (this.data.routesHasMore) this.loadRoutes(true)
+  },
+
+  // 路线发布状态筛选
+  onRoutesFilterChange(e) {
+    const filter = e.currentTarget.dataset.filter
+    if (filter === this.data.routesActiveFilter) return
+    this.setData({
+      routesActiveFilter: filter,
+      routesFiltered: this._filterRoutes(this.data.routes, filter)
+    })
+  },
+
+  _filterRoutes(list, filter) {
+    if (filter === 'all') return list
+    if (filter === 'published') return list.filter(r => r.isActive !== false)
+    if (filter === 'draft') return list.filter(r => r.isActive === false)
+    return list
   },
 
   // --- 用户 ---
@@ -437,6 +460,7 @@ Page({
         const list = append ? this.data.articles.concat(res.data.list) : res.data.list
         this.setData({
           articles: list,
+          articlesFiltered: this._filterArticles(list, this.data.articlesActiveFilter),
           articlesTotal: res.data.total,
           articlesPage: page,
           articlesHasMore: list.length < res.data.total,
@@ -474,6 +498,23 @@ Page({
 
   onArticlesScrollToLower() {
     if (this.data.articlesHasMore) this.loadArticles(true)
+  },
+
+  // 文章发布状态筛选
+  onArticlesFilterChange(e) {
+    const filter = e.currentTarget.dataset.filter
+    if (filter === this.data.articlesActiveFilter) return
+    this.setData({
+      articlesActiveFilter: filter,
+      articlesFiltered: this._filterArticles(this.data.articles, filter)
+    })
+  },
+
+  _filterArticles(list, filter) {
+    if (filter === 'all') return list
+    if (filter === 'published') return list.filter(a => a.isActive !== false)
+    if (filter === 'draft') return list.filter(a => a.isActive === false)
+    return list
   },
 
   // ========== 交互操作 ==========
@@ -553,7 +594,10 @@ Page({
           if (r._id === id) r.isActive = res.data.isActive
           return r
         })
-        this.setData({ routes })
+        this.setData({
+          routes,
+          routesFiltered: this._filterRoutes(routes, this.data.routesActiveFilter)
+        })
       } else {
         this.showToast(res.message || '操作失败', 'error')
       }
@@ -573,7 +617,10 @@ Page({
           if (a._id === id) a.isActive = res.data.isActive
           return a
         })
-        this.setData({ articles })
+        this.setData({
+          articles,
+          articlesFiltered: this._filterArticles(articles, this.data.articlesActiveFilter)
+        })
       } else {
         this.showToast(res.message || '操作失败', 'error')
       }
@@ -627,33 +674,6 @@ Page({
           wx.hideLoading()
           console.error('导出失败:', err)
           this.showToast('导出失败', 'error')
-        }
-      }
-    })
-  },
-
-  // ========== 数据迁移 ==========
-
-  async onMigrateIsActive() {
-    wx.showModal({
-      title: '数据迁移',
-      content: '为所有现有数据添加 isActive: true 字段，确定执行？',
-      success: async (modal) => {
-        if (!modal.confirm) return
-        wx.showLoading({ title: '迁移中...' })
-        try {
-          const res = await this.callAdminApi('migrate', 'migrateIsActive')
-          wx.hideLoading()
-          if (res.code === 0) {
-            const { routes, articles } = res.data
-            this.showToast(`迁移完成：路线${routes.updated}条，文章${articles.updated}条`, 'success')
-          } else {
-            this.showToast(res.message || '迁移失败', 'error')
-          }
-        } catch (err) {
-          wx.hideLoading()
-          console.error('迁移失败:', err)
-          this.showToast('迁移失败', 'error')
         }
       }
     })

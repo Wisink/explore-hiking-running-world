@@ -134,14 +134,36 @@ Page({
 
   /**
    * 从本地缓存加载收藏列表
-   * 收藏数据结构: { favorites: ["route_001", "route_002"] }
-   * 需要将ID转换为路线详情
+   * 收藏数据结构（新）: favorites_full = [{ routeId: "route_001", date: "..." }]
+   * 兼容旧格式: favorites = ["route_001", "route_002"]
+   * 按收藏日期倒序排列（最新的在前）
    */
   async loadFavorites() {
     try {
-      const favorites = wx.getStorageSync('favorites') || []
-      const favoriteIds = Array.isArray(favorites) ? favorites : (favorites.favorites || [])
-      
+      // 优先读取完整数据（含时间戳）
+      let favoritesFull = wx.getStorageSync('favorites_full') || []
+      let favorites = wx.getStorageSync('favorites') || []
+
+      // 兼容：如果没有 favorites_full，从 favorites 构建
+      let favoriteIds = []
+      let dateMap = {}
+
+      if (favoritesFull.length > 0) {
+        favoritesFull.forEach(item => {
+          if (typeof item === 'string') {
+            favoriteIds.push(item)
+            dateMap[item] = null
+          } else if (item && item.routeId) {
+            favoriteIds.push(item.routeId)
+            dateMap[item.routeId] = item.date || null
+          }
+        })
+      } else if (Array.isArray(favorites)) {
+        favoriteIds = favorites
+      } else if (favorites && favorites.favorites) {
+        favoriteIds = favorites.favorites
+      }
+
       this.setData({ favoriteCount: favoriteIds.length })
 
       if (favoriteIds.length === 0) {
@@ -172,11 +194,19 @@ Page({
         }
       }
 
-      // 按收藏顺序排列
-      const routes = favoriteIds.map(id => {
+      // 构建路线列表并附上收藏日期
+      let routes = favoriteIds.map(id => {
         const r = allRoutes.find(t => t._id === id)
-        if (r) return this.normalizeRoute(r)
-        return { _id: id, name: '路线详情', description: '', coverImage: '', location: '', distance: '', duration: '', difficulty: '', difficultyLevel: 0 }
+        const route = r ? this.normalizeRoute(r) : { _id: id, name: '路线详情', description: '', coverImage: '', location: '', distance: '', duration: '', difficulty: '', difficultyLevel: 0 }
+        return { ...route, favoriteDate: dateMap[id] || null }
+      })
+
+      // 按收藏日期倒序（有日期的在前，无日期的按原顺序排在后面）
+      routes.sort((a, b) => {
+        if (a.favoriteDate && b.favoriteDate) return new Date(b.favoriteDate) - new Date(a.favoriteDate)
+        if (a.favoriteDate) return -1
+        if (b.favoriteDate) return 1
+        return 0
       })
 
       this.setData({ favoriteRoutes: routes })
@@ -522,13 +552,22 @@ Page({
    */
   removeFavorite(id) {
     try {
-      // 先更新本地
+      // 先更新本地（兼容新旧格式）
       let favorites = wx.getStorageSync('favorites') || []
       if (!Array.isArray(favorites)) {
         favorites = favorites.favorites || []
       }
       favorites = favorites.filter(fid => fid !== id)
       wx.setStorageSync('favorites', favorites)
+
+      // 同时更新完整数据
+      let favoritesFull = wx.getStorageSync('favorites_full') || []
+      favoritesFull = favoritesFull.filter(item => {
+        if (typeof item === 'string') return item !== id
+        if (item && item.routeId) return item.routeId !== id
+        return true
+      })
+      wx.setStorageSync('favorites_full', favoritesFull)
 
       // 同步到云端
       const cloudSync = require('../../utils/cloud-sync.js')

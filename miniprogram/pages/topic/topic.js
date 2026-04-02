@@ -64,7 +64,7 @@ Page({
     this.setData({ loading: true })
 
     db.collection('articles')
-      .where({ category: this.data.category })
+      .where({ category: this.data.category, isActive: true })
       .orderBy('order', 'asc')
       .skip(skip)
       .limit(this.data.pageSize)

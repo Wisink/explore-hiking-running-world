@@ -318,8 +318,11 @@
       <view class="delete-btn" wx:if="{{id}}" bindtap="onDelete">
         <text>删除</text>
       </view>
-      <view class="save-btn {{saving ? 'save-btn--disabled' : ''}}" bindtap="onSave">
-        <text>{{saving ? '保存中...' : '保存'}}</text>
+      <view class="draft-btn {{saving ? 'draft-btn--disabled' : ''}}" bindtap="onSaveDraft">
+        <text>{{saving ? '保存中...' : '保存草稿'}}</text>
+      </view>
+      <view class="save-btn {{saving ? 'save-btn--disabled' : ''}}" bindtap="onPublish">
+        <text>{{saving ? '发布中...' : '发布'}}</text>
       </view>
     </view>
   </view>

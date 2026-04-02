@@ -94,12 +94,6 @@
         </view>
       </view>
 
-      <!-- 数据迁移按钮 -->
-      <view class="migrate-wrap">
-        <view class="migrate-btn" bindtap="onMigrateIsActive">
-          <text>🔧 数据迁移：为现有数据添加 isActive 字段</text>
-        </view>
-      </view>
       <view class="loading-wrap" wx:if="{{statsLoading}}">
         <text class="loading-text">加载中...</text>
       </view>
@@ -172,23 +166,26 @@
           </view>
         </view>
 
-        <!-- 3. 收藏趋势（收藏无时间戳，按路线维度展示） -->
+        <!-- 3. 收藏趋势（按收藏日期分组） -->
         <view class="chart-panel">
           <view class="chart-panel__header" data-field="panelFavoriteTrend" catchtap="toggleChartPanel">
-            <text class="chart-panel__title">⭐ 收藏趋势（路线维度）</text>
+            <text class="chart-panel__title">⭐ 收藏趋势</text>
             <text class="chart-panel__arrow">{{panelFavoriteTrend ? '▼' : '▶'}}</text>
           </view>
           <view class="chart-panel__body" wx:if="{{panelFavoriteTrend}}">
-            <view class="chart-note">
-              <text>ℹ️ 收藏数据无时间戳，按路线收藏量排序展示</text>
+            <view class="trend-dims">
+              <text class="trend-dim {{trendDimension==='day' ? 'trend-dim--active' : ''}}" data-dim="day" catchtap="onTrendDimensionChange">日</text>
+              <text class="trend-dim {{trendDimension==='week' ? 'trend-dim--active' : ''}}" data-dim="week" catchtap="onTrendDimensionChange">周</text>
+              <text class="trend-dim {{trendDimension==='month' ? 'trend-dim--active' : ''}}" data-dim="month" catchtap="onTrendDimensionChange">月</text>
+              <text class="trend-dim {{trendDimension==='year' ? 'trend-dim--active' : ''}}" data-dim="year" catchtap="onTrendDimensionChange">年</text>
             </view>
             <view class="bar-chart" wx:if="{{favoriteTrendList.length > 0}}">
-              <view class="bar-row" wx:for="{{favoriteTrendList}}" wx:key="name">
-                <text class="bar-row__label bar-row__label--long">{{item.name || '未命名'}}</text>
+              <view class="bar-row" wx:for="{{favoriteTrendList}}" wx:key="label">
+                <text class="bar-row__label">{{item.label}}</text>
                 <view class="bar-row__track">
                   <view class="bar-row__fill bar-row__fill--yellow" style="width: {{item.barPct}}%"></view>
                 </view>
-                <text class="bar-row__value">{{item.favoriteCount}}</text>
+                <text class="bar-row__value">{{item.value}}</text>
               </view>
             </view>
             <view class="chart-empty" wx:else>
@@ -328,6 +325,19 @@
         </view>
       </view>
 
+      <!-- 发布状态筛选 -->
+      <view class="filter-tabs">
+        <view class="filter-tab {{routesActiveFilter === 'all' ? 'filter-tab--on' : ''}}" data-filter="all" catchtap="onRoutesFilterChange">
+          <text>全部</text>
+        </view>
+        <view class="filter-tab {{routesActiveFilter === 'published' ? 'filter-tab--on' : ''}}" data-filter="published" catchtap="onRoutesFilterChange">
+          <text>✅ 已发布</text>
+        </view>
+        <view class="filter-tab {{routesActiveFilter === 'draft' ? 'filter-tab--on' : ''}}" data-filter="draft" catchtap="onRoutesFilterChange">
+          <text>📝 未发布</text>
+        </view>
+      </view>
+
       <scroll-view
         class="admin-scroll"
         scroll-y
@@ -337,7 +347,7 @@
         <view class="admin-list">
           <view
             class="admin-item"
-            wx:for="{{routes}}"
+            wx:for="{{routesFiltered}}"
             wx:key="_id"
             bindtap="onRouteTap"
             data-id="{{item._id}}"
@@ -374,7 +384,7 @@
         <view class="loading-wrap" wx:if="{{routesLoading}}">
           <text class="loading-text">加载中...</text>
         </view>
-        <view class="list-end" wx:if="{{!routesHasMore && routes.length > 0}}">
+        <view class="list-end" wx:if="{{!routesHasMore && routesFiltered.length > 0}}">
           <text>— 没有更多了 —</text>
         </view>
       </scroll-view>
@@ -496,6 +506,19 @@
         </view>
       </view>
 
+      <!-- 发布状态筛选 -->
+      <view class="filter-tabs">
+        <view class="filter-tab {{articlesActiveFilter === 'all' ? 'filter-tab--on' : ''}}" data-filter="all" catchtap="onArticlesFilterChange">
+          <text>全部</text>
+        </view>
+        <view class="filter-tab {{articlesActiveFilter === 'published' ? 'filter-tab--on' : ''}}" data-filter="published" catchtap="onArticlesFilterChange">
+          <text>✅ 已发布</text>
+        </view>
+        <view class="filter-tab {{articlesActiveFilter === 'draft' ? 'filter-tab--on' : ''}}" data-filter="draft" catchtap="onArticlesFilterChange">
+          <text>📝 未发布</text>
+        </view>
+      </view>
+
       <scroll-view
         class="admin-scroll"
         scroll-y
@@ -505,7 +528,7 @@
         <view class="admin-list">
           <view
             class="admin-item"
-            wx:for="{{articles}}"
+            wx:for="{{articlesFiltered}}"
             wx:key="_id"
             bindtap="onArticleTap"
             data-id="{{item._id}}"
@@ -533,7 +556,7 @@
         <view class="loading-wrap" wx:if="{{articlesLoading}}">
           <text class="loading-text">加载中...</text>
         </view>
-        <view class="list-end" wx:if="{{!articlesHasMore && articles.length > 0}}">
+        <view class="list-end" wx:if="{{!articlesHasMore && articlesFiltered.length > 0}}">
           <text>— 没有更多了 —</text>
         </view>
       </scroll-view>

@@ -332,6 +332,28 @@
   font-weight: 600;
 }
 
+.draft-btn {
+  flex: 1;
+  height: 88rpx;
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,.25);
+  border-radius: 16rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.draft-btn:active { transform: scale(0.98); }
+.draft-btn--disabled { opacity: 0.6; }
+
+.draft-btn text {
+  font-size: 32rpx;
+  color: #1a2e1a;
+  font-weight: 600;
+}
+
 .save-btn {
   flex: 1;
   height: 88rpx;

@@ -277,12 +277,10 @@ Page({
   addDifficultySuitableFor() { this._addTagItem('difficulty_suitableFor', 'difficultySuitableForInput') },
   removeDifficultySuitableFor(e) { this._removeTagItem('difficulty_suitableFor', e.currentTarget.dataset.index) },
 
-  // ========== 保存 ==========
+  // ========== 保存/发布 ==========
 
-  async onSave() {
-    if (this.data.saving) return
-    this.setData({ saving: true })
-
+  // 构建更新数据（isActive 由调用方传入）
+  _buildUpdateData(isActive) {
     const module = this.data.type === 'article' ? 'articles' : 'routes'
     let updateData
 
@@ -290,16 +288,14 @@ Page({
       const f = this.data.articleForm
       if (!f.title.trim()) {
         this.showToast('标题不能为空', 'error')
-        this.setData({ saving: false })
-        return
+        return null
       }
-      updateData = { ...f }
+      updateData = { ...f, isActive }
     } else {
       const f = this.data.form
       if (!f.name.trim()) {
         this.showToast('路线名称不能为空', 'error')
-        this.setData({ saving: false })
-        return
+        return null
       }
       updateData = {
         name: f.name,
@@ -340,22 +336,38 @@ Page({
           emergencyPhone: f.safety_emergencyPhone
         },
         best_season: f.best_season,
-        order: parseInt(f.order) || 0
+        order: parseInt(f.order) || 0,
+        isActive
       }
+    }
+    return updateData
+  },
+
+  // 通用保存函数
+  async _doSave(isActive, successMsg) {
+    if (this.data.saving) return
+    this.setData({ saving: true })
+
+    const module = this.data.type === 'article' ? 'articles' : 'routes'
+    const updateData = this._buildUpdateData(isActive)
+    if (!updateData) {
+      this.setData({ saving: false })
+      return
     }
 
     try {
+      const token = wx.getStorageSync('admin_token') || ''
       if (this.data.id) {
         // 更新
         const res = await wx.cloud.callFunction({
           name: 'admin-api',
           data: {
             module, action: 'update',
-            params: { id: this.data.id, data: updateData }
+            params: { id: this.data.id, data: updateData, token }
           }
         })
         if (res.result.code === 0) {
-          this.showToast('保存成功', 'success')
+          this.showToast(successMsg, 'success')
           setTimeout(() => wx.navigateBack(), 1500)
         } else {
           this.showToast(res.result.message || '保存失败', 'error')
@@ -366,11 +378,11 @@ Page({
           name: 'admin-api',
           data: {
             module, action: 'add',
-            params: { data: updateData }
+            params: { data: updateData, token }
           }
         })
         if (res.result.code === 0) {
-          this.showToast('添加成功', 'success')
+          this.showToast(successMsg, 'success')
           setTimeout(() => wx.navigateBack(), 1500)
         } else {
           this.showToast(res.result.message || '添加失败', 'error')
@@ -381,6 +393,16 @@ Page({
       this.showToast('网络错误', 'error')
     }
     this.setData({ saving: false })
+  },
+
+  // 保存草稿（isActive=false）
+  onSaveDraft() {
+    this._doSave(false, '草稿已保存')
+  },
+
+  // 发布（isActive=true）
+  onPublish() {
+    this._doSave(true, '发布成功')
   },
 
   // ========== 删除 ==========
