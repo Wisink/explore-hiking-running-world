@@ -55,7 +55,7 @@
       </view>
 
       <view class="option-card option-card--wide" data-value="family" bindtap="onStep1Tap">
-        <view class="option-card__icon">👨‍👩‍👧</view>
+        <view class="option-card__icon">👶</view>
         <view class="option-card__title">亲子徒步</view>
         <view class="option-card__desc">亲子友好、路程短、安全好走</view>
       </view>
@@ -201,7 +201,7 @@
           </view>
 
           <view class="route-card__family" wx:if="{{item.family_friendly}}">
-            <text>👨‍👩‍👧 亲子友好</text>
+            <text>👶 亲子友好</text>
           </view>
         </view>
       </view>
