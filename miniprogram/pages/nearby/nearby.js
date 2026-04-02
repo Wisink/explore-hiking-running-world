@@ -76,32 +76,83 @@ Page({
     const that = this
     this.setData({ loading: true, showSkeleton: true })
 
-    wx.getLocation({
-      type: 'gcj02',
-      success: function (res) {
-        that.setData({
-          userLat: res.latitude,
-          userLng: res.longitude,
-          userLocationName: '当前位置',
-          hasLocation: true,
-          loading: false
-        })
-        that.loadNearbyRoutes()
+    function getLocation() {
+      wx.getLocation({
+        type: 'gcj02',
+        success: function (res) {
+          that.setData({
+            userLat: res.latitude,
+            userLng: res.longitude,
+            userLocationName: '当前位置',
+            hasLocation: true,
+            loading: false
+          })
+          that.loadNearbyRoutes()
+        },
+        fail: function (err) {
+          console.warn('getLocation fail:', err)
+          that.setData({ loading: false })
+          that.showLocationFailModal()
+        }
+      })
+    }
+
+    // 先尝试授权
+    wx.authorize({
+      scope: 'scope.userLocation',
+      success: function () {
+        getLocation()
       },
       fail: function () {
-        // 授权失败，降级为手动选择
-        wx.showModal({
-          title: '定位失败',
-          content: '无法获取您的位置，请手动选择一个位置',
-          confirmText: '手动选择',
-          cancelText: '返回',
-          success: function (modal) {
-            that.setData({ loading: false })
-            if (modal.confirm) {
-              that.openChooseLocation()
+        // 授权被拒绝，检查是否已永久拒绝
+        wx.getSetting({
+          success: function (res) {
+            if (res.authSetting['scope.userLocation'] === false) {
+              // 用户永久拒绝了授权，引导去设置页开启
+              wx.showModal({
+                title: '需要位置权限',
+                content: '您已拒绝位置权限，请在设置中开启后重试',
+                confirmText: '去设置',
+                cancelText: '手动选择',
+                success: function (modal) {
+                  if (modal.confirm) {
+                    wx.openSetting({
+                      success: function (settingRes) {
+                        if (settingRes.authSetting['scope.userLocation']) {
+                          getLocation()
+                        }
+                      }
+                    })
+                  } else {
+                    that.openChooseLocation()
+                  }
+                }
+              })
+            } else {
+              // 首次拒绝，降级为手动选择
+              that.showLocationFailModal()
             }
+          },
+          fail: function () {
+            that.showLocationFailModal()
           }
         })
+      }
+    })
+  },
+
+  // 定位失败弹窗
+  showLocationFailModal: function () {
+    const that = this
+    wx.showModal({
+      title: '定位失败',
+      content: '无法获取您的位置，请手动选择一个位置',
+      confirmText: '手动选择',
+      cancelText: '返回',
+      success: function (modal) {
+        if (modal.confirm) {
+          that.openChooseLocation()
+        }
       }
     })
   },
