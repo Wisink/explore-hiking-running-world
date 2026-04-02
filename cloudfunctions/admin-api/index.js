@@ -600,8 +600,8 @@ async function handleExport(action, params) {
       const tokenCheck = verifyToken(params)
       if (!tokenCheck.valid) return fail(tokenCheck.message)
       const { collection } = params || {}
-      if (!collection || !['routes', 'articles', 'user_data'].includes(collection)) {
-        return fail('不支持的集合，可选：routes / articles / user_data')
+      if (!collection || !['routes', 'articles', 'users'].includes(collection)) {
+        return fail('不支持的集合，可选：routes / articles / users')
       }
 
       // 分批获取全部数据
@@ -788,16 +788,15 @@ async function handleStats(action, params) {
       }
 
       const trendMap = {}
-      // startTs 减去8小时容差，避免时区偏移导致的边界遗漏
-      const startTs = Math.floor(startDate.getTime() / 1000) - 8 * 3600
+      // 用 createdAt 字段（ISO日期），与 favoriteTrend / completedTrend 保持一致
+      // startDate 转为北京时间的毫秒时间戳用于比较
+      const startBeijingMs = startDate.getTime() - 8 * 3600000
       for (const user of allUsers) {
-        // _id 前 8 字符是创建时间的 Unix hex（UTC时间戳）
-        if (!user._id || user._id.length < 8) continue
-        const tsHex = user._id.substring(0, 8)
-        const ts = parseInt(tsHex, 16)
-        if (isNaN(ts) || ts < startTs) continue
-        // 转北京时间（UTC+8）：与 favoriteTrend / completedTrend 保持一致
-        const d = new Date(ts * 1000 + 8 * 3600000)
+        if (!user.createdAt) continue
+        const createdDate = new Date(user.createdAt)
+        if (isNaN(createdDate.getTime())) continue
+        const d = new Date(createdDate.getTime() + 8 * 3600000) // 转北京时间
+        if (d.getTime() < startBeijingMs) continue
         const key = groupFn(d)
         trendMap[key] = (trendMap[key] || 0) + 1
       }

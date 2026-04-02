@@ -649,7 +649,7 @@ Page({
   },
 
   async onExportUsers() {
-    this._doExport('user_data', '用户')
+    this._doExport('users', '用户')
   },
 
   async _doExport(collection, label) {
