@@ -114,42 +114,56 @@ async function handleUsers(action, params) {
       if (keyword) {
         where = _.or([
           { nickName: db.RegExp({ regexp: keyword, options: 'i' }) },
-          { openid: db.RegExp({ regexp: keyword, options: 'i' }) }
+          { _openid: db.RegExp({ regexp: keyword, options: 'i' }) }
         ])
       }
-      const countRes = await db.collection('user_data').where(where).count()
-      const { data } = await db.collection('user_data')
-        .where(where).orderBy('_id', 'desc')
+      // 以 users 集合为主（所有登录过的用户都在这里）
+      const countRes = await db.collection('users').where(where).count()
+      const { data } = await db.collection('users')
+        .where(where).orderBy('lastVisit', 'desc')
         .skip((page - 1) * pageSize).limit(pageSize).get()
 
-      // 关联 users 集合获取 visitCount 和 userNumber
+      // 关联 user_data 集合获取 favorites / completed
       const openIds = data.map(u => u._openid).filter(Boolean)
-      let userMetaMap = {}
+      let userDataMap = {}
       if (openIds.length > 0) {
-        const { data: userMetas } = await db.collection('users')
+        const { data: userDatas } = await db.collection('user_data')
           .where({ _openid: _.in(openIds) }).get()
-        userMetas.forEach(u => { userMetaMap[u._openid] = u })
+        userDatas.forEach(ud => { userDataMap[ud._openid] = ud })
       }
 
-      const enriched = data.map(u => ({
-        ...u,
-        visitCount: (userMetaMap[u._openid] || {}).visitCount || 0,
-        userNumber: (userMetaMap[u._openid] || {}).userNumber || ''
-      }))
+      const enriched = data.map(u => {
+        const ud = userDataMap[u._openid] || {}
+        return {
+          ...u,
+          ...ud,
+          // 保留 users 集合中的 visitCount / userNumber
+          visitCount: u.visitCount || 0,
+          userNumber: u.userNumber || ''
+        }
+      })
 
       return success({ list: enriched, total: countRes.total, page, pageSize })
     }
     case 'detail': {
       const { id } = params || {}
-      const { data: userData } = await db.collection('user_data').doc(id).get()
-      if (!userData) return fail('用户不存在')
+      // 先从 users 集合获取用户基本信息
+      let userMeta
+      try {
+        const res = await db.collection('users').doc(id).get()
+        userMeta = res.data
+      } catch (e) {
+        return fail('用户不存在')
+      }
+      if (!userMeta) return fail('用户不存在')
+      const openid = userMeta._openid
 
-      // 关联 users 集合
-      let userMeta = {}
-      if (userData._openid) {
-        const { data: metas } = await db.collection('users')
-          .where({ _openid: userData._openid }).limit(1).get()
-        if (metas.length > 0) userMeta = metas[0]
+      // 从 user_data 集合获取用户数据（可能不存在）
+      let userData = {}
+      if (openid) {
+        const { data: udArr } = await db.collection('user_data')
+          .where({ _openid: openid }).limit(1).get()
+        if (udArr.length > 0) userData = udArr[0]
       }
 
       // 获取收藏路线详情（兼容新旧格式）
@@ -200,6 +214,7 @@ async function handleUsers(action, params) {
       return success({
         userInfo: {
           ...userData,
+          ...userMeta,
           visitCount: userMeta.visitCount || 0,
           userNumber: userMeta.userNumber || ''
         },
@@ -724,7 +739,7 @@ async function handleStats(action, params) {
     case 'overview': {
       const [routesRes, usersRes, articlesRes] = await Promise.all([
         db.collection('routes').count(),
-        db.collection('user_data').count(),
+        db.collection('users').count(),
         db.collection('articles').count()
       ])
       return success({
@@ -740,39 +755,52 @@ async function handleStats(action, params) {
     case 'userGrowth': {
       const { dimension = 'month' } = params || {}
       const now = new Date()
-      let startDate, dateFormat
+      let startDate, groupFn
 
       if (dimension === 'day') {
         startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 29)
-        dateFormat = '%Y-%m-%d'
+        groupFn = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`
       } else if (dimension === 'week') {
         startDate = new Date(now.getTime() - 29 * 7 * 86400000)
-        dateFormat = '%Y-W%V'
+        groupFn = d => {
+          const onejan = new Date(d.getFullYear(), 0, 1)
+          const week = Math.ceil(((d - onejan) / 86400000 + onejan.getDay() + 1) / 7)
+          return `${d.getFullYear()}-W${String(week).padStart(2,'0')}`
+        }
       } else if (dimension === 'month') {
         startDate = new Date(now.getFullYear(), now.getMonth() - 11, 1)
-        dateFormat = '%Y-%m'
-      } else { // year
+        groupFn = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`
+      } else {
         startDate = new Date(now.getFullYear() - 4, 0, 1)
-        dateFormat = '%Y'
+        groupFn = d => `${d.getFullYear()}`
       }
 
-      const res = await db.collection('user_data').aggregate()
-        .match({ _openid: _.exists(true) })
-        .project({
-          dateStr: $.dateToString({
-            date: '$updatedAt',
-            format: dateFormat,
-            timezone: '+08:00'
-          })
-        })
-        .group({
-          _id: '$dateStr',
-          count: $.sum(1)
-        })
-        .sort({ _id: 1 })
-        .end()
+      // 从 users 集合获取所有用户，用 _id 的 ObjectId 时间戳分组
+      const MAX_LIMIT = 100
+      const countRes = await db.collection('users').count()
+      const batchTimes = Math.ceil(countRes.total / MAX_LIMIT)
+      let allUsers = []
+      for (let i = 0; i < batchTimes; i++) {
+        const { data } = await db.collection('users')
+          .skip(i * MAX_LIMIT).limit(MAX_LIMIT).get()
+        allUsers = allUsers.concat(data)
+      }
 
-      return success({ list: res.list, dimension })
+      const trendMap = {}
+      const startTs = Math.floor(startDate.getTime() / 1000)
+      for (const user of allUsers) {
+        // _id 前 8 字符是创建时间的 Unix hex
+        if (!user._id || user._id.length < 8) continue
+        const tsHex = user._id.substring(0, 8)
+        const ts = parseInt(tsHex, 16)
+        if (isNaN(ts) || ts < startTs) continue
+        const d = new Date(ts * 1000)
+        const key = groupFn(d)
+        trendMap[key] = (trendMap[key] || 0) + 1
+      }
+
+      const list = Object.keys(trendMap).sort().map(k => ({ _id: k, count: trendMap[k] }))
+      return success({ list, dimension })
     }
 
     // 收藏趋势（按收藏日期分组统计）
