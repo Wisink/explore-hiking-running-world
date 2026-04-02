@@ -630,8 +630,74 @@ Page({
 
   // 点击「附近路线」入口
   onNearbyTap: function () {
-    wx.navigateTo({
-      url: '/pages/nearby/nearby'
+    wx.showModal({
+      title: '',
+      content: '你要从当前位置出发吗？需要获取你的位置，以便为你推荐附近的徒步路线哦！',
+      confirmText: '使用当前位置',
+      cancelText: '手动选择地点',
+      success: (res) => {
+        if (res.confirm) {
+          this.requestLocationAndGo()
+        } else if (res.cancel) {
+          this.chooseLocationAndGo()
+        }
+      }
+    })
+  },
+
+  // 请求定位并跳转附近页面
+  requestLocationAndGo: function () {
+    wx.authorize({
+      scope: 'scope.userLocation',
+      success: () => {
+        wx.getLocation({
+          type: 'gcj02',
+          success: (res) => {
+            wx.navigateTo({
+              url: `/pages/nearby/nearby?lat=${res.latitude}&lng=${res.longitude}`
+            })
+          },
+          fail: () => {
+            wx.showToast({ title: '定位失败，请手动选择', icon: 'none' })
+            this.chooseLocationAndGo()
+          }
+        })
+      },
+      fail: () => {
+        wx.getSetting({
+          success: (settingRes) => {
+            if (!settingRes.authSetting['scope.userLocation']) {
+              wx.showModal({
+                title: '需要位置权限',
+                content: '请在设置中开启位置权限，或选择手动选择地点',
+                confirmText: '去设置',
+                cancelText: '手动选择',
+                success: (r) => {
+                  if (r.confirm) {
+                    wx.openSetting()
+                  } else {
+                    this.chooseLocationAndGo()
+                  }
+                }
+              })
+            }
+          }
+        })
+      }
+    })
+  },
+
+  // 手动选择地点并跳转附近页面
+  chooseLocationAndGo: function () {
+    wx.chooseLocation({
+      success: (res) => {
+        wx.navigateTo({
+          url: `/pages/nearby/nearby?lat=${res.latitude}&lng=${res.longitude}`
+        })
+      },
+      fail: () => {
+        wx.showToast({ title: '已取消', icon: 'none' })
+      }
     })
   },
 
