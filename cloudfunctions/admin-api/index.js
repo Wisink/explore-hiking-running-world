@@ -567,15 +567,19 @@ async function handleStats(action, params) {
       }
 
       // 展开 favorites 数组，按 date 字段聚合
+      // favorites.date 是 ISO 字符串格式（如 "2026-04-02T11:25:00.000Z"）
+      // 用 $dateFromString 解析字符串并转为北京时间分组
       const res = await db.collection('user_data').aggregate()
         .unwind('$favorites')
         .match({
-          'favorites.date': _.exists(true),
           'favorites.date': _.gte(startDate.toISOString())
         })
         .project({
           dateStr: $.dateToString({
-            date: $.toDate('$favorites.date'),
+            date: $.dateFromString({
+              dateString: '$favorites.date',
+              timezone: '+08:00'
+            }),
             format: dateFormat,
             timezone: '+08:00'
           })
@@ -587,6 +591,7 @@ async function handleStats(action, params) {
         .sort({ _id: 1 })
         .end()
 
+      console.log('favoriteTrend result:', JSON.stringify(res.list))
       return success({ list: res.list, dimension })
     }
 
