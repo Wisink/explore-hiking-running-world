@@ -418,3 +418,63 @@
 
 .edit-toast--success { background: rgba(46, 125, 50, 0.85); }
 .edit-toast--error { background: rgba(244, 67, 54, 0.85); }
+
+/* ========== 季节多选 — 毛玻璃 ========== */
+.season-checkbox-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+}
+
+.season-checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  padding: 12rpx 24rpx;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12rpx;
+  transition: all 200ms ease;
+}
+
+.season-checkbox-item--active {
+  background: rgba(129, 199, 132, 0.25);
+  border-color: rgba(46, 125, 50, 0.4);
+}
+
+.season-checkbox-icon {
+  font-size: 28rpx;
+  color: #2d6a4f;
+}
+
+.season-checkbox-label {
+  font-size: 26rpx;
+  color: #1a2e1a;
+  font-weight: 500;
+}
+
+/* ========== 封面图上传按钮 — 毛玻璃 ========== */
+.cover-upload-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 80rpx;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 2rpx dashed rgba(129, 199, 132, 0.4);
+  border-radius: 12rpx;
+  margin-top: 10rpx;
+}
+
+.cover-upload-btn:active {
+  background: rgba(129, 199, 132, 0.15);
+}
+
+.cover-upload-btn text {
+  font-size: 26rpx;
+  color: #2d6a4f;
+  font-weight: 500;
+}

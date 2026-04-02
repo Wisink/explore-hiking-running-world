@@ -287,13 +287,60 @@
 
   <!-- ========== 文章编辑 ========== -->
   <block wx:elif="{{type === 'article'}}">
+    <!-- 基本信息 -->
     <view class="form-section">
-      <text class="form-section__title">文章信息</text>
+      <text class="form-section__title">基本信息</text>
 
       <view class="form-item">
         <text class="form-label">标题 <text class="form-required">*</text></text>
         <input class="form-input" placeholder="请输入文章标题" value="{{articleForm.title}}" data-field="title" bindinput="onArticleFieldInput" />
       </view>
+
+      <view class="form-item">
+        <text class="form-label">摘要</text>
+        <textarea class="form-textarea" placeholder="请输入文章摘要（列表页展示）" value="{{articleForm.summary}}" data-field="summary" bindinput="onArticleFieldInput" maxlength="300" />
+      </view>
+
+      <view class="form-item">
+        <text class="form-label">作者</text>
+        <input class="form-input" placeholder="请输入作者" value="{{articleForm.author}}" data-field="author" bindinput="onArticleFieldInput" />
+      </view>
+
+      <view class="form-row">
+        <view class="form-item form-item--half">
+          <text class="form-label">阅读时长</text>
+          <input class="form-input" placeholder="如：5分钟" value="{{articleForm.readTime}}" data-field="readTime" bindinput="onArticleFieldInput" />
+        </view>
+        <view class="form-item form-item--half">
+          <text class="form-label">难度</text>
+          <picker mode="selector" range="{{difficultyArticleOptions}}" rangeKey="label" value="{{difficultyArticleIndex}}" bindchange="onArticleDifficultyChange">
+            <view class="form-picker">
+              <text>{{difficultyArticleOptions[difficultyArticleIndex].label || '请选择难度'}}</text>
+              <text class="form-picker__arrow">▾</text>
+            </view>
+          </picker>
+        </view>
+      </view>
+
+      <view class="form-item">
+        <text class="form-label">亮点推荐语</text>
+        <textarea class="form-textarea" placeholder="请输入亮点推荐语" value="{{articleForm.highlights}}" data-field="highlights" bindinput="onArticleFieldInput" maxlength="500" />
+      </view>
+    </view>
+
+    <!-- 内容信息 -->
+    <view class="form-section">
+      <text class="form-section__title">内容信息</text>
+
+      <view class="form-item">
+        <text class="form-label">内容 <text class="form-required">*</text></text>
+        <textarea class="form-textarea form-textarea--tall" placeholder="请输入文章内容" value="{{articleForm.content}}" data-field="content" bindinput="onArticleFieldInput" maxlength="10000" />
+      </view>
+    </view>
+
+    <!-- 分类标签 -->
+    <view class="form-section">
+      <text class="form-section__title">分类标签</text>
 
       <view class="form-item">
         <text class="form-label">分类 <text class="form-required">*</text></text>
@@ -306,13 +353,77 @@
       </view>
 
       <view class="form-item">
-        <text class="form-label">作者</text>
-        <input class="form-input" placeholder="请输入作者" value="{{articleForm.author}}" data-field="author" bindinput="onArticleFieldInput" />
+        <text class="form-label">子分类</text>
+        <picker mode="selector" range="{{currentSubcategoryOptions}}" value="{{subcategoryIndex}}" bindchange="onSubcategoryChange">
+          <view class="form-picker">
+            <text>{{articleForm.subcategory || '请选择子分类'}}</text>
+            <text class="form-picker__arrow">▾</text>
+          </view>
+        </picker>
+      </view>
+
+      <!-- 标签 -->
+      <view class="form-item">
+        <text class="form-label">标签</text>
+        <view class="tag-list">
+          <view class="tag-item" wx:for="{{articleForm.tags}}" wx:key="*this">
+            <text>{{item}}</text>
+            <view class="tag-item__remove" bindtap="removeArticleTag" data-index="{{index}}">
+              <text>✕</text>
+            </view>
+          </view>
+        </view>
+        <view class="tag-add">
+          <input class="form-input form-input--small" placeholder="输入标签后按确认添加" value="{{tagInput}}" bindinput="onTagInput" confirm-type="done" bindconfirm="addArticleTag" />
+          <view class="tag-add__btn" bindtap="addArticleTag">
+            <text>+ 添加</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 季节 -->
+      <view class="form-item">
+        <text class="form-label">适合季节</text>
+        <view class="season-checkbox-group">
+          <view class="season-checkbox-item {{item.checked ? 'season-checkbox-item--active' : ''}}" wx:for="{{seasonOptions}}" wx:key="value" bindtap="onSeasonToggle" data-index="{{index}}">
+            <text class="season-checkbox-icon">{{item.checked ? '☑' : '☐'}}</text>
+            <text class="season-checkbox-label">{{item.label}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 封面图 -->
+    <view class="form-section">
+      <text class="form-section__title">封面图</text>
+
+      <view class="form-item">
+        <text class="form-label">图片URL</text>
+        <input class="form-input" placeholder="请输入封面图片链接" value="{{articleForm.coverImage}}" data-field="coverImage" bindinput="onArticleFieldInput" />
       </view>
 
       <view class="form-item">
-        <text class="form-label">内容 <text class="form-required">*</text></text>
-        <textarea class="form-textarea form-textarea--tall" placeholder="请输入文章内容" value="{{articleForm.content}}" data-field="content" bindinput="onArticleFieldInput" maxlength="10000" />
+        <text class="form-label">或上传图片</text>
+        <view class="cover-upload-btn" bindtap="onChooseCoverImage">
+          <text>{{coverUploading ? '上传中...' : '选择图片上传'}}</text>
+        </view>
+        <image wx:if="{{articleForm.coverImage}}" class="form-preview" src="{{articleForm.coverImage}}" mode="aspectFill" />
+      </view>
+    </view>
+
+    <!-- 排序设置 -->
+    <view class="form-section">
+      <text class="form-section__title">排序设置</text>
+
+      <view class="form-row">
+        <view class="form-item form-item--half">
+          <text class="form-label">优先级</text>
+          <input class="form-input" type="number" placeholder="0=新手精选" value="{{articleForm.priority}}" data-field="priority" bindinput="onArticleFieldInput" />
+        </view>
+        <view class="form-item form-item--half">
+          <text class="form-label">排序值</text>
+          <input class="form-input" type="number" placeholder="0" value="{{articleForm.order}}" data-field="order" bindinput="onArticleFieldInput" />
+        </view>
       </view>
     </view>
   </block>

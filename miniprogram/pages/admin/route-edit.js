@@ -52,20 +52,65 @@ Page({
     difficultySuitableForInput: '',
     imagesInput: '',
 
-    // 文章表单
+    // 文章表单（全量字段）
     articleForm: {
       title: '',
       category: '',
       content: '',
-      author: ''
+      author: '',
+      summary: '',
+      coverImage: '',
+      readTime: '',
+      difficulty: '',
+      subcategory: '',
+      tags: [],
+      season: [],
+      highlights: '',
+      priority: 0,
+      order: 0
     },
 
     // 难度选项
     difficultyOptions: ['轻松', '初级', '中级', '高级', '挑战'],
 
+    // 文章难度选项
+    difficultyArticleOptions: [
+      { value: '', label: '请选择难度' },
+      { value: 'beginner', label: '入门' },
+      { value: 'intermediate', label: '进阶' },
+      { value: 'advanced', label: '高级' }
+    ],
+    difficultyArticleIndex: 0,
+
     // 文章分类选项
-    categoryOptions: ['装备推荐', '安全自救', '户外礼仪', '其他'],
+    categoryOptions: ['装备推荐', '安全自救', '户外礼仪', '新手专区', '其他'],
     categoryIndex: -1,
+
+    // 子分类联动
+    subcategoryMap: {
+      '装备推荐': ['必备装备', '推荐装备', '进阶装备', '装备管理'],
+      '安全自救': ['基础安全', '季节安全', '极端天气', '求生技能', '伤害处理'],
+      '户外礼仪': ['LNT无痕山林', '生态尊重', '社区礼仪', '营地规范'],
+      '新手专区': ['路线选择', '基础安全', '必备装备', '体能训练'],
+      '其他': ['自然科普', '体能训练', '路线选择', '团队协作']
+    },
+    currentSubcategoryOptions: [],
+    subcategoryIndex: -1,
+
+    // 季节选项
+    seasonOptions: [
+      { value: '春', label: '春', checked: false },
+      { value: '夏', label: '夏', checked: false },
+      { value: '秋', label: '秋', checked: false },
+      { value: '冬', label: '冬', checked: false },
+      { value: '全年', label: '全年', checked: false }
+    ],
+
+    // 标签编辑
+    tagInput: '',
+
+    // 封面图上传状态
+    coverUploading: false,
 
     // scenery 编辑
     sceneryInput: '',
@@ -113,14 +158,41 @@ Page({
         if (this.data.type === 'article') {
           const category = data.category || ''
           const categoryIdx = this.data.categoryOptions.indexOf(category)
+          // 子分类联动
+          const subcategoryList = this.data.subcategoryMap[category] || []
+          const subcategory = data.subcategory || ''
+          const subcategoryIdx = subcategoryList.indexOf(subcategory)
+          // 难度
+          const diffValue = data.difficulty || ''
+          const diffIdx = this.data.difficultyArticleOptions.findIndex(d => d.value === diffValue)
+          // 季节
+          const savedSeasons = data.season || []
+          const seasonOpts = this.data.seasonOptions.map(s => ({
+            ...s,
+            checked: savedSeasons.includes(s.value)
+          }))
           this.setData({
             articleForm: {
               title: data.title || '',
               category: category,
               content: data.content || '',
-              author: data.author || ''
+              author: data.author || '',
+              summary: data.summary || '',
+              coverImage: data.coverImage || '',
+              readTime: data.readTime || '',
+              difficulty: diffValue,
+              subcategory: subcategory,
+              tags: data.tags || [],
+              season: savedSeasons,
+              highlights: data.highlights || '',
+              priority: data.priority || 0,
+              order: data.order || 0
             },
             categoryIndex: categoryIdx,
+            currentSubcategoryOptions: subcategoryList,
+            subcategoryIndex: subcategoryIdx,
+            difficultyArticleIndex: diffIdx >= 0 ? diffIdx : 0,
+            seasonOptions: seasonOpts,
             loading: false
           })
         } else {
@@ -200,10 +272,115 @@ Page({
 
   onCategoryChange(e) {
     const idx = parseInt(e.detail.value)
+    const category = this.data.categoryOptions[idx]
+    const subcategoryList = this.data.subcategoryMap[category] || []
     this.setData({
       categoryIndex: idx,
-      'articleForm.category': this.data.categoryOptions[idx]
+      'articleForm.category': category,
+      'articleForm.subcategory': '',
+      currentSubcategoryOptions: subcategoryList,
+      subcategoryIndex: -1
     })
+  },
+
+  // 子分类联动
+  onSubcategoryChange(e) {
+    const idx = parseInt(e.detail.value)
+    this.setData({
+      subcategoryIndex: idx,
+      'articleForm.subcategory': this.data.currentSubcategoryOptions[idx]
+    })
+  },
+
+  // 文章难度选择
+  onArticleDifficultyChange(e) {
+    const idx = parseInt(e.detail.value)
+    this.setData({
+      difficultyArticleIndex: idx,
+      'articleForm.difficulty': this.data.difficultyArticleOptions[idx].value
+    })
+  },
+
+  // ========== 标签编辑 ==========
+  onTagInput(e) {
+    this.setData({ tagInput: e.detail.value })
+  },
+
+  addArticleTag() {
+    const val = (this.data.tagInput || '').trim()
+    if (!val) return
+    const tags = this.data.articleForm.tags.concat([val])
+    this.setData({ 'articleForm.tags': tags, tagInput: '' })
+  },
+
+  removeArticleTag(e) {
+    const idx = e.currentTarget.dataset.index
+    const tags = this.data.articleForm.tags.filter((_, i) => i !== idx)
+    this.setData({ 'articleForm.tags': tags })
+  },
+
+  // ========== 季节多选 ==========
+  onSeasonToggle(e) {
+    const idx = e.currentTarget.dataset.index
+    const options = this.data.seasonOptions.slice()
+    const value = options[idx].value
+
+    if (value === '全年') {
+      // 选"全年"则清空其他
+      const checked = !options[idx].checked
+      options.forEach(s => { s.checked = checked && s.value === '全年' })
+    } else {
+      // 选其他则取消"全年"
+      options[idx].checked = !options[idx].checked
+      const allYearIdx = options.findIndex(s => s.value === '全年')
+      if (allYearIdx >= 0 && options[idx].checked) {
+        options[allYearIdx].checked = false
+      }
+    }
+
+    const seasons = options.filter(s => s.checked).map(s => s.value)
+    this.setData({
+      seasonOptions: options,
+      'articleForm.season': seasons
+    })
+  },
+
+  // ========== 封面图上传 ==========
+  onChooseCoverImage() {
+    if (this.data.coverUploading) return
+    wx.chooseImage({
+      count: 1,
+      sizeType: ['compressed'],
+      sourceType: ['album', 'camera'],
+      success: (res) => {
+        const tempFilePath = res.tempFilePaths[0]
+        this.uploadCoverImage(tempFilePath)
+      }
+    })
+  },
+
+  async uploadCoverImage(filePath) {
+    this.setData({ coverUploading: true })
+    try {
+      const ext = filePath.split('.').pop() || 'jpg'
+      const cloudPath = `article-covers/${Date.now()}_${Math.random().toString(36).substr(2, 8)}.${ext}`
+      const uploadRes = await wx.cloud.uploadFile({
+        cloudPath,
+        filePath
+      })
+      if (uploadRes.fileID) {
+        this.setData({
+          'articleForm.coverImage': uploadRes.fileID
+        })
+        this.showToast('封面图上传成功', 'success')
+      } else {
+        this.showToast('上传失败', 'error')
+      }
+    } catch (e) {
+      console.error('封面图上传失败:', e)
+      this.showToast('上传失败', 'error')
+    }
+    this.setData({ coverUploading: false })
   },
 
   onDifficultyChange(e) {
@@ -313,7 +490,23 @@ Page({
         this.showToast('文章内容不能为空', 'error')
         return null
       }
-      updateData = { ...f, isActive }
+      updateData = {
+        title: f.title,
+        category: f.category,
+        content: f.content,
+        author: f.author,
+        summary: f.summary,
+        coverImage: f.coverImage,
+        readTime: f.readTime,
+        difficulty: f.difficulty,
+        subcategory: f.subcategory,
+        tags: f.tags,
+        season: f.season,
+        highlights: f.highlights,
+        priority: parseInt(f.priority) || 0,
+        order: parseInt(f.order) || 0,
+        isActive
+      }
     } else {
       const f = this.data.form
       if (!f.name.trim()) {

@@ -20,15 +20,20 @@
           <text class="search-inline__icon">🔍</text>
           <input
             class="search-inline__field"
-            placeholder="搜峪口、山名、风景名"
+            placeholder="输入路线名称或地点..."
             value="{{searchKeyword}}"
             bindinput="onSearchInput"
             bindconfirm="onSearchConfirm"
             confirm-type="search"
           />
           <text class="search-inline__clear" wx:if="{{searchKeyword}}" bindtap="onSearchClear">✕</text>
-          <view class="search-inline__filter-btn {{showAdvancedFilter ? 'active' : ''}}" bindtap="onToggleAdvancedFilter">
-            <text>⚙️ 筛选</text>
+          <view class="search-inline__search-btn" bindtap="onSearchConfirm">
+            <text>搜索</text>
+          </view>
+        </view>
+        <view class="search-filter-row">
+          <view class="search-advanced-filter-btn {{showAdvancedFilter ? 'active' : ''}}" bindtap="onToggleAdvancedFilter">
+            <text>⚙️ 高级筛选</text>
           </view>
         </view>
       </view>

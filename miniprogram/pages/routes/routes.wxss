@@ -126,26 +126,58 @@
   padding: 8rpx;
 }
 
-.search-inline__filter-btn {
+/* 搜索按钮 — 搜索框内部右侧 */
+.search-inline__search-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 10rpx 18rpx;
-  background: rgba(255, 255, 255, 0.35);
+  padding: 10rpx 24rpx;
+  background: linear-gradient(135deg, rgba(129,199,132,.85), rgba(76,175,80,.85));
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 24rpx;
+  font-size: 24rpx;
+  color: #FFFFFF;
+  font-weight: 600;
+  white-space: nowrap;
+  border: 1px solid rgba(255,255,255,.2);
+  transition: all 200ms ease;
+  box-shadow: 0 4rpx 12rpx rgba(76, 175, 80, 0.25);
+}
+
+.search-inline__search-btn:active {
+  transform: scale(0.95);
+  opacity: 0.9;
+}
+
+/* 高级筛选按钮行 — 搜索框下方 */
+.search-filter-row {
+  display: flex;
+  align-items: center;
+  margin-top: 12rpx;
+}
+
+.search-advanced-filter-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10rpx 24rpx;
+  background: rgba(255, 255, 255, 0.25);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border-radius: 28rpx;
   font-size: 22rpx;
-  color: #1a2e1a;
+  color: rgba(255, 255, 255, 0.9);
   font-weight: 600;
   white-space: nowrap;
   border: 1px solid rgba(255,255,255,.2);
   transition: all 200ms ease;
 }
 
-.search-inline__filter-btn.active {
+.search-advanced-filter-btn.active {
   background: rgba(255, 255, 255, 0.95);
   color: #2d6a4f;
+  border-color: rgba(255,255,255,.4);
 }
 
 /* ===== 高级筛选 — 毛玻璃 ===== */
