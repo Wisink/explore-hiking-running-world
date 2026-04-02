@@ -428,6 +428,12 @@ Page({
           })
           if (delRes.result.code === 0) {
             this.showToast('删除成功', 'success')
+            // 通知上一页刷新统计数据
+            const pages = getCurrentPages()
+            const prevPage = pages[pages.length - 2]
+            if (prevPage && prevPage.loadStats) {
+              prevPage.loadStats()
+            }
             setTimeout(() => wx.navigateBack(), 1500)
           } else {
             this.showToast(delRes.result.message || '删除失败', 'error')

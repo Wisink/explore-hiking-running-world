@@ -139,10 +139,15 @@ Page({
   },
 
   onShow() {
-    // 从编辑页返回时刷新路线列表
-    if (this.data.isLoggedIn && this.data.activeTab === 'routes') {
+    if (!this.data.isLoggedIn) return
+    // 从编辑页返回时刷新当前 tab 数据
+    if (this.data.activeTab === 'routes') {
       this.loadRoutes()
+    } else if (this.data.activeTab === 'articles') {
+      this.loadArticles()
     }
+    // 始终刷新概览统计（删除/编辑路线/文章后数据可能变化）
+    this.loadStats()
   },
 
   // ========== 认证 ==========
@@ -220,9 +225,9 @@ Page({
     const tab = e.currentTarget.dataset.tab
     if (tab === this.data.activeTab) return
     this.setData({ activeTab: tab })
-    // 懒加载：首次切换到对应 tab 时加载数据
+    // 切换到概览时刷新统计数据，确保删除操作后数据最新
     if (tab === 'overview') {
-      if (this.data.statsLoading) this.loadStats()
+      this.loadStats()
       if (!this.data.chartLoaded) this.loadCharts()
     }
     if (tab === 'routes' && this.data.routes.length === 0) this.loadRoutes()
