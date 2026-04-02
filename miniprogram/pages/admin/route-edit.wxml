@@ -218,15 +218,16 @@
 
       <text class="form-label">必带装备</text>
       <view class="tag-list">
-        <view class="tag-item" wx:for="{{form.equipment_must}}" wx:key="*this">
-          <text>{{item}}</text>
+        <view class="tag-item" wx:for="{{form.equipment_must}}" wx:key="index">
+          <text>{{item.name}}{{item.reason ? ' — ' + item.reason : ''}}</text>
           <view class="tag-item__remove" bindtap="removeEquipmentMust" data-index="{{index}}">
             <text>✕</text>
           </view>
         </view>
       </view>
       <view class="tag-add">
-        <input class="form-input form-input--small" placeholder="必带装备" value="{{equipmentMustInput}}" bindinput="onEquipmentMustInput" confirm-type="done" bindconfirm="addEquipmentMust" />
+        <input class="form-input form-input--small" placeholder="装备名称" value="{{equipmentMustNameInput}}" bindinput="onEquipmentMustNameInput" />
+        <input class="form-input form-input--small" placeholder="原因（选填）" value="{{equipmentMustReasonInput}}" bindinput="onEquipmentMustReasonInput" confirm-type="done" bindconfirm="addEquipmentMust" />
         <view class="tag-add__btn" bindtap="addEquipmentMust">
           <text>+ 添加</text>
         </view>
@@ -234,15 +235,16 @@
 
       <text class="form-label" style="margin-top:20rpx;">建议携带</text>
       <view class="tag-list">
-        <view class="tag-item" wx:for="{{form.equipment_suggest}}" wx:key="*this">
-          <text>{{item}}</text>
+        <view class="tag-item" wx:for="{{form.equipment_suggest}}" wx:key="index">
+          <text>{{item.name}}{{item.reason ? ' — ' + item.reason : ''}}</text>
           <view class="tag-item__remove" bindtap="removeEquipmentSuggest" data-index="{{index}}">
             <text>✕</text>
           </view>
         </view>
       </view>
       <view class="tag-add">
-        <input class="form-input form-input--small" placeholder="建议装备" value="{{equipmentSuggestInput}}" bindinput="onEquipmentSuggestInput" confirm-type="done" bindconfirm="addEquipmentSuggest" />
+        <input class="form-input form-input--small" placeholder="装备名称" value="{{equipmentSuggestNameInput}}" bindinput="onEquipmentSuggestNameInput" />
+        <input class="form-input form-input--small" placeholder="原因（选填）" value="{{equipmentSuggestReasonInput}}" bindinput="onEquipmentSuggestReasonInput" confirm-type="done" bindconfirm="addEquipmentSuggest" />
         <view class="tag-add__btn" bindtap="addEquipmentSuggest">
           <text>+ 添加</text>
         </view>
@@ -250,15 +252,16 @@
 
       <text class="form-label" style="margin-top:20rpx;">无需携带</text>
       <view class="tag-list">
-        <view class="tag-item" wx:for="{{form.equipment_noNeed}}" wx:key="*this">
-          <text>{{item}}</text>
+        <view class="tag-item" wx:for="{{form.equipment_noNeed}}" wx:key="index">
+          <text>{{item.name}}{{item.reason ? ' — ' + item.reason : ''}}</text>
           <view class="tag-item__remove" bindtap="removeEquipmentNoNeed" data-index="{{index}}">
             <text>✕</text>
           </view>
         </view>
       </view>
       <view class="tag-add">
-        <input class="form-input form-input--small" placeholder="无需装备" value="{{equipmentNoNeedInput}}" bindinput="onEquipmentNoNeedInput" confirm-type="done" bindconfirm="addEquipmentNoNeed" />
+        <input class="form-input form-input--small" placeholder="装备名称" value="{{equipmentNoNeedNameInput}}" bindinput="onEquipmentNoNeedNameInput" />
+        <input class="form-input form-input--small" placeholder="原因（选填）" value="{{equipmentNoNeedReasonInput}}" bindinput="onEquipmentNoNeedReasonInput" confirm-type="done" bindconfirm="addEquipmentNoNeed" />
         <view class="tag-add__btn" bindtap="addEquipmentNoNeed">
           <text>+ 添加</text>
         </view>
@@ -287,6 +290,66 @@
       <view class="form-item" style="margin-top:20rpx;">
         <text class="form-label">紧急电话</text>
         <input class="form-input" placeholder="如：当地县救援：119 / 110" value="{{form.safety_emergencyPhone}}" data-field="safety_emergencyPhone" bindinput="onFieldInput" />
+      </view>
+    </view>
+
+    <view class="form-section">
+      <text class="form-section__title">实用信息</text>
+
+      <view class="form-item">
+        <text class="form-label">门票信息</text>
+        <textarea class="form-textarea" placeholder="门票价格、优惠政策等" value="{{form.ticket_info}}" data-field="ticket_info" bindinput="onFieldInput" />
+      </view>
+
+      <view class="form-item">
+        <text class="form-label">餐饮</text>
+        <textarea class="form-textarea" placeholder="沿途餐饮、自带建议等" value="{{form.food}}" data-field="food" bindinput="onFieldInput" />
+      </view>
+
+      <view class="form-item">
+        <text class="form-label">避坑</text>
+        <textarea class="form-textarea" placeholder="常见坑点、注意事项" value="{{form.pitfall}}" data-field="pitfall" bindinput="onFieldInput" />
+      </view>
+
+      <view class="form-item">
+        <text class="form-label">贴士</text>
+        <textarea class="form-textarea" placeholder="实用小贴士" value="{{form.tips}}" data-field="tips" bindinput="onFieldInput" />
+      </view>
+
+      <view class="form-item">
+        <text class="form-label">法规</text>
+        <textarea class="form-textarea" placeholder="相关法规要求" value="{{form.law_tips}}" data-field="law_tips" bindinput="onFieldInput" />
+      </view>
+
+      <view class="form-item">
+        <text class="form-label">环保</text>
+        <textarea class="form-textarea" placeholder="环保提醒" value="{{form.eco_tips}}" data-field="eco_tips" bindinput="onFieldInput" />
+      </view>
+    </view>
+
+    <view class="form-section">
+      <text class="form-section__title">风景亮点</text>
+      <view class="form-item">
+        <text class="form-label">亮点描述</text>
+        <textarea class="form-textarea" placeholder="这条路线的风景亮点" value="{{form.highlights}}" data-field="highlights" bindinput="onFieldInput" maxlength="500" />
+      </view>
+    </view>
+
+    <view class="form-section">
+      <text class="form-section__title">打卡点</text>
+      <view class="tag-list">
+        <view class="tag-item" wx:for="{{form.photoSpots}}" wx:key="*this">
+          <text>{{item}}</text>
+          <view class="tag-item__remove" bindtap="removePhotoSpot" data-index="{{index}}">
+            <text>✕</text>
+          </view>
+        </view>
+      </view>
+      <view class="tag-add">
+        <input class="form-input form-input--small" placeholder="输入打卡点名称" value="{{photoSpotInput}}" bindinput="onPhotoSpotInput" confirm-type="done" bindconfirm="addPhotoSpot" />
+        <view class="tag-add__btn" bindtap="addPhotoSpot">
+          <text>+ 添加</text>
+        </view>
       </view>
     </view>
   </block>

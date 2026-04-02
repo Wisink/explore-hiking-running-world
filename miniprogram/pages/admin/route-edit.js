@@ -41,16 +41,30 @@ Page({
       safety_warnings: [],
       safety_emergencyPhone: '',
       best_season: '',
-      order: 0
+      order: 0,
+      // 新增6个字段
+      ticket_info: '',
+      food: '',
+      pitfall: '',
+      tips: '',
+      law_tips: '',
+      eco_tips: '',
+      // 风景亮点 & 打卡点
+      highlights: '',
+      photoSpots: []
     },
 
     // equipment/safety 编辑临时输入
-    equipmentMustInput: '',
-    equipmentSuggestInput: '',
-    equipmentNoNeedInput: '',
+    equipmentMustNameInput: '',
+    equipmentMustReasonInput: '',
+    equipmentSuggestNameInput: '',
+    equipmentSuggestReasonInput: '',
+    equipmentNoNeedNameInput: '',
+    equipmentNoNeedReasonInput: '',
     safetyWarningInput: '',
     difficultySuitableForInput: '',
     imagesInput: '',
+    photoSpotInput: '',
 
     // 文章表单（全量字段）
     articleForm: {
@@ -203,6 +217,15 @@ Page({
           const cost = data.cost || {}
           const equip = data.equipment || {}
           const safe = data.safety || {}
+
+          // 标准化装备为 {name, reason} 格式
+          const normalizeEquip = (list) => {
+            return (list || []).map(item => {
+              if (typeof item === 'string') return { name: item, reason: '' }
+              return { name: item.name || '', reason: item.reason || '' }
+            })
+          }
+
           this.setData({
             form: {
               name: data.name || '',
@@ -235,15 +258,25 @@ Page({
                 distance: s.distance || '',
                 elevation: s.elevation || ''
               })),
-              // equipment 展开
-              equipment_must: equip.must || [],
-              equipment_suggest: equip.suggest || [],
-              equipment_noNeed: equip.noNeed || [],
+              // equipment 展开 — 统一为 {name, reason} 格式
+              equipment_must: normalizeEquip(equip.must),
+              equipment_suggest: normalizeEquip(equip.suggest),
+              equipment_noNeed: normalizeEquip(equip.noNeed),
               // safety 展开
               safety_warnings: safe.warnings || [],
               safety_emergencyPhone: safe.emergencyPhone || '',
               best_season: data.best_season || '',
-              order: data.order || 0
+              order: data.order || 0,
+              // 新增6个字段
+              ticket_info: data.ticket_info || '',
+              food: data.food || '',
+              pitfall: data.pitfall || '',
+              tips: data.tips || '',
+              law_tips: data.law_tips || '',
+              eco_tips: data.eco_tips || '',
+              // 风景亮点 & 打卡点
+              highlights: data.highlights || '',
+              photoSpots: data.photoSpots || []
             },
             loading: false
           })
@@ -549,20 +582,67 @@ Page({
   addImage() { this._addTagItem('images', 'imagesInput') },
   removeImage(e) { this._removeTagItem('images', e.currentTarget.dataset.index) },
 
-  // equipment must
-  onEquipmentMustInput(e) { this.setData({ equipmentMustInput: e.detail.value }) },
-  addEquipmentMust() { this._addTagItem('equipment_must', 'equipmentMustInput') },
-  removeEquipmentMust(e) { this._removeTagItem('equipment_must', e.currentTarget.dataset.index) },
+  // ========== Equipment 编辑（{name, reason} 格式）==========
 
-  // equipment suggest
-  onEquipmentSuggestInput(e) { this.setData({ equipmentSuggestInput: e.detail.value }) },
-  addEquipmentSuggest() { this._addTagItem('equipment_suggest', 'equipmentSuggestInput') },
-  removeEquipmentSuggest(e) { this._removeTagItem('equipment_suggest', e.currentTarget.dataset.index) },
+  onEquipmentMustNameInput(e) { this.setData({ equipmentMustNameInput: e.detail.value }) },
+  onEquipmentMustReasonInput(e) { this.setData({ equipmentMustReasonInput: e.detail.value }) },
+  addEquipmentMust() {
+    const name = (this.data.equipmentMustNameInput || '').trim()
+    if (!name) return
+    const reason = (this.data.equipmentMustReasonInput || '').trim()
+    const list = this.data.form.equipment_must.concat([{ name, reason }])
+    this.setData({ 'form.equipment_must': list, equipmentMustNameInput: '', equipmentMustReasonInput: '' })
+  },
+  removeEquipmentMust(e) {
+    const idx = e.currentTarget.dataset.index
+    const list = this.data.form.equipment_must.filter((_, i) => i !== idx)
+    this.setData({ 'form.equipment_must': list })
+  },
 
-  // equipment noNeed
-  onEquipmentNoNeedInput(e) { this.setData({ equipmentNoNeedInput: e.detail.value }) },
-  addEquipmentNoNeed() { this._addTagItem('equipment_noNeed', 'equipmentNoNeedInput') },
-  removeEquipmentNoNeed(e) { this._removeTagItem('equipment_noNeed', e.currentTarget.dataset.index) },
+  onEquipmentSuggestNameInput(e) { this.setData({ equipmentSuggestNameInput: e.detail.value }) },
+  onEquipmentSuggestReasonInput(e) { this.setData({ equipmentSuggestReasonInput: e.detail.value }) },
+  addEquipmentSuggest() {
+    const name = (this.data.equipmentSuggestNameInput || '').trim()
+    if (!name) return
+    const reason = (this.data.equipmentSuggestReasonInput || '').trim()
+    const list = this.data.form.equipment_suggest.concat([{ name, reason }])
+    this.setData({ 'form.equipment_suggest': list, equipmentSuggestNameInput: '', equipmentSuggestReasonInput: '' })
+  },
+  removeEquipmentSuggest(e) {
+    const idx = e.currentTarget.dataset.index
+    const list = this.data.form.equipment_suggest.filter((_, i) => i !== idx)
+    this.setData({ 'form.equipment_suggest': list })
+  },
+
+  onEquipmentNoNeedNameInput(e) { this.setData({ equipmentNoNeedNameInput: e.detail.value }) },
+  onEquipmentNoNeedReasonInput(e) { this.setData({ equipmentNoNeedReasonInput: e.detail.value }) },
+  addEquipmentNoNeed() {
+    const name = (this.data.equipmentNoNeedNameInput || '').trim()
+    if (!name) return
+    const reason = (this.data.equipmentNoNeedReasonInput || '').trim()
+    const list = this.data.form.equipment_noNeed.concat([{ name, reason }])
+    this.setData({ 'form.equipment_noNeed': list, equipmentNoNeedNameInput: '', equipmentNoNeedReasonInput: '' })
+  },
+  removeEquipmentNoNeed(e) {
+    const idx = e.currentTarget.dataset.index
+    const list = this.data.form.equipment_noNeed.filter((_, i) => i !== idx)
+    this.setData({ 'form.equipment_noNeed': list })
+  },
+
+  // ========== 打卡点编辑 ==========
+
+  onPhotoSpotInput(e) { this.setData({ photoSpotInput: e.detail.value }) },
+  addPhotoSpot() {
+    const val = (this.data.photoSpotInput || '').trim()
+    if (!val) return
+    const list = this.data.form.photoSpots.concat([val])
+    this.setData({ 'form.photoSpots': list, photoSpotInput: '' })
+  },
+  removePhotoSpot(e) {
+    const idx = e.currentTarget.dataset.index
+    const list = this.data.form.photoSpots.filter((_, i) => i !== idx)
+    this.setData({ 'form.photoSpots': list })
+  },
 
   // safety warnings
   onSafetyWarningInput(e) { this.setData({ safetyWarningInput: e.detail.value }) },
@@ -658,6 +738,14 @@ Page({
         },
         best_season: f.best_season,
         order: parseInt(f.order) || 0,
+        ticket_info: f.ticket_info,
+        food: f.food,
+        pitfall: f.pitfall,
+        tips: f.tips,
+        law_tips: f.law_tips,
+        eco_tips: f.eco_tips,
+        highlights: f.highlights,
+        photoSpots: f.photoSpots,
         isActive
       }
     }
