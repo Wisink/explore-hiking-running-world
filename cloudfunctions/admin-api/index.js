@@ -550,63 +550,62 @@ async function handleStats(action, params) {
     case 'favoriteTrend': {
       const { dimension = 'month' } = params || {}
       const now = new Date()
-      let startDate, dateFormat
+      let startDate
 
       if (dimension === 'day') {
         startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 29)
-        dateFormat = '%Y-%m-%d'
       } else if (dimension === 'week') {
         startDate = new Date(now.getTime() - 29 * 7 * 86400000)
-        dateFormat = '%Y-W%V'
       } else if (dimension === 'month') {
         startDate = new Date(now.getFullYear(), now.getMonth() - 11, 1)
-        dateFormat = '%Y-%m'
       } else {
         startDate = new Date(now.getFullYear() - 4, 0, 1)
-        dateFormat = '%Y'
       }
 
-      // 展开 favorites 数组，按 date 字段聚合
-      // favorites.date 是 ISO 字符串格式（如 "2026-04-02T11:25:00.000Z"）
-      // 用 $dateFromString 解析字符串并转为北京时间分组
-      console.log('favoriteTrend: startDate =', startDate.toISOString(), 'dimension =', dimension)
+      // 查询所有 user_data 记录（分页）
+      const countResult = await db.collection('user_data').count()
+      const total = countResult.total
+      const pageSize = 100
+      const pages = Math.ceil(total / pageSize)
+      const trendMap = {}
 
-      // 先查一下 user_data 中有多少条记录有带date的favorites
-      const debugRes = await db.collection('user_data').where({
-        'favorites.date': _.exists(true)
-      }).count()
-      console.log('favoriteTrend: user_data with date favorites count =', debugRes.total)
+      for (let i = 0; i < pages; i++) {
+        const { data } = await db.collection('user_data')
+          .skip(i * pageSize)
+          .limit(pageSize)
+          .get()
 
-      const res = await db.collection('user_data').aggregate()
-        .unwind('$favorites')
-        .match({
-          'favorites.date': _.exists(true)
-        })
-        .addFields({
-          parsedDate: $.dateFromString({
-            dateString: '$favorites.date',
-            timezone: '+08:00'
-          })
-        })
-        .match({
-          parsedDate: _.gte(startDate)
-        })
-        .project({
-          dateStr: $.dateToString({
-            date: '$parsedDate',
-            format: dateFormat,
-            timezone: '+08:00'
-          })
-        })
-        .group({
-          _id: '$dateStr',
-          count: $.sum(1)
-        })
-        .sort({ _id: 1 })
-        .end()
+        for (const doc of data) {
+          const favorites = doc.favorites || []
+          for (const fav of favorites) {
+            // 兼容新旧格式
+            const favDate = typeof fav === 'object' && fav.date ? new Date(fav.date) : null
+            if (!favDate || isNaN(favDate.getTime())) continue
+            if (favDate < startDate) continue
 
-      console.log('favoriteTrend result:', JSON.stringify(res.list))
-      return success({ list: res.list, dimension })
+            // 根据维度生成 key
+            let key
+            const d = new Date(favDate.getTime() + 8 * 3600000) // 转北京时间
+            if (dimension === 'day') {
+              key = d.toISOString().slice(0, 10)
+            } else if (dimension === 'week') {
+              const onejan = new Date(d.getFullYear(), 0, 1)
+              const week = Math.ceil(((d - onejan) / 86400000 + onejan.getDay() + 1) / 7)
+              key = `${d.getFullYear()}-W${String(week).padStart(2, '0')}`
+            } else if (dimension === 'month') {
+              key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
+            } else {
+              key = `${d.getFullYear()}`
+            }
+            trendMap[key] = (trendMap[key] || 0) + 1
+          }
+        }
+      }
+
+      // 转为排序数组
+      const list = Object.keys(trendMap).sort().map(k => ({ _id: k, count: trendMap[k] }))
+      console.log('favoriteTrend result:', JSON.stringify(list))
+      return success({ list, dimension })
     }
 
     // 已走过趋势（按 completedAt 时间戳聚合）
