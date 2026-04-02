@@ -137,7 +137,8 @@ async function handleUsers(action, params) {
         return {
           ...u,
           ...ud,
-          // 保留 users 集合中的 visitCount / userNumber
+          // 保留 users 集合中的 _id（用于 detail 查询）、visitCount / userNumber
+          _id: u._id,
           visitCount: u.visitCount || 0,
           userNumber: u.userNumber || ''
         }
