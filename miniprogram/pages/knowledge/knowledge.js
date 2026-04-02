@@ -190,13 +190,13 @@ Page({
     })
   },
 
-  // 展开/收起某个分类的全部文章
-  onToggleShowAll(e) {
+  // 查看全部 - 跳转到专题页
+  onViewAll(e) {
     const category = e.currentTarget.dataset.category
-    const showAll = { ...this.data.showAll }
-    showAll[category] = !showAll[category]
-    const displayedCategorizedArticles = this._rebuildDisplayed(this._allCategorizedArticles, showAll)
-    this.setData({ showAll, displayedCategorizedArticles })
+    if (!category) return
+    wx.navigateTo({
+      url: '/pages/topic/topic?category=' + encodeURIComponent(category)
+    })
   },
 
   // 新的推荐逻辑：从每个子分类取1篇优先级最高的

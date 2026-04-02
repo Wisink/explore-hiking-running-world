@@ -13,10 +13,8 @@
         <image class="profile-avatar" src="{{avatarUrl}}" mode="aspectFill" />
       </view>
       <text class="profile-nickname">{{hikerNickname}}</text>
-      <text class="page-header__emoji">🥾</text>
-      <text class="page-header__title">我的徒步世界</text>
-      <text class="page-header__sub" wx:if="{{userInfo}}">你好，{{userInfo.nickName}}！</text>
-      <text class="page-header__sub" wx:else>记录每一步的风景</text>
+      <text class="page-header__title">我的徒步世界！</text>
+      <text class="page-header__sub">记录每一步的风景</text>
       <view class="page-header__visit" wx:if="{{userInfo}}">
         <text class="page-header__visit-text">🌍 已访问 {{userInfo.visitCount}} 次</text>
       </view>
@@ -195,7 +193,7 @@
   <!-- 底部 -->
   <view class="footer">
     <text class="footer__icon">🌿</text>
-    <text class="footer__text">安全出行，文明登山</text>
+    <text class="footer__text">安全出行，文明徒步</text>
   </view>
   <view class="icp-footer">
     <text class="icp-footer__text" bindtap="onIcpTap">陕ICP备2026006901号</text>

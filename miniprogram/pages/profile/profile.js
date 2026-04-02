@@ -56,11 +56,18 @@ Page({
     const app = getApp()
     if (app.globalData && app.globalData.userInfo) {
       this.setData({ userInfo: app.globalData.userInfo })
+      // 同步昵称为云端用户编号
+      if (app.globalData.userInfo.nickName) {
+        this.setData({ hikerNickname: app.globalData.userInfo.nickName })
+      }
     } else if (app._userReady) {
       // initUser 已有结果（含失败），监听就绪回调
       app._userReady.then(() => {
         if (app.globalData && app.globalData.userInfo) {
           this.setData({ userInfo: app.globalData.userInfo })
+          if (app.globalData.userInfo.nickName) {
+            this.setData({ hikerNickname: app.globalData.userInfo.nickName })
+          }
         }
       }).catch(() => {})
     }

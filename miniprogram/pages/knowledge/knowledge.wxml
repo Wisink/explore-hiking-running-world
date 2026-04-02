@@ -21,26 +21,29 @@
   <block wx:if="{{!loading}}">
     <!-- 新手入门路径 -->
     <view class="learning-path">
-      <view class="learning-path__title">🚀 新手入门路径</view>
-      <view class="learning-path__steps">
-        <view class="step" bindtap="onStepTap" data-category="装备推荐">
-          <text class="step__icon">🥾</text>
-          <text class="step__label">装备</text>
-        </view>
-        <view class="step-arrow">→</view>
-        <view class="step" bindtap="onStepTap" data-category="安全自救">
-          <text class="step__icon">🆘</text>
-          <text class="step__label">安全</text>
-        </view>
-        <view class="step-arrow">→</view>
-        <view class="step" bindtap="onStepTap" data-category="户外礼仪">
-          <text class="step__icon">🤝</text>
-          <text class="step__label">礼仪</text>
-        </view>
-        <view class="step-arrow">→</view>
-        <view class="step" bindtap="onStepTap" data-category="实践">
-          <text class="step__icon">🏔️</text>
-          <text class="step__label">出发</text>
+      <view class="learning-path__bg"></view>
+      <view class="learning-path__inner">
+        <view class="learning-path__title">🚀 新手入门路径</view>
+        <view class="learning-path__steps">
+          <view class="step" bindtap="onStepTap" data-category="装备推荐">
+            <text class="step__icon">🥾</text>
+            <text class="step__label">装备</text>
+          </view>
+          <view class="step-arrow">›</view>
+          <view class="step" bindtap="onStepTap" data-category="安全自救">
+            <text class="step__icon">🆘</text>
+            <text class="step__label">安全</text>
+          </view>
+          <view class="step-arrow">›</view>
+          <view class="step" bindtap="onStepTap" data-category="户外礼仪">
+            <text class="step__icon">🤝</text>
+            <text class="step__label">礼仪</text>
+          </view>
+          <view class="step-arrow">›</view>
+          <view class="step" bindtap="onStepTap" data-category="实践">
+            <text class="step__icon">🏔️</text>
+            <text class="step__label">出发</text>
+          </view>
         </view>
       </view>
     </view>
@@ -62,39 +65,6 @@
         <text class="category-card__title">户外礼仪</text>
         <text class="category-card__count">{{categoryCount.etiquette}}篇</text>
       </view>
-    </view>
-
-    <!-- 为你推荐 -->
-    <view class="section">
-      <view class="section__head">
-        <view class="section__title-wrap">
-          <text class="section__icon">⭐</text>
-          <text class="section__title">为你推荐</text>
-        </view>
-      </view>
-      <scroll-view class="recommend-scroll" scroll-x enable-flex>
-        <view
-          class="recommend-card"
-          wx:for="{{recommended}}"
-          wx:key="_id"
-          data-id="{{item._id}}"
-          bindtap="onRecommendedTap"
-        >
-          <view class="recommend-card__cover" style="background: {{item.coverGradient}}">
-            <text class="recommend-card__icon">{{item.category === '装备推荐' ? '🥾' : item.category === '安全自救' ? '🆘' : '🤝'}}</text>
-          </view>
-          <view class="recommend-card__info">
-            <text class="recommend-card__title">{{item.title}}</text>
-            <text class="recommend-card__subcategory">{{item.subcategory}}</text>
-            <view class="recommend-card__badges">
-              <text class="recommend-badge recommend-badge--{{item.difficulty}}">
-                {{item.difficulty === 'beginner' ? '🟢入门' : item.difficulty === 'intermediate' ? '🟡进阶' : '🔴资深'}}
-              </text>
-              <text class="recommend-badge recommend-badge--time">{{item.readTime}}</text>
-            </view>
-          </view>
-        </view>
-      </scroll-view>
     </view>
 
     <!-- 知识分类列表 -->
@@ -131,10 +101,9 @@
         </view>
       </view>
 
-      <!-- 查看更多按钮 -->
-      <view class="show-more" wx:if="{{categorizedArticles[item.key].length > 5}}" data-category="{{item.key}}" bindtap="onToggleShowAll">
-        <text class="show-more__text" wx:if="{{!showAll[item.key]}}">查看全部{{categorizedArticles[item.key].length}}篇 ></text>
-        <text class="show-more__text" wx:else>收起</text>
+      <!-- 查看全部按钮 -->
+      <view class="show-more" wx:if="{{categorizedArticles[item.key].length > 5}}" data-category="{{item.key}}" bindtap="onViewAll">
+        <text class="show-more__text">查看全部 ›</text>
       </view>
     </view>
 

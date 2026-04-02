@@ -65,7 +65,7 @@
 /* 顶部标题 — 毛玻璃 */
 .page-header {
   position: relative;
-  padding: 40rpx 32rpx 20rpx;
+  padding: 60rpx 32rpx 20rpx;
   overflow: hidden;
 }
 
@@ -245,7 +245,7 @@
   bottom: 0;
   left: 50%;
   transform: translateX(-50%);
-  width: 48rpx;
+  width: 60%;
   height: 6rpx;
   background: linear-gradient(90deg, #2d6a4f, #74c69d);
   border-radius: 3rpx;
@@ -254,7 +254,7 @@
 
 @keyframes tabSlide {
   from { width: 0; opacity: 0; }
-  to { width: 48rpx; opacity: 1; }
+  to { width: 60%; opacity: 1; }
 }
 
 /* 列表区域 — 毛玻璃 */
@@ -555,7 +555,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 40rpx 24rpx 32rpx;
+  padding: 40rpx 24rpx 12rpx;
   gap: 10rpx;
 }
 
