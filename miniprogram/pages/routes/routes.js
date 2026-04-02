@@ -23,7 +23,7 @@ const FILTER_TAGS = [
   { id: 'season', label: getSeasonTag().label, icon: getSeasonTag().icon },
   { id: 'stream', label: '有溪流', icon: '🌊' },
   { id: 'waterfall', label: '有瀑布', icon: '💧' },
-  { id: 'forest', label: '森林', icon: '🌲' },
+  { id: 'forest', label: '有森林', icon: '🌲' },
   { id: 'free', label: '免费路线', icon: '💰' }
 ]
 
