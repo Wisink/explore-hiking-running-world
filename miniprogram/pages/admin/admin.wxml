@@ -28,7 +28,17 @@
           bindconfirm="onLogin"
           password="{{!showPassword}}"
         />
-        <text class="login-eye" bindtap="togglePassword">{{showPassword ? '👁️' : '👁️‍🗨️'}}</text>
+        <view class="login-eye" bindtap="togglePassword">
+          <view class="eye-shape" wx:if="{{!showPassword}}">
+            <view class="eye-body"></view>
+            <view class="eye-pupil"></view>
+            <view class="eye-strike"></view>
+          </view>
+          <view class="eye-shape" wx:else>
+            <view class="eye-body"></view>
+            <view class="eye-pupil"></view>
+          </view>
+        </view>
       </view>
       <view class="login-btn" bindtap="onLogin">
         <text>进入后台</text>

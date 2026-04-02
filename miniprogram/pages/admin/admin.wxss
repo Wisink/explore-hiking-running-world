@@ -125,27 +125,33 @@
 
 .login-eye {
   position: absolute;
-  right: 20rpx;
+  right: 24rpx;
   top: 50%;
   transform: translateY(-50%);
   z-index: 1;
-  padding: 8rpx;
-  cursor: pointer;
+  padding: 10rpx;
 }
 
-.eye-icon {
-  width: 40rpx;
-  height: 24rpx;
+.eye-shape {
+  position: relative;
+  width: 44rpx;
+  height: 26rpx;
+}
+
+.eye-body {
+  position: absolute;
+  width: 44rpx;
+  height: 26rpx;
   border: 3rpx solid #4a6b4a;
   border-radius: 50%;
-  position: relative;
+  top: 0;
+  left: 0;
 }
 
-.eye-icon::before {
-  content: '';
+.eye-pupil {
   position: absolute;
-  width: 10rpx;
-  height: 10rpx;
+  width: 12rpx;
+  height: 12rpx;
   background: #4a6b4a;
   border-radius: 50%;
   top: 50%;
@@ -153,15 +159,15 @@
   transform: translate(-50%, -50%);
 }
 
-.eye-icon.eye-closed::after {
-  content: '';
+.eye-strike {
   position: absolute;
-  width: 50rpx;
+  width: 56rpx;
   height: 3rpx;
   background: #4a6b4a;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%) rotate(-45deg);
+  border-radius: 2rpx;
 }
 
 .login-btn {
