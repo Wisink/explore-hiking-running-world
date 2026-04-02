@@ -1,5 +1,5 @@
 // pages/assistant/assistant.js
-const routesData = require('../../data/routes.json')
+const routesData = require('../../data/routes-data')
 
 // 难度映射
 const DIFFICULTY_MAP = {

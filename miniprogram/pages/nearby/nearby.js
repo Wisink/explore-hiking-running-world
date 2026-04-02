@@ -1,5 +1,5 @@
 // pages/nearby/nearby.js
-const routesData = require('../../data/routes.json')
+const routesData = require('../../data/routes-data')
 
 // Haversine公式计算两点间距离（km）
 function calcDistance(lat1, lng1, lat2, lng2) {
