@@ -42,6 +42,7 @@ Page({
     showTodayHint: false,
     scrollToRecords: false,
     showFavHint: false,
+    showSavedHint: false,
     showCompletePanel: false,
     completeWeather: '',
     completeDistance: '',
@@ -1150,6 +1151,11 @@ Page({
     this.setData({ showFavHint: false })
   },
 
+  // 关闭保存成功提示弹窗
+  onCloseSavedHint: function () {
+    this.setData({ showSavedHint: false })
+  },
+
   // 点击标记已走过按钮
   onCompleteTrail: function () {
     // 如果今天已经标记过，显示自定义提示
@@ -1375,7 +1381,7 @@ Page({
           distance: parseFloat(completeDistance) || 0
         })
         if (result === false) return
-        showNiceToast(this, '✏️ 记录已更新！', 'success', 2000)
+        this.setData({ showSavedHint: true })
       } else {
         // 新增模式（原有逻辑）
         const result = await cloudSync.addCompleted(trailId, completeDate, {
@@ -1387,7 +1393,7 @@ Page({
           name: this.data.trail.name
         })
         if (result === false) return
-        showNiceToast(this, '🎉 记录已保存！', 'success', 2000)
+        this.setData({ showSavedHint: true })
       }
       this.setData({
         isCompleted: true,

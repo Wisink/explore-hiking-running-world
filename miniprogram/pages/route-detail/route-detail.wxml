@@ -472,6 +472,16 @@
     </view>
   </view>
 
+  <!-- ===== 保存记录成功提示弹窗 ===== -->
+  <view class="hint-overlay" wx:if="{{showSavedHint}}" bindtap="onCloseSavedHint">
+    <view class="hint-popup saved-hint-popup" catchtap="">
+      <view class="hint-popup__icon">🎉</view>
+      <view class="saved-hint__title">记录已保存！</view>
+      <view class="saved-hint__desc">这些信息仅你自己可见，因为这是属于你的独家记忆！</view>
+      <view class="saved-hint__btn" bindtap="onCloseSavedHint">好的，下次再见！</view>
+    </view>
+  </view>
+
   <!-- ===== 固定底部操作栏（升级5） ===== -->
   <view class="fixed-bottom-bar" wx:if="{{!loading}}">
     <view
