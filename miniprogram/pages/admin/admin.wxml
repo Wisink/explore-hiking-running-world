@@ -649,5 +649,3 @@
 
   <view class="admin-toast admin-toast--{{toastType}} {{showToast ? 'admin-toast--show' : ''}}">{{toastMessage}}</view>
 </view>
-dmin-toast--{{toastType}} {{showToast ? 'admin-toast--show' : ''}}">{{toastMessage}}</view>
-</view>
