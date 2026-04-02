@@ -17,6 +17,7 @@ Page({
     statusBarHeight: 0,
     // 认证状态
     isLoggedIn: false,
+    showPassword: false,
     passwordInput: '',
 
     // Tab
@@ -144,6 +145,10 @@ Page({
 
   onPasswordInput(e) {
     this.setData({ passwordInput: e.detail.value })
+  },
+
+  togglePassword() {
+    this.setData({ showPassword: !this.data.showPassword })
   },
 
   async onLogin() {

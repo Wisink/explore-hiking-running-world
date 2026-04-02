@@ -18,15 +18,18 @@
       <text class="login-icon">🔐</text>
       <text class="login-title">后台管理</text>
       <text class="login-desc">请输入管理员密码</text>
-      <input
-        class="login-input"
-        type="password"
-        placeholder="请输入密码"
-        value="{{passwordInput}}"
-        bindinput="onPasswordInput"
-        bindconfirm="onLogin"
-        password
-      />
+      <view class="login-input-wrap">
+        <input
+          class="login-input"
+          type="text"
+          placeholder="请输入密码"
+          value="{{passwordInput}}"
+          bindinput="onPasswordInput"
+          bindconfirm="onLogin"
+          password="{{!showPassword}}"
+        />
+        <text class="login-eye" bindtap="togglePassword">{{showPassword ? '👁️' : '👁️‍🗨️'}}</text>
+      </view>
       <view class="login-btn" bindtap="onLogin">
         <text>进入后台</text>
       </view>
