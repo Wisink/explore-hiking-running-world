@@ -52,7 +52,7 @@
     "empty-state": "/components/empty-state/empty-state",
     "skeleton": "/components/skeleton/skeleton"
   },
-  "requiredPrivateInfos": ["getLocation", "getFuzzyLocation", "chooseLocation"],
+  "requiredPrivateInfos": ["getLocation", "chooseLocation"],
   "permission": {
     "scope.userLocation": {
       "desc": "用于查找附近路线和推荐徒步目的地"
