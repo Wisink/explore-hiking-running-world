@@ -683,19 +683,35 @@ async function handleStats(action, params) {
     // 访问最活跃的 100 位用户（按已走过记录数排序）
     // 注意：小程序没有独立的访问日志 collection，用已走过记录数作为活跃度指标
     case 'topUsers': {
-      const res = await db.collection('user_data').aggregate()
-        .project({
-          _openid: 1,
-          nickName: 1,
-          avatarUrl: 1,
-          completedCount: $.size($.ifNull(['$completed', []])),
-          favoritesCount: $.size($.ifNull(['$favorites', []]))
-        })
-        .sort({ completedCount: -1 })
+      // 从 users 集合按 visitCount 降序取 TOP 100
+      const { data: topUsers } = await db.collection('users')
+        .orderBy('visitCount', 'desc')
         .limit(100)
-        .end()
+        .get()
 
-      return success({ list: res.list })
+      // 关联 user_data 获取已走过和收藏数
+      const topOpenIds = topUsers.map(u => u._openid).filter(Boolean)
+      let userDataMap = {}
+      if (topOpenIds.length > 0) {
+        const { data: userDatas } = await db.collection('user_data')
+          .where({ _openid: _.in(topOpenIds) }).get()
+        userDatas.forEach(ud => { userDataMap[ud._openid] = ud })
+      }
+
+      const list = topUsers.map(u => {
+        const ud = userDataMap[u._openid] || {}
+        return {
+          _openid: u._openid,
+          nickName: u.nickName || '',
+          avatarUrl: u.avatarUrl || '',
+          userNumber: u.userNumber || '',
+          visitCount: u.visitCount || 0,
+          completedCount: Array.isArray(ud.completed) ? ud.completed.length : 0,
+          favoritesCount: Array.isArray(ud.favorites) ? ud.favorites.length : 0
+        }
+      })
+
+      return success({ list })
     }
 
     // 初始化路线收藏和已走过次数统计（一次性操作）

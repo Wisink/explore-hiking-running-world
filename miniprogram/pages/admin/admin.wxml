@@ -271,7 +271,7 @@
           </view>
           <view class="chart-panel__body" wx:if="{{panelTopUsers}}">
             <view class="chart-note">
-              <text>ℹ️ 按已走过记录数排序（小程序无独立访问日志）</text>
+              <text>ℹ️ 按访问次数排序</text>
             </view>
             <view class="rank-chart" wx:if="{{topUsers.length > 0}}">
               <view class="rank-row rank-row--user" wx:for="{{topUsers}}" wx:key="_openid">
@@ -281,6 +281,7 @@
                   <text class="rank-row__openid">{{item._openid}}</text>
                 </view>
                 <view class="rank-row__badges">
+                  <text class="rank-row__badge">👁{{item.visitCount}}</text>
                   <text class="rank-row__badge">🥾{{item.completedCount}}</text>
                   <text class="rank-row__badge">⭐{{item.favoritesCount}}</text>
                 </view>
