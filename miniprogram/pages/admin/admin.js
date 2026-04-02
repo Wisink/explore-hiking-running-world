@@ -398,8 +398,8 @@ Page({
 
   _filterRoutes(list, filter) {
     if (filter === 'all') return list
-    if (filter === 'published') return list.filter(r => r.isActive !== false)
-    if (filter === 'draft') return list.filter(r => r.isActive === false)
+    if (filter === 'published') return list.filter(r => r.isActive === true)
+    if (filter === 'draft') return list.filter(r => r.isActive !== true)
     return list
   },
 
@@ -517,8 +517,8 @@ Page({
 
   _filterArticles(list, filter) {
     if (filter === 'all') return list
-    if (filter === 'published') return list.filter(a => a.isActive !== false)
-    if (filter === 'draft') return list.filter(a => a.isActive === false)
+    if (filter === 'published') return list.filter(a => a.isActive === true)
+    if (filter === 'draft') return list.filter(a => a.isActive !== true)
     return list
   },
 

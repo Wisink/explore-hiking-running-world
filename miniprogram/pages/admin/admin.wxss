@@ -68,7 +68,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 100vh;
+  min-height: 80vh;
+  padding: 40rpx;
 }
 
 .login-card {
@@ -786,6 +787,7 @@
   display: flex;
   align-items: center;
   gap: 12rpx;
+  margin-top: 20rpx;
   margin-bottom: 24rpx;
   background: rgba(255, 255, 255, 0.18);
   backdrop-filter: blur(12px);
