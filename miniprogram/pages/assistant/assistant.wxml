@@ -45,19 +45,19 @@
       <view class="option-card" data-value="easy" bindtap="onStep1Tap">
         <view class="option-card__icon">🚶</view>
         <view class="option-card__title">轻松散步</view>
-        <view class="option-card__desc">距离短、难度低<br/>走走停停很放松</view>
+        <view class="option-card__desc">距离短、难度低、走走停停很放松，没挑战</view>
       </view>
 
       <view class="option-card" data-value="serious" bindtap="onStep1Tap">
         <view class="option-card__icon">🥾</view>
         <view class="option-card__title">认真徒步</view>
-        <view class="option-card__desc">距离稍远、有点挑战<br/>享受徒步的乐趣</view>
+        <view class="option-card__desc">距离稍远、有点挑战、尽情享受徒步的乐趣</view>
       </view>
 
       <view class="option-card option-card--wide" data-value="family" bindtap="onStep1Tap">
         <view class="option-card__icon">👶</view>
         <view class="option-card__title">亲子徒步</view>
-        <view class="option-card__desc">亲子友好、路程短、安全好走</view>
+        <view class="option-card__desc">亲子友好、距离短、安全好走不费腿</view>
       </view>
     </view>
   </view>
@@ -83,7 +83,7 @@
       <view class="option-card" data-value="mountain" bindtap="onStep2Tap">
         <view class="option-card__icon">⛰️</view>
         <view class="option-card__title">山顶</view>
-        <view class="option-card__desc">登高望远，一览众山</view>
+        <view class="option-card__desc">登高望远，一览众山小</view>
       </view>
 
       <view class="option-card" data-value="historic" bindtap="onStep2Tap">
@@ -113,7 +113,7 @@
       <view class="option-card" data-value="half" bindtap="onStep3Tap">
         <view class="option-card__icon">⏰</view>
         <view class="option-card__title">半天</view>
-        <view class="option-card__desc">时间紧张那就少走一点</view>
+        <view class="option-card__desc">时间紧张少走一点也没事儿</view>
       </view>
 
       <view class="option-card" data-value="most" bindtap="onStep3Tap">
@@ -143,7 +143,7 @@
   <!-- ===== 推荐结果 ===== -->
   <view class="result-wrap" wx:if="{{showResult}}">
     <view class="result-header">
-      <view class="result-header__title">为你推荐</view>
+      <view class="result-header__title">为你推荐以下路线</view>
       <view class="result-header__desc" wx:if="{{resultReason}}">{{resultReason}}</view>
       <view class="result-header__count">从 {{allMatched.length}} 条路线中精选</view>
     </view>
