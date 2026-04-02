@@ -134,14 +134,14 @@
 
 .eye-shape {
   position: relative;
-  width: 44rpx;
-  height: 26rpx;
+  width: 32rpx;
+  height: 20rpx;
 }
 
 .eye-body {
   position: absolute;
-  width: 44rpx;
-  height: 26rpx;
+  width: 32rpx;
+  height: 20rpx;
   border: 3rpx solid #4a6b4a;
   border-radius: 50%;
   top: 0;
@@ -150,8 +150,8 @@
 
 .eye-pupil {
   position: absolute;
-  width: 12rpx;
-  height: 12rpx;
+  width: 9rpx;
+  height: 9rpx;
   background: #4a6b4a;
   border-radius: 50%;
   top: 50%;
@@ -161,7 +161,7 @@
 
 .eye-strike {
   position: absolute;
-  width: 56rpx;
+  width: 40rpx;
   height: 3rpx;
   background: #4a6b4a;
   top: 50%;
