@@ -63,6 +63,10 @@ Page({
     // 难度选项
     difficultyOptions: ['轻松', '初级', '中级', '高级', '挑战'],
 
+    // 文章分类选项
+    categoryOptions: ['装备推荐', '安全自救', '户外礼仪', '其他'],
+    categoryIndex: -1,
+
     // scenery 编辑
     sceneryInput: '',
 
@@ -107,13 +111,16 @@ Page({
       const data = res.result.data
       if (res.result.code === 0 && data) {
         if (this.data.type === 'article') {
+          const category = data.category || ''
+          const categoryIdx = this.data.categoryOptions.indexOf(category)
           this.setData({
             articleForm: {
               title: data.title || '',
-              category: data.category || '',
+              category: category,
               content: data.content || '',
               author: data.author || ''
             },
+            categoryIndex: categoryIdx,
             loading: false
           })
         } else {
@@ -189,6 +196,14 @@ Page({
   onArticleFieldInput(e) {
     const field = e.currentTarget.dataset.field
     this.setData({ [`articleForm.${field}`]: e.detail.value })
+  },
+
+  onCategoryChange(e) {
+    const idx = parseInt(e.detail.value)
+    this.setData({
+      categoryIndex: idx,
+      'articleForm.category': this.data.categoryOptions[idx]
+    })
   },
 
   onDifficultyChange(e) {
@@ -288,6 +303,14 @@ Page({
       const f = this.data.articleForm
       if (!f.title.trim()) {
         this.showToast('标题不能为空', 'error')
+        return null
+      }
+      if (!f.category.trim()) {
+        this.showToast('请选择分类', 'error')
+        return null
+      }
+      if (!f.content.trim()) {
+        this.showToast('文章内容不能为空', 'error')
         return null
       }
       updateData = { ...f, isActive }
