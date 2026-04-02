@@ -128,9 +128,40 @@
   right: 20rpx;
   top: 50%;
   transform: translateY(-50%);
-  font-size: 36rpx;
   z-index: 1;
   padding: 8rpx;
+  cursor: pointer;
+}
+
+.eye-icon {
+  width: 40rpx;
+  height: 24rpx;
+  border: 3rpx solid #4a6b4a;
+  border-radius: 50%;
+  position: relative;
+}
+
+.eye-icon::before {
+  content: '';
+  position: absolute;
+  width: 10rpx;
+  height: 10rpx;
+  background: #4a6b4a;
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.eye-icon.eye-closed::after {
+  content: '';
+  position: absolute;
+  width: 50rpx;
+  height: 3rpx;
+  background: #4a6b4a;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-45deg);
 }
 
 .login-btn {

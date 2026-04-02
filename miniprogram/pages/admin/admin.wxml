@@ -43,7 +43,6 @@
     <view class="page-header">
       <view class="page-header__bg"></view>
       <view class="page-header__content">
-        <text class="page-header__emoji">⚙️</text>
         <text class="page-header__title">后台管理</text>
         <text class="page-header__sub">秦人徒步 · 数据管理</text>
       </view>
@@ -649,4 +648,6 @@
   </block>
 
   <view class="admin-toast admin-toast--{{toastType}} {{showToast ? 'admin-toast--show' : ''}}">{{toastMessage}}</view>
+</view>
+dmin-toast--{{toastType}} {{showToast ? 'admin-toast--show' : ''}}">{{toastMessage}}</view>
 </view>
