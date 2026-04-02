@@ -1381,7 +1381,6 @@ Page({
           distance: parseFloat(completeDistance) || 0
         })
         if (result === false) return
-        this.setData({ showSavedHint: true })
       } else {
         // 新增模式（原有逻辑）
         const result = await cloudSync.addCompleted(trailId, completeDate, {
@@ -1393,14 +1392,22 @@ Page({
           name: this.data.trail.name
         })
         if (result === false) return
-        this.setData({ showSavedHint: true })
       }
+      // 先关闭面板，再显示提示弹窗（避免同一次 setData 合批导致弹窗被覆盖）
       this.setData({
         isCompleted: true,
         showCompletePanel: false,
         isEditMode: false,
         editingCompletedAt: ''
       })
+      // 延迟一帧再弹提示，确保面板关闭完成
+      setTimeout(() => {
+        this.setData({ showSavedHint: true })
+        // 2秒后自动关闭提示弹窗
+        setTimeout(() => {
+          this.setData({ showSavedHint: false })
+        }, 2000)
+      }, 300)
       // 刷新已走过记录列表
       this.checkCompletedStatus()
       // 刷新路线统计数字（全局已走过数）
