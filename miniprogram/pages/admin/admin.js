@@ -1,5 +1,4 @@
 // pages/admin/admin.js
-const echarts = require('../../components/ec-canvas/echarts')
 
 // ========== 口令强度校验 ==========
 function validatePasswordStrength(password) {
@@ -14,12 +13,6 @@ function validatePasswordStrength(password) {
 
 Page({
   data: {
-    // ECharts 实例引用
-    echarts: echarts,
-    ecGrowth: { lazyLoad: true },
-    ecCompleted: { lazyLoad: true },
-    ecFavorite: { lazyLoad: true },
-
     // 状态栏高度
     statusBarHeight: 0,
     // 认证状态
@@ -305,9 +298,6 @@ Page({
       this._calcTrendBarPct('userGrowthList', 'value')
       this._calcTrendBarPct('completedTrendList', 'value')
       this._calcTrendBarPct('favoriteTrendList', 'value')
-
-      // 渲染 ECharts 折线图
-      this._renderAllTrendCharts()
     } catch (e) {
       console.error('加载图表失败:', e)
       this.setData({ chartLoading: false })
@@ -321,153 +311,6 @@ Page({
     const max = Math.max(...list.map(i => i[key] || 0), 1)
     const updated = list.map(i => ({ ...i, barPct: Math.round(((i[key] || 0) / max) * 100) }))
     this.setData({ [field]: updated })
-  },
-
-  // ========== ECharts 折线图渲染 ==========
-
-  _getLineOption(title, list, lineColor, fillColor) {
-    const labels = list.map(i => i.label)
-    const values = list.map(i => i.value)
-    return {
-      tooltip: {
-        trigger: 'axis',
-        backgroundColor: 'rgba(26, 46, 26, 0.85)',
-        borderColor: 'rgba(76, 175, 80, 0.4)',
-        borderWidth: 1,
-        textStyle: { color: '#e8f5e9', fontSize: 12 },
-        axisPointer: { type: 'line', lineStyle: { color: 'rgba(76, 175, 80, 0.3)' } }
-      },
-      grid: {
-        left: 40,
-        right: 20,
-        top: 20,
-        bottom: 30,
-        containLabel: false
-      },
-      xAxis: {
-        type: 'category',
-        data: labels,
-        axisLine: { lineStyle: { color: 'rgba(76, 175, 80, 0.3)' } },
-        axisTick: { show: false },
-        axisLabel: {
-          color: '#6b8b6b',
-          fontSize: 10,
-          interval: Math.max(0, Math.floor(labels.length / 8) - 1)
-        },
-        splitLine: { show: false }
-      },
-      yAxis: {
-        type: 'value',
-        axisLine: { show: false },
-        axisTick: { show: false },
-        axisLabel: { color: '#6b8b6b', fontSize: 10 },
-        splitLine: {
-          lineStyle: { color: 'rgba(76, 175, 80, 0.12)', type: 'dashed' }
-        }
-      },
-      series: [{
-        type: 'line',
-        data: values,
-        smooth: true,
-        symbol: 'circle',
-        symbolSize: 6,
-        showSymbol: values.length <= 20,
-        lineStyle: {
-          color: lineColor,
-          width: 3,
-          shadowColor: lineColor.replace(')', ', 0.3)').replace('rgb', 'rgba'),
-          shadowBlur: 8
-        },
-        itemStyle: {
-          color: lineColor,
-          borderColor: '#fff',
-          borderWidth: 2
-        },
-        areaStyle: {
-          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-            { offset: 0, color: fillColor.replace('0.25', '0.45') },
-            { offset: 0.5, color: fillColor },
-            { offset: 1, color: fillColor.replace('0.25', '0.05') }
-          ])
-        },
-        emphasis: {
-          itemStyle: {
-            color: lineColor,
-            borderColor: '#fff',
-            borderWidth: 3,
-            shadowBlur: 12,
-            shadowColor: lineColor.replace(')', ', 0.4)').replace('rgb', 'rgba')
-          }
-        },
-        animationDuration: 1200,
-        animationEasing: 'cubicOut'
-      }]
-    }
-  },
-
-  _renderTrendChart(componentId, data, field, retryCount = 0) {
-    if (!data || data.length === 0) return
-    const colors = {
-      growth: { line: 'rgb(76, 175, 80)', fill: 'rgba(76, 175, 80, 0.25)' },
-      completed: { line: 'rgb(255, 152, 0)', fill: 'rgba(255, 152, 0, 0.25)' },
-      favorite: { line: 'rgb(255, 193, 7)', fill: 'rgba(255, 193, 7, 0.25)' }
-    }
-    const c = colors[field] || colors.growth
-    const titles = { growth: '用户增长', completed: '已走过', favorite: '收藏' }
-
-    const ecRef = this.selectComponent('#' + componentId)
-    if (!ecRef) {
-      // 重试最多5次，每次间隔递增（100ms → 500ms）
-      if (retryCount < 5) {
-        const delay = 100 + retryCount * 100
-        console.warn(`ec-canvas ${componentId} not found, retry ${retryCount + 1}/5 in ${delay}ms`)
-        setTimeout(() => {
-          this._renderTrendChart(componentId, data, field, retryCount + 1)
-        }, delay)
-      } else {
-        console.error('ec-canvas component not found after retries:', componentId)
-      }
-      return
-    }
-
-    // If chart already exists, just update
-    if (this['_chart_' + field]) {
-      const option = this._getLineOption(titles[field], data, c.line, c.fill)
-      this['_chart_' + field].setOption(option)
-      return
-    }
-
-    ecRef.init((canvas, width, height, dpr) => {
-      const chart = echarts.init(canvas, null, { width, height, devicePixelRatio: dpr })
-      const option = this._getLineOption(titles[field], data, c.line, c.fill)
-      chart.setOption(option)
-      this['_chart_' + field] = chart
-      return chart
-    })
-  },
-
-  _renderAllTrendCharts() {
-    // 先等 setData DOM 更新完毕，再延迟渲染图表
-    wx.nextTick(() => {
-      setTimeout(() => {
-        if (this.data.panelUserGrowth && this.data.userGrowthList.length > 0) {
-          this._renderTrendChart('ec-canvas-growth', this.data.userGrowthList, 'growth')
-        }
-        if (this.data.panelCompletedTrend && this.data.completedTrendList.length > 0) {
-          this._renderTrendChart('ec-canvas-completed', this.data.completedTrendList, 'completed')
-        }
-        if (this.data.panelFavoriteTrend && this.data.favoriteTrendList.length > 0) {
-          this._renderTrendChart('ec-canvas-favorite', this.data.favoriteTrendList, 'favorite')
-        }
-      }, 300)
-    })
-  },
-
-  _disposeChart(field) {
-    if (this['_chart_' + field]) {
-      this['_chart_' + field].dispose()
-      this['_chart_' + field] = null
-    }
   },
 
   // 时间维度切换
@@ -488,11 +331,6 @@ Page({
         this.callAdminApi('stats', 'favoriteTrend', { dimension: dim })
       ])
 
-      // Dispose old charts before re-creating
-      this._disposeChart('growth')
-      this._disposeChart('completed')
-      this._disposeChart('favorite')
-
       this.setData({
         userGrowthList: growth.code === 0 ? (growth.data.list || []).map(i => ({ label: i._id, value: i.count, barPct: 0 })) : [],
         completedTrendList: compTrend.code === 0 ? (compTrend.data.list || []).map(i => ({ label: i._id, value: i.count, barPct: 0 })) : [],
@@ -501,9 +339,6 @@ Page({
       this._calcTrendBarPct('userGrowthList', 'value')
       this._calcTrendBarPct('completedTrendList', 'value')
       this._calcTrendBarPct('favoriteTrendList', 'value')
-
-      // Re-render ECharts
-      this._renderAllTrendCharts()
     } catch (e) {
       console.error('刷新趋势失败:', e)
     }
@@ -512,27 +347,7 @@ Page({
   // 图表面板折叠/展开
   toggleChartPanel(e) {
     const field = e.currentTarget.dataset.field
-    const isExpanding = !this.data[field]
-    this.setData({ [field]: isExpanding })
-
-    // Re-render chart when panel is expanded
-    if (isExpanding) {
-      wx.nextTick(() => {
-        setTimeout(() => {
-          const fieldMap = {
-            panelUserGrowth: { id: 'ec-canvas-growth', data: 'userGrowthList', field: 'growth' },
-          panelCompletedTrend: { id: 'ec-canvas-completed', data: 'completedTrendList', field: 'completed' },
-          panelFavoriteTrend: { id: 'ec-canvas-favorite', data: 'favoriteTrendList', field: 'favorite' }
-        }
-        const mapping = fieldMap[field]
-        if (mapping && this.data[mapping.data].length > 0) {
-          // Dispose and re-create
-          this._disposeChart(mapping.field)
-          this._renderTrendChart(mapping.id, this.data[mapping.data], mapping.field)
-        }
-      }, 300)
-      })
-    }
+    this.setData({ [field]: !this.data[field] })
   },
 
   // --- 路线 ---
