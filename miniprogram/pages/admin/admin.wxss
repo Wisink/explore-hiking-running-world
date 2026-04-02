@@ -150,8 +150,8 @@
 
 .eye-pupil {
   position: absolute;
-  width: 10rpx;
-  height: 10rpx;
+  width: 14rpx;
+  height: 14rpx;
   border: 2rpx solid #4a6b4a;
   border-radius: 50%;
   top: 50%;
@@ -161,7 +161,7 @@
 
 .eye-strike {
   position: absolute;
-  width: 52rpx;
+  width: 40rpx;
   height: 3rpx;
   background: #4a6b4a;
   top: 46%;
