@@ -84,10 +84,10 @@
       <text class="advanced-filter__label">风景</text>
       <view class="advanced-filter__options">
         <text class="advanced-filter__option {{activeScenery === '' ? 'active' : ''}}" data-value="" bindtap="onSceneryFilter">不限</text>
-        <text class="advanced-filter__option {{activeScenery === '山林' ? 'active' : ''}}" data-value="山林" bindtap="onSceneryFilter">有山林</text>
+        <text class="advanced-filter__option {{activeScenery === '山林' ? 'active' : ''}}" data-value="山林" bindtap="onSceneryFilter">山林</text>
         <text class="advanced-filter__option {{activeScenery === '草甸' ? 'active' : ''}}" data-value="草甸" bindtap="onSceneryFilter">草甸</text>
         <text class="advanced-filter__option {{activeScenery === '溪流' ? 'active' : ''}}" data-value="溪流" bindtap="onSceneryFilter">溪流</text>
-        <text class="advanced-filter__option {{activeScenery === '瀑布' ? 'active' : ''}}" data-value="瀑布" bindtap="onSceneryFilter">有瀑布</text>
+        <text class="advanced-filter__option {{activeScenery === '瀑布' ? 'active' : ''}}" data-value="瀑布" bindtap="onSceneryFilter">瀑布</text>
         <text class="advanced-filter__option {{activeScenery === '湖泊' ? 'active' : ''}}" data-value="湖泊" bindtap="onSceneryFilter">湖泊</text>
         <text class="advanced-filter__option {{activeScenery === '峡谷' ? 'active' : ''}}" data-value="峡谷" bindtap="onSceneryFilter">峡谷</text>
         <text class="advanced-filter__option {{activeScenery === '竹林' ? 'active' : ''}}" data-value="竹林" bindtap="onSceneryFilter">竹林</text>
