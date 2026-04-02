@@ -85,43 +85,49 @@
   padding: 32rpx 40rpx 16rpx;
 }
 
-.steps-bar__item {
+.step-header {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 8rpx;
-}
-
-.steps-bar__num {
-  width: 48rpx;
-  height: 48rpx;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.3);
-  backdrop-filter: blur(10px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 24rpx;
-  font-weight: 700;
-  color: #6b8b6b;
-  border: 2px solid rgba(255,255,255,.3);
+  padding: 16rpx 24rpx;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  background: rgba(255,255,255,0.6);
+  border-radius: 24rpx;
+  border: 1rpx solid rgba(255,255,255,0.3);
   transition: all 300ms ease;
 }
 
-.steps-bar__item.active .steps-bar__num {
-  background: linear-gradient(135deg, #81c784, #4CAF50);
-  color: #FFFFFF;
-  border-color: rgba(76,175,80,.5);
-  box-shadow: 0 4rpx 12rpx rgba(76,175,80,.3);
+.step-header.active {
+  background: rgba(255,255,255,0.8);
+  box-shadow: 0 4rpx 16rpx rgba(76,175,80,.2);
+  border-color: rgba(76,175,80,.3);
+}
+
+.step-icon {
+  font-size: 80rpx;
+  line-height: 1;
+  animation: bounceIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) both;
+}
+
+.step-header:nth-child(1) .step-icon { animation-delay: 0s; }
+.step-header:nth-child(3) .step-icon { animation-delay: 0.15s; }
+.step-header:nth-child(5) .step-icon { animation-delay: 0.3s; }
+
+@keyframes bounceIn {
+  0% { transform: scale(0); opacity: 0; }
+  60% { transform: scale(1.15); }
+  100% { transform: scale(1); opacity: 1; }
 }
 
 .steps-bar__label {
-  font-size: 22rpx;
+  font-size: 36rpx;
   color: #6b8b6b;
   font-weight: 500;
 }
 
-.steps-bar__item.active .steps-bar__label {
+.step-header.active .steps-bar__label {
   color: #2d6a4f;
   font-weight: 600;
 }
@@ -158,74 +164,45 @@
   margin-bottom: 36rpx;
 }
 
-/* 选项网格 */
+/* 选项长条圆角矩形 */
 .option-grid {
   display: flex;
   flex-wrap: wrap;
   gap: 20rpx;
 }
 
-.option-card {
-  width: calc(50% - 10rpx);
-  background: rgba(255, 255, 255, 0.25);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255,255,255,.3);
-  border-radius: 24rpx;
-  padding: 36rpx 24rpx;
+.option-pill {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  text-align: center;
-  box-shadow: 0 8rpx 24rpx rgba(31,38,50,.1);
-  transition: all 250ms ease;
+  justify-content: center;
+  padding: 20rpx 40rpx;
+  border-radius: 50rpx;
+  background: rgba(255,255,255,0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 2rpx solid rgba(27,94,32,0.15);
+  font-size: 30rpx;
+  color: #333;
+  transition: all 0.2s ease;
   animation: fadeInUp 400ms cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
 }
 
-.option-card:nth-child(1) { animation-delay: 0ms; }
-.option-card:nth-child(2) { animation-delay: 80ms; }
-.option-card:nth-child(3) { animation-delay: 160ms; }
-.option-card:nth-child(4) { animation-delay: 240ms; }
-.option-card:nth-child(5) { animation-delay: 320ms; }
+.option-pill:nth-child(1) { animation-delay: 0ms; }
+.option-pill:nth-child(2) { animation-delay: 80ms; }
+.option-pill:nth-child(3) { animation-delay: 160ms; }
+.option-pill:nth-child(4) { animation-delay: 240ms; }
+.option-pill:nth-child(5) { animation-delay: 320ms; }
 
-.option-card:active {
-  transform: scale(0.96);
-  background: rgba(255, 255, 255, 0.4);
-  box-shadow: 0 4rpx 12rpx rgba(76,175,80,.2);
+.option-pill:active {
+  transform: scale(0.95);
+  background: rgba(255,255,255,0.9);
 }
 
-.option-card--wide {
-  width: 100%;
-  flex-direction: row;
-  gap: 20rpx;
-  text-align: left;
-  padding: 28rpx 32rpx;
-}
-
-.option-card--wide .option-card__icon {
-  margin-bottom: 0;
-}
-
-.option-card--wide .option-card__title {
-  margin-bottom: 0;
-}
-
-.option-card__icon {
-  font-size: 56rpx;
-  margin-bottom: 16rpx;
-}
-
-.option-card__title {
-  font-size: 30rpx;
-  font-weight: 700;
-  color: #1a2e1a;
-  margin-bottom: 8rpx;
-}
-
-.option-card__desc {
-  font-size: 22rpx;
-  color: #4a6b4a;
-  line-height: 1.5;
+.option-pill--active {
+  background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
+  border-color: #4CAF50;
+  color: #1B5E20;
+  font-weight: 500;
 }
 
 @keyframes fadeInUp {
@@ -234,12 +211,30 @@
 }
 
 /* 返回按钮 */
-.step-back {
+.back-btn {
   display: flex;
+  align-items: center;
   justify-content: center;
-  padding: 40rpx 0;
-  font-size: 26rpx;
-  color: #6b8b6b;
+  gap: 8rpx;
+  padding: 18rpx 40rpx;
+  border-radius: 50rpx;
+  background: rgba(255,255,255,0.5);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 2rpx solid rgba(27,94,32,0.2);
+  color: #4CAF50;
+  font-size: 28rpx;
+  margin-top: 30rpx;
+  transition: all 0.2s ease;
+}
+
+.back-btn__icon {
+  font-size: 32rpx;
+}
+
+.back-btn:active {
+  transform: scale(0.95);
+  background: rgba(255,255,255,0.8);
 }
 
 /* ===== 推荐结果 ===== */
@@ -253,11 +248,6 @@
   align-items: center;
   padding: 40rpx 32rpx 24rpx;
   text-align: center;
-}
-
-.result-header__icon {
-  font-size: 56rpx;
-  margin-bottom: 12rpx;
 }
 
 .result-header__title {

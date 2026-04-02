@@ -13,25 +13,25 @@
       </view>
       <view class="header__text">
         <text class="header__title">🤖 徒步助手</text>
-        <text class="header__sub">智能推荐适合你的路线</text>
+        <text class="header__sub">基于你的需求给你推荐路线</text>
       </view>
     </view>
   </view>
 
   <!-- 步骤指示器 -->
   <view class="steps-bar" wx:if="{{!showResult}}">
-    <view class="steps-bar__item {{currentStep >= 1 ? 'active' : ''}}">
-      <view class="steps-bar__num">1</view>
+    <view class="step-header {{currentStep >= 1 ? 'active' : ''}}">
+      <view class="step-icon">🎯</view>
       <text class="steps-bar__label">想怎么玩</text>
     </view>
     <view class="steps-bar__line {{currentStep >= 2 ? 'active' : ''}}"></view>
-    <view class="steps-bar__item {{currentStep >= 2 ? 'active' : ''}}">
-      <view class="steps-bar__num">2</view>
+    <view class="step-header {{currentStep >= 2 ? 'active' : ''}}">
+      <view class="step-icon">🌳</view>
       <text class="steps-bar__label">想看什么</text>
     </view>
     <view class="steps-bar__line {{currentStep >= 3 ? 'active' : ''}}"></view>
-    <view class="steps-bar__item {{currentStep >= 3 ? 'active' : ''}}">
-      <view class="steps-bar__num">3</view>
+    <view class="step-header {{currentStep >= 3 ? 'active' : ''}}">
+      <view class="step-icon">⏳</view>
       <text class="steps-bar__label">想走多久</text>
     </view>
   </view>
@@ -42,22 +42,14 @@
     <view class="step-desc">选择你今天的徒步风格</view>
 
     <view class="option-grid">
-      <view class="option-card" data-value="easy" bindtap="onStep1Tap">
-        <view class="option-card__icon">🚶</view>
-        <view class="option-card__title">轻松散步</view>
-        <view class="option-card__desc">距离短、难度低<br/>走走停停很放松</view>
+      <view class="option-pill {{step1Choice === 'easy' ? 'option-pill--active' : ''}}" data-value="easy" bindtap="onStep1Tap">
+        🚶 轻松散步
       </view>
-
-      <view class="option-card" data-value="serious" bindtap="onStep1Tap">
-        <view class="option-card__icon">🥾</view>
-        <view class="option-card__title">认真徒步</view>
-        <view class="option-card__desc">距离稍远、有点挑战<br/>享受徒步的乐趣</view>
+      <view class="option-pill {{step1Choice === 'serious' ? 'option-pill--active' : ''}}" data-value="serious" bindtap="onStep1Tap">
+        🥾 认真徒步
       </view>
-
-      <view class="option-card option-card--wide" data-value="family" bindtap="onStep1Tap">
-        <view class="option-card__icon">👨‍👩‍👧</view>
-        <view class="option-card__title">带娃出去</view>
-        <view class="option-card__desc">亲子友好、路程短、安全好走</view>
+      <view class="option-pill {{step1Choice === 'family' ? 'option-pill--active' : ''}}" data-value="family" bindtap="onStep1Tap">
+        👨‍👩‍👧 带娃出去
       </view>
     </view>
   </view>
@@ -68,39 +60,26 @@
     <view class="step-desc">你喜欢什么样的风景？</view>
 
     <view class="option-grid">
-      <view class="option-card" data-value="stream" bindtap="onStep2Tap">
-        <view class="option-card__icon">💧</view>
-        <view class="option-card__title">溪水</view>
-        <view class="option-card__desc">听水声，感受清凉</view>
+      <view class="option-pill {{step2Choice === 'stream' ? 'option-pill--active' : ''}}" data-value="stream" bindtap="onStep2Tap">
+        💧 溪水
       </view>
-
-      <view class="option-card" data-value="forest" bindtap="onStep2Tap">
-        <view class="option-card__icon">🌲</view>
-        <view class="option-card__title">森林</view>
-        <view class="option-card__desc">穿行林间，满目绿意</view>
+      <view class="option-pill {{step2Choice === 'forest' ? 'option-pill--active' : ''}}" data-value="forest" bindtap="onStep2Tap">
+        🌲 森林
       </view>
-
-      <view class="option-card" data-value="mountain" bindtap="onStep2Tap">
-        <view class="option-card__icon">⛰️</view>
-        <view class="option-card__title">山顶</view>
-        <view class="option-card__desc">登高望远，一览众山</view>
+      <view class="option-pill {{step2Choice === 'mountain' ? 'option-pill--active' : ''}}" data-value="mountain" bindtap="onStep2Tap">
+        ⛰️ 山顶
       </view>
-
-      <view class="option-card" data-value="historic" bindtap="onStep2Tap">
-        <view class="option-card__icon">🏛️</view>
-        <view class="option-card__title">古迹</view>
-        <view class="option-card__desc">边走边感受历史底蕴</view>
+      <view class="option-pill {{step2Choice === 'historic' ? 'option-pill--active' : ''}}" data-value="historic" bindtap="onStep2Tap">
+        🏛️ 古迹
       </view>
-
-      <view class="option-card option-card--wide" data-value="any" bindtap="onStep2Tap">
-        <view class="option-card__icon">🌈</view>
-        <view class="option-card__title">都行</view>
-        <view class="option-card__desc">什么风景都喜欢，不过滤</view>
+      <view class="option-pill {{step2Choice === 'any' ? 'option-pill--active' : ''}}" data-value="any" bindtap="onStep2Tap">
+        🌈 都行
       </view>
     </view>
 
-    <view class="step-back" bindtap="onPrevStep">
-      <text>← 返回上一步</text>
+    <view class="back-btn" bindtap="onPrevStep">
+      <text class="back-btn__icon">←</text>
+      <text class="back-btn__text">返回上一步</text>
     </view>
   </view>
 
@@ -110,40 +89,29 @@
     <view class="step-desc">今天打算花多少时间？</view>
 
     <view class="option-grid">
-      <view class="option-card" data-value="half" bindtap="onStep3Tap">
-        <view class="option-card__icon">⏰</view>
-        <view class="option-card__title">半天</view>
-        <view class="option-card__desc">5km以内<br/>轻松半天搞定</view>
+      <view class="option-pill {{step3Choice === 'half' ? 'option-pill--active' : ''}}" data-value="half" bindtap="onStep3Tap">
+        ⏰ 半天
       </view>
-
-      <view class="option-card" data-value="most" bindtap="onStep3Tap">
-        <view class="option-card__icon">☀️</view>
-        <view class="option-card__title">大半天</view>
-        <view class="option-card__desc">5-10km<br/>时间充裕慢慢走</view>
+      <view class="option-pill {{step3Choice === 'most' ? 'option-pill--active' : ''}}" data-value="most" bindtap="onStep3Tap">
+        ☀️ 大半天
       </view>
-
-      <view class="option-card" data-value="all" bindtap="onStep3Tap">
-        <view class="option-card__icon">🌅</view>
-        <view class="option-card__title">一整天</view>
-        <view class="option-card__desc">10km以上<br/>一日徒步充实满满</view>
+      <view class="option-pill {{step3Choice === 'all' ? 'option-pill--active' : ''}}" data-value="all" bindtap="onStep3Tap">
+        🌅 一整天
       </view>
-
-      <view class="option-card" data-value="flexible" bindtap="onStep3Tap">
-        <view class="option-card__icon">🤷</view>
-        <view class="option-card__title">看情况</view>
-        <view class="option-card__desc">时间灵活<br/>不过滤，随便推荐</view>
+      <view class="option-pill {{step3Choice === 'flexible' ? 'option-pill--active' : ''}}" data-value="flexible" bindtap="onStep3Tap">
+        🤷 看情况
       </view>
     </view>
 
-    <view class="step-back" bindtap="onPrevStep">
-      <text>← 返回上一步</text>
+    <view class="back-btn" bindtap="onPrevStep">
+      <text class="back-btn__icon">←</text>
+      <text class="back-btn__text">返回上一步</text>
     </view>
   </view>
 
   <!-- ===== 推荐结果 ===== -->
   <view class="result-wrap" wx:if="{{showResult}}">
     <view class="result-header">
-      <view class="result-header__icon">✨</view>
       <view class="result-header__title">为你推荐</view>
       <view class="result-header__desc" wx:if="{{resultReason}}">{{resultReason}}</view>
       <view class="result-header__count">从 {{allMatched.length}} 条路线中精选</view>
