@@ -325,17 +325,20 @@ Page({
   async _reloadTrends() {
     const dim = this.data.trendDimension
     try {
-      const [growth, compTrend] = await Promise.all([
+      const [growth, compTrend, favTrend] = await Promise.all([
         this.callAdminApi('stats', 'userGrowth', { dimension: dim }),
-        this.callAdminApi('stats', 'completedTrend', { dimension: dim })
+        this.callAdminApi('stats', 'completedTrend', { dimension: dim }),
+        this.callAdminApi('stats', 'favoriteTrend', { dimension: dim })
       ])
 
       this.setData({
         userGrowthList: growth.code === 0 ? (growth.data.list || []).map(i => ({ label: i._id, value: i.count, barPct: 0 })) : [],
-        completedTrendList: compTrend.code === 0 ? (compTrend.data.list || []).map(i => ({ label: i._id, value: i.count, barPct: 0 })) : []
+        completedTrendList: compTrend.code === 0 ? (compTrend.data.list || []).map(i => ({ label: i._id, value: i.count, barPct: 0 })) : [],
+        favoriteTrendList: favTrend.code === 0 ? (favTrend.data.list || []).map(i => ({ label: i._id, value: i.count, barPct: 0 })) : []
       })
       this._calcTrendBarPct('userGrowthList', 'value')
       this._calcTrendBarPct('completedTrendList', 'value')
+      this._calcTrendBarPct('favoriteTrendList', 'value')
     } catch (e) {
       console.error('刷新趋势失败:', e)
     }

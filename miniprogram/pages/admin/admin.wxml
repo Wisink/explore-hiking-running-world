@@ -182,12 +182,6 @@
             <text class="chart-panel__arrow">{{panelFavoriteTrend ? '▼' : '▶'}}</text>
           </view>
           <view class="chart-panel__body" wx:if="{{panelFavoriteTrend}}">
-            <view class="trend-dims">
-              <text class="trend-dim {{trendDimension==='day' ? 'trend-dim--active' : ''}}" data-dim="day" catchtap="onTrendDimensionChange">日</text>
-              <text class="trend-dim {{trendDimension==='week' ? 'trend-dim--active' : ''}}" data-dim="week" catchtap="onTrendDimensionChange">周</text>
-              <text class="trend-dim {{trendDimension==='month' ? 'trend-dim--active' : ''}}" data-dim="month" catchtap="onTrendDimensionChange">月</text>
-              <text class="trend-dim {{trendDimension==='year' ? 'trend-dim--active' : ''}}" data-dim="year" catchtap="onTrendDimensionChange">年</text>
-            </view>
             <view class="bar-chart" wx:if="{{favoriteTrendList.length > 0}}">
               <view class="bar-row" wx:for="{{favoriteTrendList}}" wx:key="label">
                 <text class="bar-row__label">{{item.label}}</text>
