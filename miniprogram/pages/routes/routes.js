@@ -234,8 +234,8 @@ Page({
       ? item.difficulty.suitableFor
       : []
 
-    // family_friendly: 检查suitableFor是否包含亲子
-    const isFamily = suitableForArr.some(s => s.includes('亲子'))
+    // family_friendly: 检查suitableFor是否包含亲子，或原始数据已有family_friendly标记
+    const isFamily = suitableForArr.some(s => s.includes('亲子')) || item.family_friendly === true
 
     // location_direction: 从 location.direction 提取
     const locationDirection = typeof item.location === 'object' ? (item.location.direction || '') : ''
@@ -630,15 +630,12 @@ Page({
 
   // 点击「附近路线」入口
   onNearbyTap: function () {
-    wx.showModal({
-      title: '',
-      content: '你要从当前位置出发吗？需要获取你的位置，以便为你推荐附近的徒步路线哦！',
-      confirmText: '使用当前位置',
-      cancelText: '手动选择地点',
+    wx.showActionSheet({
+      itemList: ['使用当前位置', '手动选择地点'],
       success: (res) => {
-        if (res.confirm) {
+        if (res.tapIndex === 0) {
           this.requestLocationAndGo()
-        } else if (res.cancel) {
+        } else if (res.tapIndex === 1) {
           this.chooseLocationAndGo()
         }
       }

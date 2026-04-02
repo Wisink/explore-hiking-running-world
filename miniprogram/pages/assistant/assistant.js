@@ -11,7 +11,7 @@ const DIFFICULTY_MAP = {
 const PLAY_OPTIONS = {
   easy: { maxDist: 5, maxDiffLevel: 1, label: '轻松散步' },
   serious: { minDist: 5, maxDist: 20, maxDiffLevel: 2, label: '认真徒步' },
-  family: { maxDist: 3, maxDiffLevel: 1, familyFriendly: true, label: '带娃出去' }
+  family: { maxDist: 3, maxDiffLevel: 1, familyFriendly: true, label: '亲子徒步' }
 }
 
 // Step2 选项 → 关键词
