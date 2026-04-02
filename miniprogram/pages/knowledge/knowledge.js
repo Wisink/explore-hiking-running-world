@@ -157,6 +157,18 @@ Page({
             if (res.data.length === MAX) {
               fetchPage(skip + MAX)
             } else {
+              // 合并本地新增的文章（云端可能没有的）
+              try {
+                const localArticles = require('../../data/articles.json')
+                const cloudIds = new Set(allArticles.map(a => a._id))
+                for (const local of localArticles) {
+                  if (!cloudIds.has(local._id)) {
+                    allArticles.push(local)
+                  }
+                }
+              } catch (e) {
+                console.warn('合并本地文章失败:', e)
+              }
               this.processArticles(allArticles)
               if (callback) callback()
             }

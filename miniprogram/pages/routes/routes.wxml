@@ -16,24 +16,24 @@
         </view>
       </view>
       <view class="header__search-inline">
-        <view class="search-inline">
-          <text class="search-inline__icon">🔍</text>
-          <input
-            class="search-inline__field"
-            placeholder="输入路线名称或地点..."
-            value="{{searchKeyword}}"
-            bindinput="onSearchInput"
-            bindconfirm="onSearchConfirm"
-            confirm-type="search"
-          />
-          <text class="search-inline__clear" wx:if="{{searchKeyword}}" bindtap="onSearchClear">✕</text>
-          <view class="search-inline__search-btn" bindtap="onSearchConfirm">
-            <text>搜索</text>
+        <view class="search-row">
+          <view class="search-inline">
+            <text class="search-inline__icon">🔍</text>
+            <input
+              class="search-inline__field"
+              placeholder="输入路线名称或地点..."
+              value="{{searchKeyword}}"
+              bindinput="onSearchInput"
+              bindconfirm="onSearchConfirm"
+              confirm-type="search"
+            />
+            <text class="search-inline__clear" wx:if="{{searchKeyword}}" bindtap="onSearchClear">✕</text>
+            <view class="search-inline__search-btn" bindtap="onSearchConfirm">
+              <text>搜索</text>
+            </view>
           </view>
-        </view>
-        <view class="search-filter-row">
           <view class="search-advanced-filter-btn {{showAdvancedFilter ? 'active' : ''}}" bindtap="onToggleAdvancedFilter">
-            <text>⚙️ 高级筛选</text>
+            <text>🔬 高级筛选</text>
           </view>
         </view>
       </view>
@@ -147,11 +147,11 @@
         <text class="quick-card__desc">基于定位发现周边</text>
       </view>
     </view>
-    <view class="quick-card" bindtap="onAssistantTap">
+    <view class="quick-card quick-card--assistant" bindtap="onAssistantTap">
       <view class="quick-card__icon">🤖</view>
       <view class="quick-card__text">
         <text class="quick-card__title">徒步助手</text>
-        <text class="quick-card__desc">智能推荐适合你的路线</text>
+        <text class="quick-card__desc">基于需求智能推荐路线</text>
       </view>
     </view>
   </view>
@@ -297,3 +297,4 @@
   </view>
 </view>
 </view>
+view>
