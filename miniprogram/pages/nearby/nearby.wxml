@@ -83,7 +83,7 @@
 
         <!-- 距离角标 -->
         <view class="route-card__distance">
-          📍 距你 {{item.distanceToUser}}km
+          📍 距你直线距离 {{item.distanceToUser}}km
         </view>
 
         <!-- 底部叠加信息 -->
