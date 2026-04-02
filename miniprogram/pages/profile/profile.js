@@ -392,8 +392,8 @@ Page({
 
   // 重建显示列表（默认5条）
   _rebuildDisplayed() {
-    const fav = this.data.showAllFavorites ? this.data.favoriteRoutes : this.data.favoriteRoutes.slice(0, 5)
-    const comp = this.data.showAllCompleted ? this.data.completedRoutes : this.data.completedRoutes.slice(0, 5)
+    const fav = this.data.showAllFavorites ? this.data.favoriteRoutes : this.data.favoriteRoutes.slice(0, 3)
+    const comp = this.data.showAllCompleted ? this.data.completedRoutes : this.data.completedRoutes.slice(0, 3)
     this.setData({ displayedFavorites: fav, displayedCompleted: comp })
   },
 
@@ -402,7 +402,7 @@ Page({
     const showAll = !this.data.showAllFavorites
     this.setData({
       showAllFavorites: showAll,
-      displayedFavorites: showAll ? this.data.favoriteRoutes : this.data.favoriteRoutes.slice(0, 5)
+      displayedFavorites: showAll ? this.data.favoriteRoutes : this.data.favoriteRoutes.slice(0, 3)
     })
   },
 
@@ -411,7 +411,7 @@ Page({
     const showAll = !this.data.showAllCompleted
     this.setData({
       showAllCompleted: showAll,
-      displayedCompleted: showAll ? this.data.completedRoutes : this.data.completedRoutes.slice(0, 5)
+      displayedCompleted: showAll ? this.data.completedRoutes : this.data.completedRoutes.slice(0, 3)
     })
   },
 
