@@ -14,7 +14,7 @@
       </view>
       <text class="profile-nickname">{{hikerNickname}}</text>
       <text class="page-header__title">我的徒步世界！</text>
-      <text class="page-header__sub">记录每一步的风景</text>
+      <text class="page-header__sub">徒步过的每一条路线，都是最美好的回忆.</text>
       <view class="page-header__visit" wx:if="{{userInfo}}">
         <text class="page-header__visit-text">🌍 已访问 {{userInfo.visitCount}} 次</text>
       </view>
@@ -90,7 +90,7 @@
     <view class="route-list" wx:else>
       <view
         class="route-card"
-        wx:for="{{favoriteRoutes}}"
+        wx:for="{{displayedFavorites}}"
         wx:key="_id"
         bindtap="onRouteTap"
         data-id="{{item._id}}"
@@ -122,6 +122,9 @@
           <text>❤️</text>
         </view>
       </view>
+      <view class="show-more-routes" wx:if="{{favoriteRoutes.length > 5}}" bindtap="toggleShowAllFavorites">
+        <text>{{showAllFavorites ? '收起' : '查看更多 ›'}}</text>
+      </view>
     </view>
   </view>
 
@@ -142,7 +145,7 @@
     <view class="route-list" wx:else>
       <view
         class="route-card route-card--completed"
-        wx:for="{{completedRoutes}}"
+        wx:for="{{displayedCompleted}}"
         wx:key="routeId"
         bindtap="onCompletedRouteTap"
         data-id="{{item._id}}"
@@ -179,6 +182,9 @@
             </view>
           </view>
         </view>
+      </view>
+      <view class="show-more-routes" wx:if="{{completedRoutes.length > 5}}" bindtap="toggleShowAllCompleted">
+        <text>{{showAllCompleted ? '收起' : '查看更多 ›'}}</text>
       </view>
     </view>
   </view>

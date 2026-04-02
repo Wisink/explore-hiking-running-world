@@ -27,7 +27,12 @@ Page({
     completedCount: 0,
     totalDistance: 0,
     // 同步状态
-    syncStatus: ''
+    syncStatus: '',
+    // 查看更多状态
+    showAllFavorites: false,
+    showAllCompleted: false,
+    displayedFavorites: [],
+    displayedCompleted: []
   },
 
   onLoad() {
@@ -175,9 +180,10 @@ Page({
       })
 
       this.setData({ favoriteRoutes: routes })
+      this._rebuildDisplayed()
     } catch (err) {
       console.error('加载收藏列表失败：', err)
-      this.setData({ favoriteRoutes: [], favoriteCount: 0 })
+      this.setData({ favoriteRoutes: [], favoriteCount: 0, displayedFavorites: [] })
     }
   },
 
@@ -285,9 +291,10 @@ Page({
       }
 
       this.setData({ completedRoutes: routes, totalDistance: Math.round(totalDistance * 10) / 10 })
+      this._rebuildDisplayed()
     } catch (err) {
       console.error('加载已走过列表失败：', err)
-      this.setData({ completedRoutes: [], completedCount: 0, totalDistance: 0 })
+      this.setData({ completedRoutes: [], completedCount: 0, totalDistance: 0, displayedCompleted: [] })
     }
   },
 
@@ -380,6 +387,31 @@ Page({
   onIcpTap: function () {
     wx.setClipboardData({
       data: '陕ICP备2026006901号'
+    })
+  },
+
+  // 重建显示列表（默认5条）
+  _rebuildDisplayed() {
+    const fav = this.data.showAllFavorites ? this.data.favoriteRoutes : this.data.favoriteRoutes.slice(0, 5)
+    const comp = this.data.showAllCompleted ? this.data.completedRoutes : this.data.completedRoutes.slice(0, 5)
+    this.setData({ displayedFavorites: fav, displayedCompleted: comp })
+  },
+
+  // 收藏列表展开/收起
+  toggleShowAllFavorites() {
+    const showAll = !this.data.showAllFavorites
+    this.setData({
+      showAllFavorites: showAll,
+      displayedFavorites: showAll ? this.data.favoriteRoutes : this.data.favoriteRoutes.slice(0, 5)
+    })
+  },
+
+  // 已走过列表展开/收起
+  toggleShowAllCompleted() {
+    const showAll = !this.data.showAllCompleted
+    this.setData({
+      showAllCompleted: showAll,
+      displayedCompleted: showAll ? this.data.completedRoutes : this.data.completedRoutes.slice(0, 5)
     })
   },
 

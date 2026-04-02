@@ -45,7 +45,7 @@
   font-size: 30rpx;
   font-weight: 700;
   color: #2d6a4f;
-  margin-bottom: 20rpx;
+  margin-bottom: 36rpx;
   letter-spacing: 2rpx;
   text-shadow: 0 1rpx 4rpx rgba(255, 255, 255, 0.5);
   animation: fadeInUp 400ms cubic-bezier(0.34, 1.56, 0.64, 1) 100ms both;
@@ -519,6 +519,20 @@
 /* 已走过卡片特殊样式 */
 .route-card--completed {
   border-left: 6rpx solid rgba(46, 125, 50, 0.6);
+}
+
+/* 查看更多按钮 */
+.show-more-routes {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20rpx 0;
+}
+
+.show-more-routes text {
+  font-size: 26rpx;
+  color: #2d6a4f;
+  font-weight: 600;
 }
 
 /* ===== 后台管理入口 — 毛玻璃 ===== */
