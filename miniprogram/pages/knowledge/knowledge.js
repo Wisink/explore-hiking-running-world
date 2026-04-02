@@ -1,6 +1,92 @@
 // pages/knowledge/knowledge.js
 const app = getApp()
 
+// 根据文章标题和子分类精准匹配emoji图标
+function getArticleIcon(article) {
+  const title = (article.title || '').toLowerCase()
+  const sub = article.subcategory || ''
+
+  // 装备推荐类
+  if (article.category === '装备推荐') {
+    if (/徒步鞋|鞋/.test(title)) return '👟'
+    if (/登山杖|杖/.test(title)) return '🏔️'
+    if (/背包/.test(title)) return '🎒'
+    if (/水壶|水袋|饮水|补水/.test(title)) return '💧'
+    if (/帐篷/.test(title)) return '⛺'
+    if (/头灯/.test(title)) return '🔦'
+    if (/手套|护膝|护踝/.test(title)) return '🧤'
+    if (/服装|冲锋衣|速干|袜子|内衣|分层/.test(title)) return '👕'
+    if (/睡袋|防潮垫/.test(title)) return '🛏️'
+    if (/炊具/.test(title)) return '🍳'
+    if (/对讲机/.test(title)) return '📻'
+    if (/相机|运动相机/.test(title)) return '📷'
+    if (/手表/.test(title)) return '⌚'
+    if (/急救毯/.test(title)) return '🩹'
+    if (/雨衣|雨裤/.test(title)) return '🌂'
+    if (/收纳/.test(title)) return '📦'
+    if (/清单/.test(title)) return '✅'
+    return '🎒' // 通用装备
+  }
+
+  // 安全自救类
+  if (article.category === '安全自救') {
+    if (/急救|急救包|急救基本/.test(title)) return '🩹'
+    if (/中暑|晒伤/.test(title)) return '🌡️'
+    if (/失温|冻伤/.test(title)) return '🥶'
+    if (/蛇虫|动物伤害/.test(title)) return '🐍'
+    if (/扭伤/.test(title)) return '🦴'
+    if (/溺水/.test(title)) return '🌊'
+    if (/雷电/.test(title)) return '⛈️'
+    if (/暴风雪/.test(title)) return '❄️'
+    if (/山洪/.test(title)) return '🏔️'
+    if (/迷路|导航/.test(title)) return '🧭'
+    if (/信号|求救/.test(title)) return '🆘'
+    if (/高原/.test(title)) return '🏔️'
+    if (/低血糖/.test(title)) return '🍬'
+    if (/脱水|补水/.test(title)) return '💧'
+    if (/植物中毒/.test(title)) return '☠️'
+    if (/热身|拉伸/.test(title)) return '🏃'
+    if (/检查清单/.test(title)) return '✅'
+    if (/季节/.test(title)) return '🍂'
+    if (/安全须知/.test(title)) return '🛡️'
+    return '🛡️' // 通用安全
+  }
+
+  // 户外礼仪类
+  if (article.category === '户外礼仪') {
+    if (/无痕山林|LNT|Leave No Trace|环保/.test(title)) return '🌱'
+    if (/野生动物/.test(title)) return '🦎'
+    if (/步道|礼让/.test(title)) return '🏘️'
+    if (/营地|防火/.test(title)) return '🏕️'
+    if (/垃圾/.test(title)) return '♻️'
+    if (/如厕/.test(title)) return '🚻'
+    if (/团队/.test(title)) return '👥'
+    return '🌿' // 通用礼仪
+  }
+
+  // 其他类
+  if (article.category === '其他') {
+    if (/路线|选择/.test(title)) return '🗺️'
+    if (/体能|训练/.test(title)) return '💪'
+    if (/团队/.test(title)) return '👥'
+    if (/动植物|自然|科普/.test(title)) return '🍃'
+    return '📚' // 通用其他
+  }
+
+  return '📖'
+}
+
+// 获取分类代表性图标
+function getCategoryIcon(category) {
+  const icons = {
+    '装备推荐': '🎒',
+    '安全自救': '🛡️',
+    '户外礼仪': '🌿',
+    '其他': '📚'
+  }
+  return icons[category] || '📖'
+}
+
 Page({
   data: {
     loading: true,
@@ -11,10 +97,10 @@ Page({
     filteredArticles: [],
     recommended: [],
     categories: [
-      { key: '装备推荐', icon: '🥾', name: '装备推荐' },
-      { key: '安全自救', icon: '🆘', name: '安全自救' },
-      { key: '户外礼仪', icon: '🤝', name: '户外礼仪' },
-      { key: '其他', icon: '📖', name: '其他' }
+      { key: '装备推荐', icon: '🎒', name: '装备推荐' },
+      { key: '安全自救', icon: '🛡️', name: '安全自救' },
+      { key: '户外礼仪', icon: '🌿', name: '户外礼仪' },
+      { key: '其他', icon: '📚', name: '其他' }
     ],
     categorizedArticles: {},
     showAll: {},
@@ -106,14 +192,20 @@ Page({
     // 保存原始文章列表
     this._allArticles = articles
 
+    // 为每篇文章添加精准图标
+    const articlesWithIcon = articles.map(a => ({
+      ...a,
+      icon: getArticleIcon(a)
+    }))
+
     // 按分类过滤
-    let filtered = articles
+    let filtered = articlesWithIcon
     if (this.data.activeCategory) {
-      filtered = articles.filter(a => a.category === this.data.activeCategory)
+      filtered = articlesWithIcon.filter(a => a.category === this.data.activeCategory)
     }
 
     // 推荐文章：均衡推荐，从每个子分类取1篇优先级最高的
-    const recommended = this.getRecommendedArticles(articles).map((item, index) => ({
+    const recommended = this.getRecommendedArticles(articlesWithIcon).map((item, index) => ({
       ...item,
       coverGradient: this.getCoverGradient(index)
     }))
@@ -124,7 +216,7 @@ Page({
       if (this.data.activeCategory && cat.key !== this.data.activeCategory) {
         return
       }
-      categorizedArticles[cat.key] = articles
+      categorizedArticles[cat.key] = articlesWithIcon
         .filter(a => a.category === cat.key)
         .sort((a, b) => (a.order || 0) - (b.order || 0))
     })
@@ -135,7 +227,7 @@ Page({
 
     // 按分类分组
     const grouped = {}
-    articles.forEach(a => {
+    articlesWithIcon.forEach(a => {
       if (!grouped[a.category]) grouped[a.category] = []
       grouped[a.category].push(a)
     })
@@ -161,9 +253,10 @@ Page({
 
   getCoverGradient(index) {
     const gradients = [
-      'linear-gradient(135deg, #1B5E20 0%, #43A047 100%)',
-      'linear-gradient(135deg, #E65100 0%, #FF8F00 100%)',
-      'linear-gradient(135deg, #1565C0 0%, #42A5F5 100%)'
+      'linear-gradient(135deg, #0d47a1 0%, #1976d2 100%)',  // 路线选择 - 蓝色
+      'linear-gradient(135deg, #1B5E20 0%, #43A047 100%)',  // 装备清单 - 绿色
+      'linear-gradient(135deg, #b71c1c 0%, #e53935 100%)',  // 安全须知 - 红色
+      'linear-gradient(135deg, #4a148c 0%, #7b1fa2 100%)'   // LNT礼仪 - 紫色
     ]
     return gradients[index % gradients.length]
   },
@@ -202,45 +295,17 @@ Page({
     })
   },
 
-  // 推荐逻辑：优先推荐新手入门系列（priority=0），其次从各子分类取最优
+  // 推荐逻辑：硬编码新手精选4篇，固定顺序
   getRecommendedArticles(articles) {
-    const recommended = []
-
-    // 1. 优先推荐新手入门系列（priority === 0 且 difficulty === beginner）
-    const newbieArticles = articles.filter(a =>
-      a.difficulty === 'beginner' && (a.priority === 0 || a.priority === 0)
-    ).sort((a, b) => {
-      // 新手系列文章（article_050-054）优先
-      const aId = parseInt((a._id || '').replace('article_', '')) || 0
-      const bId = parseInt((b._id || '').replace('article_', '')) || 0
-      if (aId >= 50 && bId >= 50) return aId - bId
-      if (aId >= 50) return -1
-      if (bId >= 50) return 1
-      return 0
-    })
-
-    // 取3篇新手系列作为首页推荐
-    const newbiePicks = newbieArticles.slice(0, 3)
-    recommended.push(...newbiePicks)
-
-    // 2. 补充其他分类的优质文章（从各子分类取priority最高的）
-    const subcategoryMap = {}
-    articles.forEach(article => {
-      // 跳过已推荐的
-      if (recommended.find(r => r._id === article._id)) return
-      const sub = article.subcategory || '其他'
-      if (!subcategoryMap[sub]) subcategoryMap[sub] = []
-      subcategoryMap[sub].push(article)
-    })
-
-    Object.keys(subcategoryMap).forEach(sub => {
-      subcategoryMap[sub].sort((a, b) => (a.priority || 99) - (b.priority || 99))
-      if (subcategoryMap[sub][0] && recommended.length < 6) {
-        recommended.push(subcategoryMap[sub][0])
-      }
-    })
-
-    return recommended.slice(0, 6)
+    const RECOMMENDED_IDS = [
+      'article_052', // 如何选择适合自己的第一条徒步路线
+      'article_050', // 新手徒步必备装备清单
+      'article_051', // 户外徒步安全须知
+      'article_054'  // 户外环保礼仪（Leave No Trace）
+    ]
+    const idMap = {}
+    articles.forEach(a => { idMap[a._id] = a })
+    return RECOMMENDED_IDS.map(id => idMap[id]).filter(Boolean)
   },
 
   // 新手入门路径点击

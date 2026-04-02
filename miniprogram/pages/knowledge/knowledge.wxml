@@ -27,12 +27,12 @@
         <view class="learning-path__subtitle">四步带你安全迈出第一步</view>
         <view class="learning-path__steps">
           <view class="step" bindtap="onStepTap" data-category="装备推荐">
-            <text class="step__icon">🥾</text>
+            <text class="step__icon">🎒</text>
             <text class="step__label">了解装备</text>
           </view>
           <view class="step-arrow">›</view>
           <view class="step" bindtap="onStepTap" data-category="安全自救">
-            <text class="step__icon">🆘</text>
+            <text class="step__icon">🛡️</text>
             <text class="step__label">学习安全</text>
           </view>
           <view class="step-arrow">›</view>
@@ -42,7 +42,7 @@
           </view>
           <view class="step-arrow">›</view>
           <view class="step" bindtap="onStepTap" data-type="routes">
-            <text class="step__icon">🏔️</text>
+            <text class="step__icon">⛰️</text>
             <text class="step__label">开始徒步</text>
           </view>
         </view>
@@ -71,22 +71,22 @@
     <!-- 分类快速入口 -->
     <view class="category-cards">
       <view class="category-card {{activeCategory === '装备推荐' ? 'category-card--on' : ''}}" data-category="装备推荐" bindtap="onCategoryTap">
-        <text class="category-card__icon">🥾</text>
+        <text class="category-card__icon">🎒</text>
         <text class="category-card__title">装备推荐</text>
         <text class="category-card__count">{{categoryCount.equipment}}篇</text>
       </view>
       <view class="category-card {{activeCategory === '安全自救' ? 'category-card--on' : ''}}" data-category="安全自救" bindtap="onCategoryTap">
-        <text class="category-card__icon">🆘</text>
+        <text class="category-card__icon">🛡️</text>
         <text class="category-card__title">安全自救</text>
         <text class="category-card__count">{{categoryCount.safety}}篇</text>
       </view>
       <view class="category-card {{activeCategory === '户外礼仪' ? 'category-card--on' : ''}}" data-category="户外礼仪" bindtap="onCategoryTap">
-        <text class="category-card__icon">🤝</text>
+        <text class="category-card__icon">🌿</text>
         <text class="category-card__title">户外礼仪</text>
         <text class="category-card__count">{{categoryCount.etiquette}}篇</text>
       </view>
       <view class="category-card {{activeCategory === '其他' ? 'category-card--on' : ''}}" data-category="其他" bindtap="onCategoryTap">
-        <text class="category-card__icon">📖</text>
+        <text class="category-card__icon">📚</text>
         <text class="category-card__title">其他</text>
         <text class="category-card__count">{{categoryCount.other}}篇</text>
       </view>
@@ -116,7 +116,7 @@
           hover-stay-time="80"
         >
           <view class="article-item__icon {{article.category === '装备推荐' ? 'article-item__icon--equip' : article.category === '安全自救' ? 'article-item__icon--safety' : article.category === '户外礼仪' ? 'article-item__icon--manner' : 'article-item__icon--other'}}">
-            <text>{{article.category === '装备推荐' ? '🥾' : article.category === '安全自救' ? '🆘' : article.category === '户外礼仪' ? '🤝' : '📖'}}</text>
+            <text>{{article.icon}}</text>
           </view>
           <view class="article-item__body">
             <text class="article-item__title">{{article.title}}</text>
