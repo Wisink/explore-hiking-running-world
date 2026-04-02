@@ -50,6 +50,9 @@ exports.main = async (event, context) => {
       case 'get-checklist':
         return await getChecklist(openid, event.routeId)
 
+      case 'init-user':
+        return await initUser(openid)
+
       default:
         return { code: -1, message: '未知操作' }
     }
@@ -424,6 +427,73 @@ async function syncChecklist(openid, routeId, checkedItems, customItems) {
   }
 
   return { code: 0, message: '清单同步成功' }
+}
+
+// 初始化用户编号（服务端原子操作，保证唯一递增）
+async function initUser(openid) {
+  // 先检查是否已有该用户
+  const userRes = await db.collection('users').where({ _openid: openid }).get()
+  if (userRes.data.length > 0) {
+    const user = userRes.data[0]
+    // 已有用户，访问次数 +1
+    await db.collection('users').doc(user._id).update({
+      data: { visitCount: _.inc(1) }
+    })
+    return {
+      code: 0,
+      data: {
+        userNumber: user.userNumber,
+        nickName: user.nickName,
+        visitCount: (user.visitCount || 0) + 1
+      }
+    }
+  }
+
+  // 新用户：分配编号
+  // 使用 _.inc(1) 原子自增，再读取新值
+  try {
+    await db.collection('counters').doc('user_number').update({
+      data: { value: _.inc(1) }
+    })
+  } catch (e) {
+    // 文档不存在，先创建初始值再自增
+    try {
+      await db.collection('counters').add({
+        data: { _id: 'user_number', value: 0 }
+      })
+    } catch (addErr) {
+      // 可能并发创建，忽略
+    }
+    await db.collection('counters').doc('user_number').update({
+      data: { value: _.inc(1) }
+    })
+  }
+
+  // 读取当前编号值
+  const counterRes = await db.collection('counters').doc('user_number').get()
+  const number = counterRes.data.value
+  const nickName = String(number).padStart(3, '0') + '号徒步爱好者'
+
+  // 创建用户记录
+  await db.collection('users').add({
+    data: {
+      _openid: openid,
+      userNumber: number,
+      nickName: nickName,
+      visitCount: 1,
+      createdAt: db.serverDate()
+    }
+  })
+
+  console.log('initUser: 新用户注册，编号', number, '昵称', nickName)
+  return {
+    code: 0,
+    data: {
+      userNumber: number,
+      nickName: nickName,
+      visitCount: 1
+    }
+  }
 }
 
 // 获取清单勾选状态

@@ -21,19 +21,6 @@
     </view>
   </view>
 
-  <!-- 同步状态 -->
-  <view class="sync-bar" wx:if="{{syncStatus === 'syncing'}}">
-    <text class="sync-bar__icon">🔄</text>
-    <text class="sync-bar__text">正在同步数据...</text>
-  </view>
-  <view class="sync-bar sync-bar--success" wx:elif="{{syncStatus === 'success'}}">
-    <text class="sync-bar__icon">✅</text>
-    <text class="sync-bar__text">数据已同步</text>
-  </view>
-  <view class="sync-bar sync-bar--error" wx:elif="{{syncStatus === 'error'}}">
-    <text class="sync-bar__icon">⚠️</text>
-    <text class="sync-bar__text">同步失败，请检查网络</text>
-  </view>
 
   <!-- 统计卡片 -->
   <view class="stats-card">

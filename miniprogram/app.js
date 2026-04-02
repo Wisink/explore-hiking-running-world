@@ -28,99 +28,27 @@ App({
     await this._userReady
   },
 
-  // 初始化用户编号和访问次数
+  // 初始化用户编号和访问次数（通过云函数服务端分配，保证编号唯一递增）
   initUser: function () {
     return new Promise((resolve, reject) => {
-      const db = wx.cloud.database()
-      const _ = db.command
-
-      // 获取当前用户 openid
       wx.cloud.callFunction({
         name: 'user-data',
-        data: { action: 'get-openid' }
+        data: { action: 'init-user' }
       }).then(res => {
-        const openid = res.result && res.result.openid
-        if (!openid) {
-          console.log('initUser: 未获取到 openid，跳过初始化')
-          resolve()
-          return
+        if (res.result && res.result.code === 0 && res.result.data) {
+          const data = res.result.data
+          this.globalData.userInfo = {
+            userNumber: data.userNumber,
+            nickName: data.nickName,
+            visitCount: data.visitCount
+          }
+          console.log('initUser: 用户信息', data.userNumber, data.nickName, '访问次数', data.visitCount)
+        } else {
+          console.log('initUser: 未获取到用户信息', res)
         }
-
-        // 查询 users 表是否已有该用户
-        db.collection('users').where({ _openid: openid }).get().then(userRes => {
-          if (userRes.data.length > 0) {
-            // 已有用户，访问次数 +1
-            const user = userRes.data[0]
-            db.collection('users').doc(user._id).update({
-              data: { visitCount: _.inc(1) }
-            })
-            this.globalData.userInfo = {
-              userNumber: user.userNumber,
-              nickName: user.nickName,
-              visitCount: (user.visitCount || 0) + 1
-            }
-            console.log('initUser: 老用户回访，编号', user.userNumber, '访问次数', this.globalData.userInfo.visitCount)
-            resolve()
-          } else {
-            // 新用户，分配编号
-            // 先检查 counters 文档是否存在，不存在则创建
-            db.collection('counters').doc('user_number').get().then(() => {
-              // 文档存在，直接自增
-              return db.collection('counters').doc('user_number').update({
-                data: { value: _.inc(1) }
-              })
-            }).catch(() => {
-              // 文档不存在，先创建再自增
-              console.log('initUser: user_number 文档不存在，正在创建...')
-              return db.collection('counters').add({
-                data: { _id: 'user_number', value: 0 }
-              }).then(() => {
-                return db.collection('counters').doc('user_number').update({
-                  data: { value: _.inc(1) }
-                })
-              })
-            }).then(() => {
-              return db.collection('counters').doc('user_number').get()
-            }).then(counterRes => {
-              const number = counterRes.data.value
-              const nickName = String(number).padStart(3, '0') + '号徒步爱好者'
-              return db.collection('users').add({
-                data: {
-                  userNumber: number,
-                  nickName: nickName,
-                  visitCount: 1,
-                  createdAt: db.serverDate()
-                }
-              }).then(() => {
-                this.globalData.userInfo = {
-                  userNumber: number,
-                  nickName: nickName,
-                  visitCount: 1
-                }
-                console.log('initUser: 新用户注册，编号', number, '昵称', nickName)
-                resolve()
-              })
-            }).catch(err => {
-              console.error('initUser: 新用户注册失败:', err)
-              resolve() // 不阻塞启动
-            })
-          }
-        }).catch(err => {
-          // 首次运行，counters 集合可能不存在，先创建
-          if (err.errCode === -502005) {
-            console.log('initUser: counters 集合不存在，正在创建...')
-            db.collection('counters').add({
-              data: { _id: 'user_number', value: 0 }
-            }).then(() => {
-              return this.initUser() // 重试
-            }).then(resolve).catch(reject)
-          } else {
-            console.error('initUser: 查询用户失败:', err)
-            resolve() // 不阻塞启动
-          }
-        })
+        resolve()
       }).catch(err => {
-        console.error('initUser: 调用 user-data 云函数失败:', err)
+        console.error('initUser: 调用云函数失败:', err)
         resolve() // 不阻塞启动
       })
     })
