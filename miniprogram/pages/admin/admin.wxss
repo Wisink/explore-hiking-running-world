@@ -150,9 +150,9 @@
 
 .eye-pupil {
   position: absolute;
-  width: 9rpx;
-  height: 9rpx;
-  background: #4a6b4a;
+  width: 10rpx;
+  height: 10rpx;
+  border: 2rpx solid #4a6b4a;
   border-radius: 50%;
   top: 50%;
   left: 50%;
@@ -161,12 +161,12 @@
 
 .eye-strike {
   position: absolute;
-  width: 40rpx;
-  height: 3rpx;
+  width: 42rpx;
+  height: 2rpx;
   background: #4a6b4a;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%) rotate(-45deg);
+  transform: translate(-50%, -50%) rotate(45deg);
   border-radius: 2rpx;
 }
 
