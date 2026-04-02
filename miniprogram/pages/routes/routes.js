@@ -193,7 +193,21 @@ Page({
   processRouteItem: function (item) {
     // 兼容 flat（本地）和 structured（云数据库）两种格式
     const difficultyStr = typeof item.difficulty === 'object' ? (item.difficulty.label || '中级') : (item.difficulty || '中级')
-    const diffInfo = DIFFICULTY_MAP[difficultyStr] || { level: 3, color: '#FFC107', text: difficultyStr || '适中' }
+    // 优先使用 difficulty.level 数值（云数据库），其次查映射表（本地数据）
+    let diffLevel, diffColor, diffText
+    if (typeof item.difficulty === 'object' && item.difficulty.level) {
+      diffLevel = item.difficulty.level
+      // 根据 level 推导颜色和文案
+      if (diffLevel <= 1) { diffColor = '#4CAF50'; diffText = '轻松' }
+      else if (diffLevel <= 2) { diffColor = '#FFC107'; diffText = '适中' }
+      else if (diffLevel <= 4) { diffColor = '#FF9800'; diffText = '较难' }
+      else { diffColor = '#F44336'; diffText = '困难' }
+    } else {
+      const diffInfo = DIFFICULTY_MAP[difficultyStr] || { level: 3, color: '#FFC107', text: difficultyStr || '适中' }
+      diffLevel = diffInfo.level
+      diffColor = diffInfo.color
+      diffText = diffInfo.text
+    }
 
     // 解析距离和耗时
     let distanceText, durationText
@@ -259,9 +273,9 @@ Page({
       difficulty: difficultyStr,
       location: locationStr,
       cost: costStr,
-      diffLevel: diffInfo.level,
-      diffColor: diffInfo.color,
-      diffText: diffInfo.text,
+      diffLevel: diffLevel,
+      diffColor: diffColor,
+      diffText: diffText,
       distanceText: distanceText,
       durationText: durationText,
       isFavorited: isFavorited,
@@ -311,7 +325,7 @@ Page({
           case 'family': {
             const dist = item.distance_km || parseFloat((item.distanceText || '').replace(/[^0-9.]/g, '')) || 0
             return item.family_friendly === true && item.diffLevel <= 2
-              && (dist === 0 || dist <= 6)
+              && (dist === 0 || dist <= 8)
           }
           case 'stream':
             return (item.scenery || []).some(f => f.includes('溪流') || f.includes('溪水'))
