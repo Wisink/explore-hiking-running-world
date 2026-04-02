@@ -1403,10 +1403,6 @@ Page({
       // 延迟一帧再弹提示，确保面板关闭完成
       setTimeout(() => {
         this.setData({ showSavedHint: true })
-        // 2秒后自动关闭提示弹窗
-        setTimeout(() => {
-          this.setData({ showSavedHint: false })
-        }, 2000)
       }, 300)
       // 刷新已走过记录列表
       this.checkCompletedStatus()
