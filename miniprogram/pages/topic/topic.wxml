@@ -14,11 +14,20 @@
     </view>
   </view>
 
+  <!-- 子分类Tab -->
+  <scroll-view scroll-x class="subcategory-tabs" wx:if="{{tabs.length > 1}}">
+    <view class="tab {{activeTab === item.value ? 'tab--active' : ''}}"
+          wx:for="{{tabs}}" wx:key="value"
+          bindtap="onTabChange" data-value="{{item.value}}">
+      {{item.label}}
+    </view>
+  </scroll-view>
+
   <!-- 文章列表 -->
   <view class="article-list">
     <view
       class="article-card"
-      wx:for="{{articles}}"
+      wx:for="{{filteredArticles}}"
       wx:key="_id"
       bindtap="onArticleTap"
       data-id="{{item._id}}"
@@ -29,12 +38,18 @@
       <view class="card-body">
         <text class="card-title">{{item.title}}</text>
         <text class="card-summary">{{item.summary}}</text>
+        <view class="card-badges" wx:if="{{item.difficulty}}">
+          <text class="card-badge card-badge--{{item.difficulty}}">
+            {{item.difficulty === 'beginner' ? '🟢入门' : item.difficulty === 'intermediate' ? '🟡进阶' : '🔴资深'}}
+          </text>
+          <text class="card-badge card-badge--sub" wx:if="{{item.subcategory}}">{{item.subcategory}}</text>
+        </view>
       </view>
       <view class="card-arrow">›</view>
     </view>
 
     <!-- 空状态 -->
-    <view class="empty-state" wx:if="{{!loading && articles.length === 0}}">
+    <view class="empty-state" wx:if="{{!loading && filteredArticles.length === 0}}">
       <text class="empty-icon">📭</text>
       <text class="empty-text">暂无该分类的文章</text>
     </view>
@@ -46,12 +61,12 @@
     </view>
 
     <!-- 没有更多 -->
-    <view class="no-more" wx:if="{{!hasMore && articles.length > 0}}">
+    <view class="no-more" wx:if="{{!hasMore && filteredArticles.length > 0}}">
       <text class="no-more-text">— 已加载全部文章 —</text>
     </view>
 
     <!-- 底部返回按钮 -->
-    <view class="bottom-back" wx:if="{{articles.length > 0}}">
+    <view class="bottom-back" wx:if="{{filteredArticles.length > 0}}">
       <button class="back-btn-bottom" style="background-color: {{themeColor}};" bindtap="onBackTap">
         <text class="back-btn-icon">‹</text>
         <text class="back-btn-text">返回上一页</text>

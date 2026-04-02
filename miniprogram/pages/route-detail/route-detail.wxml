@@ -1,6 +1,17 @@
 <!--pages/route-detail/route-detail.wxml-->
 <view class="detail-page">
 
+  <!-- 状态栏占位 -->
+  <view class="statusbar-bg" style="height: {{statusBarHeight}}px;"></view>
+  <!-- 导航栏 -->
+  <view class="detail-nav">
+    <view class="detail-nav__back" bindtap="onBack">
+      <text class="detail-nav__back-icon">‹</text>
+    </view>
+    <text class="detail-nav__title">{{trail.name}}</text>
+    <view class="detail-nav__spacer"></view>
+  </view>
+
   <!-- Loading -->
   <view class="loading-wrap" wx:if="{{loading}}">
     <view class="loading-ring"></view>

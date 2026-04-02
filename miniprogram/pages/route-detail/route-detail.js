@@ -16,6 +16,7 @@ const DIFFICULTY_MAP = {
 
 Page({
   data: {
+    statusBarHeight: 0,
     trailId: '',
     trail: {},
     loading: true,
@@ -74,9 +75,18 @@ Page({
 
   onLoad: function (options) {
     const trailId = options.id || ''
-    this.setData({ trailId, scrollToRecords: options.scrollToRecords === '1' })
+    this.setData({
+      statusBarHeight: wx.getSystemInfoSync().statusBarHeight,
+      trailId,
+      scrollToRecords: options.scrollToRecords === '1'
+    })
     this.checkNetworkStatus()
     this.loadTrailDetail()
+  },
+
+  // 返回上一页
+  onBack() {
+    wx.navigateBack()
   },
 
   onShow: function () {

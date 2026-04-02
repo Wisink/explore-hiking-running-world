@@ -337,6 +337,143 @@ async function handleArticles(action, params) {
   }
 }
 
+// ===== isActive 切换 =====
+async function handleToggleActive(action, params) {
+  switch (action) {
+    case 'toggle': {
+      const tokenCheck = verifyToken(params)
+      if (!tokenCheck.valid) return fail(tokenCheck.message)
+      const { id, collection } = params || {}
+      if (!id || !collection) return fail('缺少参数')
+      if (!['routes', 'articles'].includes(collection)) return fail('不支持的集合')
+      const { data } = await db.collection(collection).doc(id).get()
+      if (!data) return fail('记录不存在')
+      const newVal = !(data.isActive !== false) // 默认 true，取反
+      await db.collection(collection).doc(id).update({ data: { isActive: newVal } })
+      return success({ isActive: newVal }, newVal ? '已启用' : '已禁用')
+    }
+    default: return fail('未知操作')
+  }
+}
+
+// ===== 批量导出 JSONL =====
+async function handleExport(action, params) {
+  switch (action) {
+    case 'exportData': {
+      const tokenCheck = verifyToken(params)
+      if (!tokenCheck.valid) return fail(tokenCheck.message)
+      const { collection } = params || {}
+      if (!collection || !['routes', 'articles', 'user_data'].includes(collection)) {
+        return fail('不支持的集合，可选：routes / articles / user_data')
+      }
+
+      // 分批获取全部数据
+      const MAX_LIMIT = 100
+      const countRes = await db.collection(collection).count()
+      const total = countRes.total
+      const batchTimes = Math.ceil(total / MAX_LIMIT)
+      let allData = []
+      for (let i = 0; i < batchTimes; i++) {
+        const { data } = await db.collection(collection)
+          .skip(i * MAX_LIMIT).limit(MAX_LIMIT).get()
+        allData = allData.concat(data)
+      }
+
+      // 转换时间字段为 JSONL 格式，生成 JSONL 字符串
+      const jsonlLines = allData.map(record => {
+        const converted = convertDates(record)
+        return JSON.stringify(converted)
+      })
+      const jsonlContent = jsonlLines.join('\n')
+
+      // 上传到云存储
+      const fileName = `${collection}_export_${Date.now()}.jsonl`
+      const cloudPath = `exports/${fileName}`
+      const uploadRes = await cloud.uploadFile({
+        cloudPath,
+        fileContent: Buffer.from(jsonlContent, 'utf-8')
+      })
+
+      // 获取下载链接
+      const fileID = uploadRes.fileID
+      const urlRes = await cloud.getTempFileURL({ fileList: [fileID] })
+      const downloadUrl = urlRes.fileList && urlRes.fileList[0] && urlRes.fileList[0].tempFileURL
+
+      return success({
+        fileID,
+        downloadUrl,
+        fileName,
+        totalRecords: allData.length
+      }, `导出成功，共 ${allData.length} 条记录`)
+    }
+    default: return fail('未知操作')
+  }
+}
+
+// 递归转换 Date 对象为 { "$date": "..." } 格式
+function convertDates(obj) {
+  if (obj === null || obj === undefined) return obj
+  if (obj instanceof Date) {
+    return { $date: obj.toISOString() }
+  }
+  if (Array.isArray(obj)) {
+    return obj.map(item => convertDates(item))
+  }
+  if (typeof obj === 'object') {
+    const result = {}
+    for (const key of Object.keys(obj)) {
+      result[key] = convertDates(obj[key])
+    }
+    return result
+  }
+  return obj
+}
+
+// ===== 数据迁移：为现有数据添加 isActive =====
+async function handleMigrate(action, params) {
+  switch (action) {
+    case 'migrateIsActive': {
+      const tokenCheck = verifyToken(params)
+      if (!tokenCheck.valid) return fail(tokenCheck.message)
+
+      const collections = ['routes', 'articles']
+      const results = {}
+
+      for (const col of collections) {
+        // 查询没有 isActive 字段的记录
+        const countRes = await db.collection(col).where({ isActive: _.exists(false) }).count()
+        const total = countRes.total
+        if (total === 0) {
+          results[col] = { total: 0, updated: 0 }
+          continue
+        }
+
+        const MAX_LIMIT = 100
+        const batchTimes = Math.ceil(total / MAX_LIMIT)
+        let updated = 0
+
+        for (let i = 0; i < batchTimes; i++) {
+          const { data } = await db.collection(col)
+            .where({ isActive: _.exists(false) })
+            .skip(i * MAX_LIMIT).limit(MAX_LIMIT).get()
+
+          const tasks = data.map(record =>
+            db.collection(col).doc(record._id).update({ data: { isActive: true } })
+              .then(() => { updated++ })
+              .catch(e => console.error(`迁移 ${col} ${record._id} 失败:`, e))
+          )
+          await Promise.all(tasks)
+        }
+
+        results[col] = { total, updated }
+      }
+
+      return success(results, '数据迁移完成')
+    }
+    default: return fail('未知操作')
+  }
+}
+
 // ===== 配置管理 =====
 async function handleConfig(action, params) {
   switch (action) {
@@ -660,6 +797,9 @@ exports.main = async (event, context) => {
       case 'config': return await handleConfig(action, params)
       case 'stats': return await handleStats(action, params)
       case 'auth': return handleAuth(action, params)
+      case 'toggleActive': return await handleToggleActive(action, params)
+      case 'export': return await handleExport(action, params)
+      case 'migrate': return await handleMigrate(action, params)
       case 'check-admin': {
         const adminOpenIds = ['o4BVT3QcW1wbAgEt1yqRD7drVPhY']
         const { OPENID } = cloud.getWXContext()

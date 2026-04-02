@@ -13,6 +13,8 @@ function validatePasswordStrength(password) {
 
 Page({
   data: {
+    // 状态栏高度
+    statusBarHeight: 0,
     // 认证状态
     isLoggedIn: false,
     passwordInput: '',
@@ -100,6 +102,9 @@ Page({
   },
 
   onLoad() {
+    this.setData({
+      statusBarHeight: wx.getSystemInfoSync().statusBarHeight
+    })
     // 双重保护：先验证管理员身份
     wx.cloud.callFunction({
       name: 'admin-api',
@@ -120,6 +125,11 @@ Page({
       wx.showToast({ title: '验证失败', icon: 'none' })
       setTimeout(() => wx.navigateBack(), 1500)
     })
+  },
+
+  // 返回
+  onBack() {
+    wx.navigateBack()
   },
 
   onShow() {
@@ -520,6 +530,125 @@ Page({
   // 添加文章
   onAddArticle() {
     wx.navigateTo({ url: '/pages/admin/route-edit?type=article' })
+  },
+
+  // ========== isActive 切换 ==========
+
+  async onToggleRouteActive(e) {
+    const id = e.currentTarget.dataset.id
+    try {
+      const res = await this.callAdminApi('toggleActive', 'toggle', { id, collection: 'routes' })
+      if (res.code === 0) {
+        this.showToast(res.message, 'success')
+        // 更新本地数据
+        const routes = this.data.routes.map(r => {
+          if (r._id === id) r.isActive = res.data.isActive
+          return r
+        })
+        this.setData({ routes })
+      } else {
+        this.showToast(res.message || '操作失败', 'error')
+      }
+    } catch (err) {
+      console.error('切换路线状态失败:', err)
+      this.showToast('操作失败', 'error')
+    }
+  },
+
+  async onToggleArticleActive(e) {
+    const id = e.currentTarget.dataset.id
+    try {
+      const res = await this.callAdminApi('toggleActive', 'toggle', { id, collection: 'articles' })
+      if (res.code === 0) {
+        this.showToast(res.message, 'success')
+        const articles = this.data.articles.map(a => {
+          if (a._id === id) a.isActive = res.data.isActive
+          return a
+        })
+        this.setData({ articles })
+      } else {
+        this.showToast(res.message || '操作失败', 'error')
+      }
+    } catch (err) {
+      console.error('切换文章状态失败:', err)
+      this.showToast('操作失败', 'error')
+    }
+  },
+
+  // ========== 批量导出 ==========
+
+  async onExportRoutes() {
+    this._doExport('routes', '路线')
+  },
+
+  async onExportArticles() {
+    this._doExport('articles', '文章')
+  },
+
+  async onExportUsers() {
+    this._doExport('user_data', '用户')
+  },
+
+  async _doExport(collection, label) {
+    wx.showModal({
+      title: '确认导出',
+      content: `确定导出全部${label}数据？（JSONL格式）`,
+      success: async (modal) => {
+        if (!modal.confirm) return
+        wx.showLoading({ title: '导出中...' })
+        try {
+          const res = await this.callAdminApi('export', 'exportData', { collection })
+          wx.hideLoading()
+          if (res.code === 0 && res.data.downloadUrl) {
+            this.showToast(`${label}导出成功（${res.data.totalRecords}条）`, 'success')
+            // 复制下载链接到剪贴板
+            wx.setClipboardData({
+              data: res.data.downloadUrl,
+              success: () => {
+                wx.showModal({
+                  title: '导出成功',
+                  content: `共 ${res.data.totalRecords} 条记录\n下载链接已复制到剪贴板，请在浏览器中打开下载`,
+                  showCancel: false
+                })
+              }
+            })
+          } else {
+            this.showToast(res.message || '导出失败', 'error')
+          }
+        } catch (err) {
+          wx.hideLoading()
+          console.error('导出失败:', err)
+          this.showToast('导出失败', 'error')
+        }
+      }
+    })
+  },
+
+  // ========== 数据迁移 ==========
+
+  async onMigrateIsActive() {
+    wx.showModal({
+      title: '数据迁移',
+      content: '为所有现有数据添加 isActive: true 字段，确定执行？',
+      success: async (modal) => {
+        if (!modal.confirm) return
+        wx.showLoading({ title: '迁移中...' })
+        try {
+          const res = await this.callAdminApi('migrate', 'migrateIsActive')
+          wx.hideLoading()
+          if (res.code === 0) {
+            const { routes, articles } = res.data
+            this.showToast(`迁移完成：路线${routes.updated}条，文章${articles.updated}条`, 'success')
+          } else {
+            this.showToast(res.message || '迁移失败', 'error')
+          }
+        } catch (err) {
+          wx.hideLoading()
+          console.error('迁移失败:', err)
+          this.showToast('迁移失败', 'error')
+        }
+      }
+    })
   },
 
   // ========== 下拉刷新 ==========

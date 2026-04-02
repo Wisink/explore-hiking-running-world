@@ -1,5 +1,15 @@
 /* pages/knowledge/knowledge.wxss - v3.0 自然清新风 + 毛玻璃 */
 
+/* 状态栏占位 — 毛玻璃 */
+.page-statusbar {
+  background: linear-gradient(135deg,
+    rgba(129, 199, 132, 0.5) 0%,
+    rgba(76, 175, 80, 0.4) 100%
+  );
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
 /* ===== CSS Variables ===== */
 :host {
   --glass-bg: rgba(255, 255, 255, 0.22);
@@ -38,10 +48,10 @@
 .page-header__bg {
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: linear-gradient(135deg, rgba(129,199,132,.35) 0%, rgba(200,230,201,.25) 100%);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-bottom: 1px solid rgba(255,255,255,.18);
+  background: linear-gradient(135deg, rgba(129,199,132,.5) 0%, rgba(76,175,80,.4) 100%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255,255,255,.25);
 }
 
 .page-header__content {
@@ -307,6 +317,88 @@
 }
 
 .footer__sub { font-size: 22rpx; color: #6b8b6b; }
+
+/* 新手入门路径 */
+.learning-path {
+  margin: 24rpx 32rpx;
+  padding: 28rpx 24rpx;
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,.25);
+  border-radius: 24rpx;
+  box-shadow: 0 8rpx 32rpx rgba(0,0,0,0.06);
+}
+
+.learning-path__title {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #1a2e1a;
+  margin-bottom: 20rpx;
+}
+
+.learning-path__steps {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12rpx 20rpx;
+  background: rgba(46, 125, 50, 0.08);
+  border-radius: 16rpx;
+  transition: transform 150ms;
+}
+
+.step:active {
+  transform: scale(0.95);
+}
+
+.step__icon {
+  font-size: 36rpx;
+  margin-bottom: 4rpx;
+}
+
+.step__label {
+  font-size: 24rpx;
+  color: #2E7D32;
+  font-weight: 600;
+}
+
+.step-arrow {
+  font-size: 28rpx;
+  color: #81c784;
+  margin: 0 4rpx;
+}
+
+/* 推荐卡片子分类和难度标签 */
+.recommend-card__subcategory {
+  font-size: 22rpx;
+  color: #66bb6a;
+  margin-bottom: 8rpx;
+}
+
+.recommend-card__badges {
+  display: flex;
+  gap: 8rpx;
+}
+
+.recommend-badge {
+  font-size: 20rpx;
+  padding: 4rpx 12rpx;
+  border-radius: 8rpx;
+  background: rgba(46, 125, 50, 0.08);
+  color: #2E7D32;
+}
+
+.recommend-badge--time {
+  color: #666;
+  background: rgba(0,0,0,0.04);
+}
 
 /* 分类快速入口 — 毛玻璃 */
 .category-cards {

@@ -11,10 +11,8 @@
     "pages/admin/route-edit"
   ],
   "window": {
+    "navigationStyle": "custom",
     "backgroundTextStyle": "light",
-    "navigationBarBackgroundColor": "#2d6a4f",
-    "navigationBarTitleText": "秦人徒步路线分享",
-    "navigationBarTextStyle": "white",
     "backgroundColor": "#F5F5F5"
   },
   "tabBar": {

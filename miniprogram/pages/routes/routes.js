@@ -63,10 +63,15 @@ Page({
     hasMore: true,
     loading: false,
     // 骨架屏
-    showSkeleton: true
+    showSkeleton: true,
+    // 状态栏高度
+    statusBarHeight: 0
   },
 
   onLoad: function () {
+    this.setData({
+      statusBarHeight: wx.getSystemInfoSync().statusBarHeight
+    })
     this.loadRoutes(true)
   },
 

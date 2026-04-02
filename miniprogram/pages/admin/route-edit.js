@@ -1,6 +1,7 @@
 // pages/admin/route-edit.js
 Page({
   data: {
+    statusBarHeight: 0,
     id: '',
     type: 'route', // route | article
     loading: true,
@@ -74,7 +75,11 @@ Page({
   onLoad(options) {
     const id = options.id || ''
     const type = options.type || 'route'
-    this.setData({ id, type })
+    this.setData({
+      statusBarHeight: wx.getSystemInfoSync().statusBarHeight,
+      id,
+      type
+    })
     if (type === 'article') {
       wx.setNavigationBarTitle({ title: id ? '编辑文章' : '添加文章' })
     } else {
@@ -85,6 +90,11 @@ Page({
     } else {
       this.setData({ loading: false })
     }
+  },
+
+  // 返回
+  onBack() {
+    wx.navigateBack()
   },
 
   async loadDetail() {

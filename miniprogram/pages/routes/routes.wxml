@@ -1,6 +1,9 @@
 <!--pages/routes/routes.wxml-->
 <view class="routes-page">
 
+  <!-- 状态栏占位 -->
+  <view class="page-statusbar" style="height: {{statusBarHeight}}px;"></view>
+
   <!-- 顶部标题栏 + 搜索栏 -->
   <view class="header">
     <view class="header__bg"></view>

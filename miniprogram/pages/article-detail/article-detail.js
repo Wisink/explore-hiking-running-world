@@ -7,6 +7,7 @@ const app = getApp()
 
 Page({
   data: {
+    statusBarHeight: 0,
     loading: true,
     article: null,
     relatedArticles: [],
@@ -14,6 +15,9 @@ Page({
   },
 
   onLoad(options) {
+    this.setData({
+      statusBarHeight: wx.getSystemInfoSync().statusBarHeight
+    })
     const id = options.id
     if (id) {
       this.setData({ articleId: id })

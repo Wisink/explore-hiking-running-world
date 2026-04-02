@@ -1,5 +1,15 @@
 /* pages/profile/profile.wxss - v3.0 自然清新风 + 毛玻璃 */
 
+/* 状态栏占位 — 毛玻璃 */
+.page-statusbar {
+  background: linear-gradient(135deg,
+    rgba(129, 199, 132, 0.5) 0%,
+    rgba(76, 175, 80, 0.4) 100%
+  );
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
 .profile-page {
   min-height: 100vh;
   padding-bottom: 120rpx;
@@ -8,6 +18,48 @@
     radial-gradient(ellipse at 80% 20%, rgba(165,214,167,.25) 0%, transparent 50%),
     radial-gradient(ellipse at 60% 80%, rgba(76,175,80,.2) 0%, transparent 50%),
     linear-gradient(160deg, #e8f5e9 0%, #c8e6c9 25%, #a5d6a7 50%, #81c784 75%, #66bb6a 100%);
+}
+
+/* 头像和昵称 — 个性化 */
+.profile-avatar-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 16rpx;
+  animation: fadeInUp 400ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.profile-avatar {
+  width: 140rpx;
+  height: 140rpx;
+  border-radius: 50%;
+  border: 4rpx solid #FFFFFF;
+  box-shadow:
+    0 0 0 4rpx rgba(46, 125, 50, 0.15),
+    0 4rpx 20rpx rgba(46, 125, 50, 0.25),
+    0 8rpx 32rpx rgba(31, 38, 50, 0.1);
+}
+
+.profile-nickname {
+  display: block;
+  text-align: center;
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #2d6a4f;
+  margin-bottom: 20rpx;
+  letter-spacing: 2rpx;
+  text-shadow: 0 1rpx 4rpx rgba(255, 255, 255, 0.5);
+  animation: fadeInUp 400ms cubic-bezier(0.34, 1.56, 0.64, 1) 100ms both;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30rpx);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* 顶部标题 — 毛玻璃 */
@@ -20,10 +72,10 @@
 .page-header__bg {
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: linear-gradient(135deg, rgba(129,199,132,.4) 0%, rgba(200,230,201,.3) 100%);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-bottom: 1px solid rgba(255,255,255,.2);
+  background: linear-gradient(135deg, rgba(129,199,132,.5) 0%, rgba(76,175,80,.4) 100%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255,255,255,.25);
 }
 
 .page-header__content {

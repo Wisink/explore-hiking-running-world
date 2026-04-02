@@ -1,5 +1,58 @@
 /* pages/admin/admin.wxss - v3.0 自然清新风 + 毛玻璃 */
 
+/* 状态栏占位 — 毛玻璃 */
+.page-statusbar {
+  background: linear-gradient(135deg,
+    rgba(129, 199, 132, 0.5) 0%,
+    rgba(76, 175, 80, 0.4) 100%
+  );
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+/* 导航栏 — 毛玻璃 */
+.detail-nav {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 88rpx;
+  padding: 0 24rpx;
+  background: linear-gradient(135deg,
+    rgba(129, 199, 132, 0.5) 0%,
+    rgba(76, 175, 80, 0.4) 100%
+  );
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.detail-nav__back {
+  width: 60rpx;
+  display: flex;
+  align-items: center;
+}
+
+.detail-nav__back-icon {
+  font-size: 48rpx;
+  color: #1a2e1a;
+  font-weight: 300;
+}
+
+.detail-nav__title {
+  flex: 1;
+  text-align: center;
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #1a2e1a;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.detail-nav__spacer {
+  width: 60rpx;
+}
+
 .admin-page {
   min-height: 100vh;
   padding-bottom: 40rpx;
@@ -97,10 +150,10 @@
 .page-header__bg {
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: linear-gradient(135deg, rgba(129,199,132,.35) 0%, rgba(200,230,201,.25) 100%);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-bottom: 1px solid rgba(255,255,255,.18);
+  background: linear-gradient(135deg, rgba(129,199,132,.5) 0%, rgba(76,175,80,.4) 100%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255,255,255,.25);
 }
 
 .page-header__content {
@@ -975,4 +1028,85 @@
 .chart-note text {
   font-size: 22rpx;
   color: #7b6b3a;
+}
+
+/* ===== header-actions ===== */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.export-btn {
+  display: flex;
+  align-items: center;
+  padding: 10rpx 20rpx;
+  background: #f0f0f0;
+  border-radius: 8rpx;
+  font-size: 24rpx;
+  color: #666;
+}
+
+.export-btn:active {
+  background: #e0e0e0;
+}
+
+/* ===== isActive toggle ===== */
+.admin-item__actions {
+  display: flex;
+  align-items: center;
+  margin-right: 10rpx;
+}
+
+.toggle-active-btn {
+  padding: 8rpx 16rpx;
+  border-radius: 8rpx;
+  font-size: 22rpx;
+  flex-shrink: 0;
+}
+
+.toggle-active-btn--on {
+  background: #fff0f0;
+  color: #f44336;
+  border: 1rpx solid #ffcdd2;
+}
+
+.toggle-active-btn--off {
+  background: #f0fff0;
+  color: #4CAF50;
+  border: 1rpx solid #c8e6c9;
+}
+
+.toggle-active-btn:active {
+  opacity: 0.7;
+}
+
+.admin-item__tag--active {
+  color: #4CAF50 !important;
+}
+
+.admin-item__tag--inactive {
+  color: #F44336 !important;
+}
+
+/* ===== migrate ===== */
+.migrate-wrap {
+  padding: 20rpx 0;
+}
+
+.migrate-btn {
+  padding: 20rpx 24rpx;
+  background: #fff8e1;
+  border: 1rpx solid #ffe082;
+  border-radius: 12rpx;
+  text-align: center;
+}
+
+.migrate-btn text {
+  font-size: 24rpx;
+  color: #f57f17;
+}
+
+.migrate-btn:active {
+  background: #fff3e0;
 }

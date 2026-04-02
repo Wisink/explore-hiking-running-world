@@ -1,5 +1,15 @@
 /* pages/routes/routes.wxss - 路线列表页 v3.0 自然清新风 + 毛玻璃 */
 
+/* 状态栏占位 — 毛玻璃 */
+.page-statusbar {
+  background: linear-gradient(135deg,
+    rgba(129, 199, 132, 0.5) 0%,
+    rgba(76, 175, 80, 0.4) 100%
+  );
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
 .routes-page {
   min-height: 100vh;
   padding-bottom: 140rpx;
@@ -19,10 +29,10 @@
 .header__bg {
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: linear-gradient(135deg, rgba(129,199,132,.55) 0%, rgba(76,175,80,.45) 40%, rgba(56,142,60,.4) 100%);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-bottom: 1px solid rgba(255,255,255,.2);
+  background: linear-gradient(135deg, rgba(129,199,132,.5) 0%, rgba(76,175,80,.4) 100%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255,255,255,.25);
 }
 
 .header__content {

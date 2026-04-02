@@ -141,6 +141,53 @@
   flex-shrink: 0;
 }
 
+/* 子分类Tab */
+.subcategory-tabs {
+  white-space: nowrap;
+  padding: 16rpx 32rpx;
+}
+
+.tab {
+  display: inline-block;
+  padding: 12rpx 24rpx;
+  margin-right: 16rpx;
+  font-size: 26rpx;
+  color: #666;
+  background: rgba(255,255,255,0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 20rpx;
+  border: 1px solid rgba(255,255,255,.2);
+  transition: all 200ms;
+}
+
+.tab--active {
+  color: #fff;
+  background: #2E7D32;
+  font-weight: 600;
+  border-color: #2E7D32;
+}
+
+/* 文章卡片标签 */
+.card-badges {
+  display: flex;
+  gap: 8rpx;
+  margin-top: 8rpx;
+}
+
+.card-badge {
+  font-size: 20rpx;
+  padding: 4rpx 12rpx;
+  border-radius: 8rpx;
+  background: rgba(46, 125, 50, 0.08);
+  color: #2E7D32;
+}
+
+.card-badge--sub {
+  color: #66bb6a;
+  background: rgba(129, 199, 132, 0.15);
+}
+
 /* 空状态 */
 .empty-state {
   display: flex;

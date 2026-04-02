@@ -5,6 +5,9 @@ Page({
     subtitle: '',
     themeColor: '',
     articles: [],
+    filteredArticles: [],
+    tabs: [],
+    activeTab: '',
     loading: false,
     hasMore: true,
     page: 0,
@@ -68,8 +71,21 @@ Page({
       .get()
       .then(res => {
         const newArticles = res.data || []
+        const allArticles = this.data.articles.concat(newArticles)
+
+        // 构建子分类Tab
+        const subcategories = [...new Set(allArticles.map(a => a.subcategory).filter(Boolean))]
+        const tabs = [{ label: '全部', value: '' }, ...subcategories.map(s => ({ label: s, value: s }))]
+
+        // 如果有activeTab，过滤文章
+        const filtered = this.data.activeTab
+          ? allArticles.filter(a => a.subcategory === this.data.activeTab)
+          : allArticles
+
         this.setData({
-          articles: this.data.articles.concat(newArticles),
+          articles: allArticles,
+          filteredArticles: filtered,
+          tabs,
           page: this.data.page + 1,
           hasMore: newArticles.length === this.data.pageSize,
           loading: false
@@ -83,6 +99,18 @@ Page({
 
   onReachBottom() {
     this.loadArticles()
+  },
+
+  // 子分类Tab切换
+  onTabChange(e) {
+    const value = e.currentTarget.dataset.value
+    const filtered = value
+      ? this.data.articles.filter(a => a.subcategory === value)
+      : this.data.articles
+    this.setData({
+      activeTab: value,
+      filteredArticles: filtered
+    })
   },
 
   onArticleTap(e) {

@@ -7,6 +7,7 @@ const app = getApp()
 
 Page({
   data: {
+    statusBarHeight: 0,
     trailId: '',
     trailName: '路线',
     // 装备清单数据
@@ -27,6 +28,9 @@ Page({
   },
 
   onLoad: function (options) {
+    this.setData({
+      statusBarHeight: wx.getSystemInfoSync().statusBarHeight
+    })
     const trailId = options.id || ''
     const trailName = options.name ? decodeURIComponent(options.name) : ''
     // 加载自定义物品缓存

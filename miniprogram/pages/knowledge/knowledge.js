@@ -4,6 +4,7 @@ const app = getApp()
 Page({
   data: {
     loading: true,
+    statusBarHeight: 0,
     activeCategory: '',
     categoryCount: { equipment: 0, safety: 0, etiquette: 0 },
     grouped: {},
@@ -20,6 +21,9 @@ Page({
   },
 
   onLoad(options) {
+    this.setData({
+      statusBarHeight: wx.getSystemInfoSync().statusBarHeight
+    })
     if (options && options.category) {
       this.setData({ 
         activeCategory: options.category,
@@ -106,8 +110,8 @@ Page({
       filtered = articles.filter(a => a.category === this.data.activeCategory)
     }
 
-    // 推荐文章（前3篇，全部文章）
-    const recommended = articles.slice(0, 3).map((item, index) => ({
+    // 推荐文章：均衡推荐，从每个子分类取1篇优先级最高的
+    const recommended = this.getRecommendedArticles(articles).map((item, index) => ({
       ...item,
       coverGradient: this.getCoverGradient(index)
     }))
@@ -193,6 +197,43 @@ Page({
     showAll[category] = !showAll[category]
     const displayedCategorizedArticles = this._rebuildDisplayed(this._allCategorizedArticles, showAll)
     this.setData({ showAll, displayedCategorizedArticles })
+  },
+
+  // 新的推荐逻辑：从每个子分类取1篇优先级最高的
+  getRecommendedArticles(articles) {
+    const subcategoryMap = {}
+    const recommended = []
+
+    articles.forEach(article => {
+      const sub = article.subcategory || '其他'
+      if (!subcategoryMap[sub]) {
+        subcategoryMap[sub] = []
+      }
+      subcategoryMap[sub].push(article)
+    })
+
+    // 每个子分类按priority排序，取第一篇
+    Object.keys(subcategoryMap).forEach(sub => {
+      subcategoryMap[sub].sort((a, b) => (a.priority || 99) - (b.priority || 99))
+      if (subcategoryMap[sub][0]) {
+        recommended.push(subcategoryMap[sub][0])
+      }
+    })
+
+    // 最多取6篇，确保覆盖面
+    return recommended.slice(0, 6)
+  },
+
+  // 新手入门路径点击
+  onStepTap(e) {
+    const category = e.currentTarget.dataset.category
+    if (category === '实践') {
+      wx.switchTab({ url: '/pages/routes/routes' })
+      return
+    }
+    wx.navigateTo({
+      url: `/pages/topic/topic?category=${encodeURIComponent(category)}`
+    })
   },
 
   // 根据showAll状态构建显示列表

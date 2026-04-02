@@ -20,7 +20,7 @@ function fail(message = '操作失败', data = null) {
 async function list(event) {
   const { category, page = 1, pageSize = 20 } = event
   const skip = (page - 1) * pageSize
-  const where = {}
+  const where = { isActive: true }
 
   if (category) {
     where.category = category
@@ -64,6 +64,8 @@ async function detail(event) {
   try {
     const res = await db.collection('articles').doc(articleId).get()
     if (!res.data) return fail('文章不存在')
+    // 检查文章是否有效
+    if (res.data.isActive === false) return fail('文章已下架')
     return success(res.data)
   } catch (err) {
     console.error('articles detail error:', err)
@@ -80,6 +82,7 @@ async function recommend(event) {
 
   try {
     const res = await db.collection('articles')
+      .where({ isActive: true })
       .orderBy('order', 'asc')
       .limit(limit)
       .field({

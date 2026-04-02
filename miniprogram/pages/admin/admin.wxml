@@ -1,6 +1,17 @@
 <!--pages/admin/admin.wxml-->
 <view class="admin-page">
 
+  <!-- 状态栏占位 -->
+  <view class="page-statusbar" style="height: {{statusBarHeight}}px;"></view>
+  <!-- 导航栏 -->
+  <view class="detail-nav">
+    <view class="detail-nav__back" bindtap="onBack">
+      <text class="detail-nav__back-icon">‹</text>
+    </view>
+    <text class="detail-nav__title">后台管理</text>
+    <view class="detail-nav__spacer"></view>
+  </view>
+
   <!-- 未登录：密码验证 -->
   <view class="login-wrap" wx:if="{{!isLoggedIn}}">
     <view class="login-card">
@@ -77,6 +88,13 @@
         <view class="stats-item">
           <text class="stats-item__num">{{stats.totalArticles}}</text>
           <text class="stats-item__label">📝 文章总数</text>
+        </view>
+      </view>
+
+      <!-- 数据迁移按钮 -->
+      <view class="migrate-wrap">
+        <view class="migrate-btn" bindtap="onMigrateIsActive">
+          <text>🔧 数据迁移：为现有数据添加 isActive 字段</text>
         </view>
       </view>
       <view class="loading-wrap" wx:if="{{statsLoading}}">
@@ -297,8 +315,13 @@
         <view class="list-info">
           <text>共 {{routesTotal}} 条路线</text>
         </view>
-        <view class="add-route-btn" bindtap="onAddRoute">
-          <text>+ 添加路线</text>
+        <view class="header-actions">
+          <view class="add-route-btn" bindtap="onAddRoute">
+            <text>+ 添加路线</text>
+          </view>
+          <view class="export-btn" bindtap="onExportRoutes">
+            <text>📤 导出</text>
+          </view>
         </view>
       </view>
 
@@ -331,6 +354,12 @@
                 </text>
                 <text class="admin-item__tag" wx:if="{{item.distance_km || item.distance}}">{{item.distance_km || item.distance}}km</text>
                 <text class="admin-item__tag" wx:if="{{(item.location && item.location.address) || item.location}}">📍 {{(item.location && item.location.address) || item.location}}</text>
+                <text class="admin-item__tag {{item.isActive !== false ? 'admin-item__tag--active' : 'admin-item__tag--inactive'}}">{{item.isActive !== false ? '✅ 有效' : '❌ 无效'}}</text>
+              </view>
+            </view>
+            <view class="admin-item__actions">
+              <view class="toggle-active-btn {{item.isActive !== false ? 'toggle-active-btn--on' : 'toggle-active-btn--off'}}" catchtap="onToggleRouteActive" data-id="{{item._id}}" data-active="{{item.isActive}}">
+                <text>{{item.isActive !== false ? '停用' : '启用'}}</text>
               </view>
             </view>
             <view class="admin-item__arrow">
@@ -364,8 +393,15 @@
         </view>
       </view>
 
-      <view class="list-info">
-        <text>共 {{usersTotal}} 个用户</text>
+      <view class="routes-header">
+        <view class="list-info">
+          <text>共 {{usersTotal}} 个用户</text>
+        </view>
+        <view class="header-actions">
+          <view class="export-btn" bindtap="onExportUsers">
+            <text>📤 导出</text>
+          </view>
+        </view>
       </view>
 
       <scroll-view
@@ -447,8 +483,13 @@
         <view class="list-info">
           <text>共 {{articlesTotal}} 篇文章</text>
         </view>
-        <view class="add-route-btn" bindtap="onAddArticle">
-          <text>+ 添加文章</text>
+        <view class="header-actions">
+          <view class="add-route-btn" bindtap="onAddArticle">
+            <text>+ 添加文章</text>
+          </view>
+          <view class="export-btn" bindtap="onExportArticles">
+            <text>📤 导出</text>
+          </view>
         </view>
       </view>
 
@@ -472,6 +513,12 @@
               <view class="admin-item__meta">
                 <text class="admin-item__tag" wx:if="{{item.category}}">📂 {{item.category}}</text>
                 <text class="admin-item__tag" wx:if="{{item.author}}">✍️ {{item.author}}</text>
+                <text class="admin-item__tag {{item.isActive !== false ? 'admin-item__tag--active' : 'admin-item__tag--inactive'}}">{{item.isActive !== false ? '✅ 有效' : '❌ 无效'}}</text>
+              </view>
+            </view>
+            <view class="admin-item__actions">
+              <view class="toggle-active-btn {{item.isActive !== false ? 'toggle-active-btn--on' : 'toggle-active-btn--off'}}" catchtap="onToggleArticleActive" data-id="{{item._id}}" data-active="{{item.isActive}}">
+                <text>{{item.isActive !== false ? '停用' : '启用'}}</text>
               </view>
             </view>
             <view class="admin-item__arrow">

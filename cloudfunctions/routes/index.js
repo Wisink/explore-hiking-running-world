@@ -23,6 +23,9 @@ async function list(event) {
   const skip = Math.max(0, page) * pageSize
   const where = {}
 
+  // 过滤无效路线
+  where.isActive = true
+
   // 如果 filter 是字符串（前端标签筛选），转换为查询条件
   if (typeof filter === 'string' && filter && filter !== 'all') {
     switch (filter) {
@@ -137,6 +140,8 @@ async function detail(event) {
   try {
     const res = await db.collection('routes').doc(routeId).get()
     if (!res.data) return fail('路线不存在')
+    // 检查路线是否有效
+    if (res.data.isActive === false) return fail('路线已下架')
     return success(res.data)
   } catch (err) {
     console.error('routes detail error:', err)
@@ -155,21 +160,24 @@ async function search(event) {
   const skip = Math.max(0, page) * pageSize
   const kw = keyword.trim()
 
-  // 名称、描述、地址、风景标签模糊搜索
-  const where = _.or([
-    { name: db.RegExp({ regexp: kw, options: 'i' }) },
-    { description: db.RegExp({ regexp: kw, options: 'i' }) },
-    { 'location.address': db.RegExp({ regexp: kw, options: 'i' }) },
-    { scenery: db.RegExp({ regexp: kw, options: 'i' }) },
-    { 'difficulty.suitableFor': db.RegExp({ regexp: kw, options: 'i' }) }
+  // 名称、描述、地址、风景标签模糊搜索 + 仅搜索有效路线
+  const searchCondition = _.and([
+    { isActive: true },
+    _.or([
+      { name: db.RegExp({ regexp: kw, options: 'i' }) },
+      { description: db.RegExp({ regexp: kw, options: 'i' }) },
+      { 'location.address': db.RegExp({ regexp: kw, options: 'i' }) },
+      { scenery: db.RegExp({ regexp: kw, options: 'i' }) },
+      { 'difficulty.suitableFor': db.RegExp({ regexp: kw, options: 'i' }) }
+    ])
   ])
 
   try {
-    const countRes = await db.collection('routes').where(where).count()
+    const countRes = await db.collection('routes').where(searchCondition).count()
     const total = countRes.total
 
     const listRes = await db.collection('routes')
-      .where(where)
+      .where(searchCondition)
       .orderBy('order', 'asc')
       .skip(skip)
       .limit(pageSize)

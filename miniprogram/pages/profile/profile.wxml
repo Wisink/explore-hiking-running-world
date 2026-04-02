@@ -1,12 +1,20 @@
 <!--pages/profile/profile.wxml-->
 <view class="profile-page">
 
+  <!-- 状态栏占位 -->
+  <view class="page-statusbar" style="height: {{statusBarHeight}}px;"></view>
+
   <!-- 顶部标题 -->
   <view class="page-header">
     <view class="page-header__bg"></view>
     <view class="page-header__content">
+      <!-- 头像和昵称 -->
+      <view class="profile-avatar-wrap">
+        <image class="profile-avatar" src="{{avatarUrl}}" mode="aspectFill" />
+      </view>
+      <text class="profile-nickname">{{hikerNickname}}</text>
       <text class="page-header__emoji">🥾</text>
-      <text class="page-header__title">我的徒步</text>
+      <text class="page-header__title">我的徒步世界</text>
       <text class="page-header__sub" wx:if="{{userInfo}}">你好，{{userInfo.nickName}}！</text>
       <text class="page-header__sub" wx:else>记录每一步的风景</text>
       <view class="page-header__visit" wx:if="{{userInfo}}">

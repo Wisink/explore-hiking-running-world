@@ -7,6 +7,11 @@ const app = getApp()
 
 Page({
   data: {
+    // 状态栏高度
+    statusBarHeight: 0,
+    // 头像和昵称
+    avatarUrl: '',
+    hikerNickname: '',
     // 用户信息（编号、昵称、访问次数）
     userInfo: null,
     // 管理员权限
@@ -26,6 +31,11 @@ Page({
   },
 
   onLoad() {
+    this.setData({
+      statusBarHeight: wx.getSystemInfoSync().statusBarHeight
+    })
+    // 初始化头像和昵称
+    this.initHikerProfile()
     // 检查管理员权限
     wx.cloud.callFunction({
       name: 'admin-api',
@@ -60,6 +70,42 @@ Page({
     this.loadData().then(() => {
       wx.stopPullDownRefresh()
     })
+  },
+
+  /**
+   * 初始化徒步者头像和昵称
+   * 首次进入随机生成，再次进入从缓存读取
+   */
+  initHikerProfile() {
+    let hikerNumber = wx.getStorageSync('hikerNumber')
+    let avatarIndex = wx.getStorageSync('hikerAvatarIndex')
+
+    if (!hikerNumber) {
+      hikerNumber = this.generateNumber(3)
+      wx.setStorageSync('hikerNumber', hikerNumber)
+    }
+
+    if (!avatarIndex) {
+      avatarIndex = Math.floor(Math.random() * 8) + 1
+      wx.setStorageSync('hikerAvatarIndex', avatarIndex)
+    }
+
+    const paddedIndex = String(avatarIndex).padStart(2, '0')
+    this.setData({
+      avatarUrl: `/images/avatars/avatar-${paddedIndex}.jpg`,
+      hikerNickname: `${hikerNumber}号徒步爱好者`
+    })
+  },
+
+  /**
+   * 生成随机编号（支持扩展位数）
+   * @param {number} digits - 编号位数，默认3位
+   * @returns {string} 补零后的编号字符串
+   */
+  generateNumber(digits = 3) {
+    const max = Math.pow(10, digits) - 1
+    const number = Math.floor(Math.random() * max) + 1
+    return String(number).padStart(digits, '0')
   },
 
   // ========== 数据加载 ==========

@@ -8,7 +8,17 @@
     "coverImage": "/images/scenery/scenery-general.jpg",
     "readTime": "5分钟",
     "likes": 0,
-    "highlights": "一双好鞋是徒步的根基。本篇详解鞋面、中底、大底三大核心部件的选择要点，帮你在不同地形找到最适合的那双鞋。"
+    "highlights": "一双好鞋是徒步的根基。本篇详解鞋面、中底、大底三大核心部件的选择要点，帮你在不同地形找到最适合的那双鞋。",
+    "subcategory": "必备装备",
+    "difficulty": "beginner",
+    "priority": 1,
+    "tags": [
+      "鞋",
+      "新手必备"
+    ],
+    "season": [
+      "all"
+    ]
   },
   {
     "_id": "article_002",
@@ -19,7 +29,17 @@
     "coverImage": "/images/scenery/scenery-general.jpg",
     "readTime": "5分钟",
     "likes": 0,
-    "highlights": "登山杖不是拐杖，是你的第三条腿。正确使用能减轻30%膝盖负担，学会调节长度、握持技巧和上坡下坡姿势是关键。"
+    "highlights": "登山杖不是拐杖，是你的第三条腿。正确使用能减轻30%膝盖负担，学会调节长度、握持技巧和上坡下坡姿势是关键。",
+    "subcategory": "推荐装备",
+    "difficulty": "intermediate",
+    "priority": 1,
+    "tags": [
+      "杖",
+      "膝盖保护"
+    ],
+    "season": [
+      "all"
+    ]
   },
   {
     "_id": "article_003",
@@ -30,7 +50,17 @@
     "coverImage": "/images/scenery/scenery-general.jpg",
     "readTime": "6分钟",
     "likes": 0,
-    "highlights": "背包选对了，背负体验天差地别。从容量选择、背负系统到装载技巧，一篇搞定你的出行装备核心。"
+    "highlights": "背包选对了，背负体验天差地别。从容量选择、背负系统到装载技巧，一篇搞定你的出行装备核心。",
+    "subcategory": "必备装备",
+    "difficulty": "beginner",
+    "priority": 2,
+    "tags": [
+      "背包",
+      "容量"
+    ],
+    "season": [
+      "all"
+    ]
   },
   {
     "_id": "article_004",
@@ -41,7 +71,18 @@
     "coverImage": "/images/scenery/scenery-general.jpg",
     "readTime": "6分钟",
     "likes": 0,
-    "highlights": "洋葱穿衣法是户外穿衣的黄金法则——内层排汗、中层保暖、外层防风防雨。掌握分层搭配，从容应对多变天气。"
+    "highlights": "洋葱穿衣法是户外穿衣的黄金法则——内层排汗、中层保暖、外层防风防雨。掌握分层搭配，从容应对多变天气。",
+    "subcategory": "必备装备",
+    "difficulty": "beginner",
+    "priority": 3,
+    "tags": [
+      "服装",
+      "分层",
+      "穿衣"
+    ],
+    "season": [
+      "all"
+    ]
   },
   {
     "_id": "article_005",
@@ -52,7 +93,18 @@
     "coverImage": "/images/scenery/scenery-general.jpg",
     "readTime": "5分钟",
     "likes": 0,
-    "highlights": "夜间徒步、露营、应急，头灯都是必备品。亮度、续航、防水是三大指标，这篇帮你选到性价比最高的那一盏。"
+    "highlights": "夜间徒步、露营、应急，头灯都是必备品。亮度、续航、防水是三大指标，这篇帮你选到性价比最高的那一盏。",
+    "subcategory": "必备装备",
+    "difficulty": "beginner",
+    "priority": 5,
+    "tags": [
+      "头灯",
+      "夜间",
+      "安全"
+    ],
+    "season": [
+      "all"
+    ]
   },
   {
     "_id": "article_006",
@@ -63,7 +115,17 @@
     "coverImage": "/images/scenery/scenery-general.jpg",
     "readTime": "5分钟",
     "likes": 0,
-    "highlights": "水壶方便快捷，水袋适合长距离。不同的出行场景需要不同的饮水方案，对比分析帮你做出最佳选择。"
+    "highlights": "水壶方便快捷，水袋适合长距离。不同的出行场景需要不同的饮水方案，对比分析帮你做出最佳选择。",
+    "subcategory": "必备装备",
+    "difficulty": "beginner",
+    "priority": 4,
+    "tags": [
+      "水具",
+      "补水"
+    ],
+    "season": [
+      "all"
+    ]
   },
   {
     "_id": "article_007",
@@ -74,7 +136,18 @@
     "coverImage": "/images/scenery/scenery-general.jpg",
     "readTime": "5分钟",
     "likes": 0,
-    "highlights": "户外急救包清单的详细指南，涵盖核心知识点和实用建议。"
+    "highlights": "户外急救包清单的详细指南，涵盖核心知识点和实用建议。",
+    "subcategory": "基础安全",
+    "difficulty": "beginner",
+    "priority": 1,
+    "tags": [
+      "急救",
+      "安全",
+      "必备"
+    ],
+    "season": [
+      "all"
+    ]
   },
   {
     "_id": "article_008",
@@ -85,7 +158,18 @@
     "coverImage": "/images/scenery/scenery-general.jpg",
     "readTime": "5分钟",
     "likes": 0,
-    "highlights": "中暑预防和处理的详细指南，涵盖核心知识点和实用建议。"
+    "highlights": "中暑预防和处理的详细指南，涵盖核心知识点和实用建议。",
+    "subcategory": "基础安全",
+    "difficulty": "beginner",
+    "priority": 2,
+    "tags": [
+      "中暑",
+      "夏季",
+      "安全"
+    ],
+    "season": [
+      "summer"
+    ]
   },
   {
     "_id": "article_009",
@@ -96,7 +180,20 @@
     "coverImage": "/images/scenery/scenery-general.jpg",
     "readTime": "6分钟",
     "likes": 0,
-    "highlights": "失温怎么办的详细指南，涵盖核心知识点和实用建议。"
+    "highlights": "失温怎么办的详细指南，涵盖核心知识点和实用建议。",
+    "subcategory": "伤害处理",
+    "difficulty": "intermediate",
+    "priority": 1,
+    "tags": [
+      "失温",
+      "保暖",
+      "安全"
+    ],
+    "season": [
+      "spring",
+      "autumn",
+      "winter"
+    ]
   },
   {
     "_id": "article_010",
@@ -107,7 +204,19 @@
     "coverImage": "/images/scenery/scenery-general.jpg",
     "readTime": "6分钟",
     "likes": 0,
-    "highlights": "蛇虫咬伤急救的详细指南，涵盖核心知识点和实用建议。"
+    "highlights": "蛇虫咬伤急救的详细指南，涵盖核心知识点和实用建议。",
+    "subcategory": "伤害处理",
+    "difficulty": "intermediate",
+    "priority": 2,
+    "tags": [
+      "蛇",
+      "虫",
+      "急救"
+    ],
+    "season": [
+      "spring",
+      "summer"
+    ]
   },
   {
     "_id": "article_011",
@@ -118,7 +227,18 @@
     "coverImage": "/images/scenery/scenery-general.jpg",
     "readTime": "5分钟",
     "likes": 0,
-    "highlights": "扭伤处理方法的详细指南，涵盖核心知识点和实用建议。"
+    "highlights": "扭伤处理方法的详细指南，涵盖核心知识点和实用建议。",
+    "subcategory": "伤害处理",
+    "difficulty": "intermediate",
+    "priority": 3,
+    "tags": [
+      "扭伤",
+      "急救",
+      "PRICE"
+    ],
+    "season": [
+      "all"
+    ]
   },
   {
     "_id": "article_012",
@@ -129,7 +249,18 @@
     "coverImage": "/images/scenery/scenery-general.jpg",
     "readTime": "6分钟",
     "likes": 0,
-    "highlights": "冷静、定位、等待——迷路时的三步法则。学会使用指南针、地图和手机GPS定位。"
+    "highlights": "冷静、定位、等待——迷路时的三步法则。学会使用指南针、地图和手机GPS定位。",
+    "subcategory": "求生技能",
+    "difficulty": "advanced",
+    "priority": 1,
+    "tags": [
+      "迷路",
+      "自救",
+      "STOP"
+    ],
+    "season": [
+      "all"
+    ]
   },
   {
     "_id": "article_013",
@@ -140,7 +271,18 @@
     "coverImage": "/images/scenery/scenery-general.jpg",
     "readTime": "6分钟",
     "likes": 0,
-    "highlights": "无痕山林七原则的详细指南，涵盖核心知识点和实用建议。"
+    "highlights": "无痕山林七原则的详细指南，涵盖核心知识点和实用建议。",
+    "subcategory": "LNT无痕山林",
+    "difficulty": "beginner",
+    "priority": 1,
+    "tags": [
+      "LNT",
+      "环保",
+      "礼仪"
+    ],
+    "season": [
+      "all"
+    ]
   },
   {
     "_id": "article_014",
@@ -151,7 +293,17 @@
     "coverImage": "/images/scenery/scenery-general.jpg",
     "readTime": "5分钟",
     "likes": 0,
-    "highlights": "好营地是选出来的，不是造出来的。远离水源、避开动物痕迹、保持原貌是选营地的三大原则。"
+    "highlights": "好营地是选出来的，不是造出来的。远离水源、避开动物痕迹、保持原貌是选营地的三大原则。",
+    "subcategory": "营地规范",
+    "difficulty": "beginner",
+    "priority": 1,
+    "tags": [
+      "营地",
+      "选址"
+    ],
+    "season": [
+      "all"
+    ]
   },
   {
     "_id": "article_015",
@@ -162,7 +314,18 @@
     "coverImage": "/images/scenery/scenery-general.jpg",
     "readTime": "5分钟",
     "likes": 0,
-    "highlights": "垃圾处理原则的详细指南，涵盖核心知识点和实用建议。"
+    "highlights": "垃圾处理原则的详细指南，涵盖核心知识点和实用建议。",
+    "subcategory": "LNT无痕山林",
+    "difficulty": "beginner",
+    "priority": 2,
+    "tags": [
+      "垃圾",
+      "环保",
+      "LNT"
+    ],
+    "season": [
+      "all"
+    ]
   },
   {
     "_id": "article_016",
@@ -173,7 +336,18 @@
     "coverImage": "/images/scenery/scenery-general.jpg",
     "readTime": "5分钟",
     "likes": 0,
-    "highlights": "野生动物互动指南的详细指南，涵盖核心知识点和实用建议。"
+    "highlights": "野生动物互动指南的详细指南，涵盖核心知识点和实用建议。",
+    "subcategory": "生态尊重",
+    "difficulty": "intermediate",
+    "priority": 1,
+    "tags": [
+      "动物",
+      "生态",
+      "不投喂"
+    ],
+    "season": [
+      "all"
+    ]
   },
   {
     "_id": "article_017",
@@ -184,7 +358,18 @@
     "coverImage": "/images/scenery/scenery-general.jpg",
     "readTime": "5分钟",
     "likes": 0,
-    "highlights": "团队徒步礼仪的详细指南，涵盖核心知识点和实用建议。"
+    "highlights": "团队徒步礼仪的详细指南，涵盖核心知识点和实用建议。",
+    "subcategory": "团队协作",
+    "difficulty": "beginner",
+    "priority": 1,
+    "tags": [
+      "团队",
+      "协作",
+      "礼仪"
+    ],
+    "season": [
+      "all"
+    ]
   },
   {
     "_id": "article_018",
@@ -195,7 +380,20 @@
     "coverImage": "/images/scenery/scenery-general.jpg",
     "readTime": "5分钟",
     "likes": 0,
-    "highlights": "山林防火常识的详细指南，涵盖核心知识点和实用建议。"
+    "highlights": "山林防火常识的详细指南，涵盖核心知识点和实用建议。",
+    "subcategory": "营地规范",
+    "difficulty": "beginner",
+    "priority": 2,
+    "tags": [
+      "防火",
+      "安全",
+      "火"
+    ],
+    "season": [
+      "autumn",
+      "winter",
+      "spring"
+    ]
   },
   {
     "_id": "article_019",
@@ -206,7 +404,17 @@
     "coverImage": "/images/scenery/scenery-general.jpg",
     "readTime": "5分钟",
     "likes": 0,
-    "highlights": "帐篷是户外的家。从三季帐到四季帐，从双层帐到隧道帐，了解帐篷结构和面料，才能选到合适的移动居所。"
+    "highlights": "帐篷是户外的家。从三季帐到四季帐，从双层帐到隧道帐，了解帐篷结构和面料，才能选到合适的移动居所。",
+    "subcategory": "推荐装备",
+    "difficulty": "intermediate",
+    "priority": 3,
+    "tags": [
+      "帐篷",
+      "露营"
+    ],
+    "season": [
+      "all"
+    ]
   },
   {
     "_id": "article_020",
@@ -217,7 +425,18 @@
     "coverImage": "/images/scenery/scenery-general.jpg",
     "readTime": "5分钟",
     "likes": 0,
-    "highlights": "温标、填充物、重量——选购睡袋的三个核心维度。别让错误的睡袋毁掉一个美好的露营夜晚。"
+    "highlights": "温标、填充物、重量——选购睡袋的三个核心维度。别让错误的睡袋毁掉一个美好的露营夜晚。",
+    "subcategory": "推荐装备",
+    "difficulty": "intermediate",
+    "priority": 4,
+    "tags": [
+      "睡袋",
+      "露营",
+      "温标"
+    ],
+    "season": [
+      "all"
+    ]
   },
   {
     "_id": "article_021",
@@ -228,7 +447,18 @@
     "coverImage": "/images/scenery/scenery-general.jpg",
     "readTime": "4分钟",
     "likes": 0,
-    "highlights": "地面寒气比你想象的更伤人。泡沫垫、充气垫、自充气垫各有优劣，选对防潮垫才能睡个好觉。"
+    "highlights": "地面寒气比你想象的更伤人。泡沫垫、充气垫、自充气垫各有优劣，选对防潮垫才能睡个好觉。",
+    "subcategory": "推荐装备",
+    "difficulty": "intermediate",
+    "priority": 5,
+    "tags": [
+      "防潮垫",
+      "露营",
+      "R值"
+    ],
+    "season": [
+      "all"
+    ]
   },
   {
     "_id": "article_022",
@@ -239,7 +469,18 @@
     "coverImage": "/images/scenery/scenery-general.jpg",
     "readTime": "4分钟",
     "likes": 0,
-    "highlights": "徒步下坡是膝盖最大的敌人。护具不是伤了才用，预防才是关键。本篇教你选对型号和尺码。"
+    "highlights": "徒步下坡是膝盖最大的敌人。护具不是伤了才用，预防才是关键。本篇教你选对型号和尺码。",
+    "subcategory": "推荐装备",
+    "difficulty": "intermediate",
+    "priority": 2,
+    "tags": [
+      "护膝",
+      "护踝",
+      "关节"
+    ],
+    "season": [
+      "all"
+    ]
   },
   {
     "_id": "article_023",
@@ -250,7 +491,18 @@
     "coverImage": "/images/scenery/scenery-general.jpg",
     "readTime": "4分钟",
     "likes": 0,
-    "highlights": "别小看一双袜子，选错了可能让你脚底磨出水泡。羊毛、混纺、速干面料，不同场景不同选择。"
+    "highlights": "别小看一双袜子，选错了可能让你脚底磨出水泡。羊毛、混纺、速干面料，不同场景不同选择。",
+    "subcategory": "必备装备",
+    "difficulty": "beginner",
+    "priority": 6,
+    "tags": [
+      "袜子",
+      "起泡",
+      "羊毛"
+    ],
+    "season": [
+      "all"
+    ]
   },
   {
     "_id": "article_024",
@@ -261,7 +513,18 @@
     "coverImage": "/images/scenery/scenery-general.jpg",
     "readTime": "5分钟",
     "likes": 0,
-    "highlights": "汗水不干，体温就难控制。速干衣是户外最基础的装备之一，面料、剪裁、厚度怎么选？"
+    "highlights": "汗水不干，体温就难控制。速干衣是户外最基础的装备之一，面料、剪裁、厚度怎么选？",
+    "subcategory": "必备装备",
+    "difficulty": "beginner",
+    "priority": 7,
+    "tags": [
+      "速干衣",
+      "排汗",
+      "服装"
+    ],
+    "season": [
+      "all"
+    ]
   },
   {
     "_id": "article_025",
@@ -272,7 +535,20 @@
     "coverImage": "/images/scenery/scenery-general.jpg",
     "readTime": "5分钟",
     "likes": 0,
-    "highlights": "防水≠透气≠防风。GORE-TEX、eVent、DWR涂层…各种科技让人眼花缭乱？这篇帮你理清脉络。"
+    "highlights": "防水≠透气≠防风。GORE-TEX、eVent、DWR涂层…各种科技让人眼花缭乱？这篇帮你理清脉络。",
+    "subcategory": "推荐装备",
+    "difficulty": "intermediate",
+    "priority": 6,
+    "tags": [
+      "冲锋衣",
+      "防水",
+      "防风"
+    ],
+    "season": [
+      "spring",
+      "autumn",
+      "winter"
+    ]
   },
   {
     "_id": "article_026",
@@ -283,7 +559,19 @@
     "coverImage": "/images/scenery/scenery-general.jpg",
     "readTime": "4分钟",
     "likes": 0,
-    "highlights": "突如其来的暴雨最考验装备。分体式、连体式、斗篷式雨衣各有什么优缺点？实用选购指南在此。"
+    "highlights": "突如其来的暴雨最考验装备。分体式、连体式、斗篷式雨衣各有什么优缺点？实用选购指南在此。",
+    "subcategory": "推荐装备",
+    "difficulty": "intermediate",
+    "priority": 7,
+    "tags": [
+      "雨衣",
+      "防水",
+      "雨季"
+    ],
+    "season": [
+      "spring",
+      "summer"
+    ]
   },
   {
     "_id": "article_027",
@@ -294,7 +582,18 @@
     "coverImage": "/images/scenery/scenery-general.jpg",
     "readTime": "4分钟",
     "likes": 0,
-    "highlights": "山上的一杯热茶是无价的快乐。炉头、气罐、锅具三件套怎么搭？轻量化和实用性如何平衡？"
+    "highlights": "山上的一杯热茶是无价的快乐。炉头、气罐、锅具三件套怎么搭？轻量化和实用性如何平衡？",
+    "subcategory": "进阶装备",
+    "difficulty": "advanced",
+    "priority": 1,
+    "tags": [
+      "炊具",
+      "做饭",
+      "露营"
+    ],
+    "season": [
+      "all"
+    ]
   },
   {
     "_id": "article_028",
@@ -305,7 +604,18 @@
     "coverImage": "/images/scenery/scenery-general.jpg",
     "readTime": "3分钟",
     "likes": 0,
-    "highlights": "体积小、重量轻、作用大。急救毯是被低估的户外神器，保温、防晒、求救信号反射样样行。"
+    "highlights": "体积小、重量轻、作用大。急救毯是被低估的户外神器，保温、防晒、求救信号反射样样行。",
+    "subcategory": "进阶装备",
+    "difficulty": "advanced",
+    "priority": 2,
+    "tags": [
+      "急救毯",
+      "保暖",
+      "急救"
+    ],
+    "season": [
+      "all"
+    ]
   },
   {
     "_id": "article_029",
@@ -316,7 +626,18 @@
     "coverImage": "/images/scenery/scenery-general.jpg",
     "readTime": "4分钟",
     "likes": 0,
-    "highlights": "山里信号不好时，对讲机就是生命线。频率、功率、防水等级，选购时这几个参数要关注。"
+    "highlights": "山里信号不好时，对讲机就是生命线。频率、功率、防水等级，选购时这几个参数要关注。",
+    "subcategory": "进阶装备",
+    "difficulty": "advanced",
+    "priority": 3,
+    "tags": [
+      "对讲机",
+      "通讯",
+      "团队"
+    ],
+    "season": [
+      "all"
+    ]
   },
   {
     "_id": "article_030",
@@ -327,7 +648,18 @@
     "coverImage": "/images/scenery/scenery-general.jpg",
     "readTime": "5分钟",
     "likes": 0,
-    "highlights": "记录户外精彩瞬间需要一台靠谱的相机。GoPro、Insta360、DJI各有什么特点？"
+    "highlights": "记录户外精彩瞬间需要一台靠谱的相机。GoPro、Insta360、DJI各有什么特点？",
+    "subcategory": "进阶装备",
+    "difficulty": "advanced",
+    "priority": 4,
+    "tags": [
+      "相机",
+      "拍摄",
+      "记录"
+    ],
+    "season": [
+      "all"
+    ]
   },
   {
     "_id": "article_031",
@@ -338,7 +670,18 @@
     "coverImage": "/images/scenery/scenery-general.jpg",
     "readTime": "5分钟",
     "likes": 0,
-    "highlights": "海拔、气压、温度、GPS——一块户外手表能给你全方位的数据支持。从入门到专业，选购建议全覆盖。"
+    "highlights": "海拔、气压、温度、GPS——一块户外手表能给你全方位的数据支持。从入门到专业，选购建议全覆盖。",
+    "subcategory": "进阶装备",
+    "difficulty": "advanced",
+    "priority": 5,
+    "tags": [
+      "手表",
+      "GPS",
+      "数据"
+    ],
+    "season": [
+      "all"
+    ]
   },
   {
     "_id": "article_032",
@@ -349,7 +692,18 @@
     "coverImage": "/images/scenery/scenery-general.jpg",
     "readTime": "4分钟",
     "likes": 0,
-    "highlights": "收纳是一门艺术。合理的装备收纳不仅能省空间，还能在紧急时刻快速找到所需物品。"
+    "highlights": "收纳是一门艺术。合理的装备收纳不仅能省空间，还能在紧急时刻快速找到所需物品。",
+    "subcategory": "装备管理",
+    "difficulty": "beginner",
+    "priority": 1,
+    "tags": [
+      "收纳",
+      "整理",
+      "装备"
+    ],
+    "season": [
+      "all"
+    ]
   },
   {
     "_id": "article_033",
@@ -360,7 +714,18 @@
     "coverImage": "/images/scenery/scenery-general.jpg",
     "readTime": "5分钟",
     "likes": 0,
-    "highlights": "高原反应预防的详细指南，涵盖核心知识点和实用建议。"
+    "highlights": "高原反应预防的详细指南，涵盖核心知识点和实用建议。",
+    "subcategory": "高原与野外",
+    "difficulty": "intermediate",
+    "priority": 1,
+    "tags": [
+      "高原",
+      "高反",
+      "海拔"
+    ],
+    "season": [
+      "all"
+    ]
   },
   {
     "_id": "article_034",
@@ -371,7 +736,18 @@
     "coverImage": "/images/scenery/scenery-general.jpg",
     "readTime": "4分钟",
     "likes": 0,
-    "highlights": "低血糖应急处理的详细指南，涵盖核心知识点和实用建议。"
+    "highlights": "低血糖应急处理的详细指南，涵盖核心知识点和实用建议。",
+    "subcategory": "基础安全",
+    "difficulty": "beginner",
+    "priority": 3,
+    "tags": [
+      "低血糖",
+      "补糖",
+      "安全"
+    ],
+    "season": [
+      "all"
+    ]
   },
   {
     "_id": "article_035",
@@ -382,7 +758,18 @@
     "coverImage": "/images/scenery/scenery-general.jpg",
     "readTime": "5分钟",
     "likes": 0,
-    "highlights": "脱水与补水的详细指南，涵盖核心知识点和实用建议。"
+    "highlights": "脱水与补水的详细指南，涵盖核心知识点和实用建议。",
+    "subcategory": "基础安全",
+    "difficulty": "beginner",
+    "priority": 4,
+    "tags": [
+      "脱水",
+      "补水",
+      "饮水"
+    ],
+    "season": [
+      "summer"
+    ]
   },
   {
     "_id": "article_036",
@@ -393,7 +780,18 @@
     "coverImage": "/images/scenery/scenery-general.jpg",
     "readTime": "5分钟",
     "likes": 0,
-    "highlights": "溺水自救互救的详细指南，涵盖核心知识点和实用建议。"
+    "highlights": "溺水自救互救的详细指南，涵盖核心知识点和实用建议。",
+    "subcategory": "伤害处理",
+    "difficulty": "intermediate",
+    "priority": 4,
+    "tags": [
+      "溺水",
+      "涉水",
+      "急救"
+    ],
+    "season": [
+      "summer"
+    ]
   },
   {
     "_id": "article_037",
@@ -404,7 +802,18 @@
     "coverImage": "/images/scenery/scenery-general.jpg",
     "readTime": "4分钟",
     "likes": 0,
-    "highlights": "雷电天气应对的详细指南，涵盖核心知识点和实用建议。"
+    "highlights": "雷电天气应对的详细指南，涵盖核心知识点和实用建议。",
+    "subcategory": "极端天气",
+    "difficulty": "intermediate",
+    "priority": 1,
+    "tags": [
+      "雷电",
+      "天气",
+      "安全"
+    ],
+    "season": [
+      "summer"
+    ]
   },
   {
     "_id": "article_038",
@@ -415,7 +824,18 @@
     "coverImage": "/images/scenery/scenery-general.jpg",
     "readTime": "5分钟",
     "likes": 0,
-    "highlights": "暴风雪自救的详细指南，涵盖核心知识点和实用建议。"
+    "highlights": "暴风雪自救的详细指南，涵盖核心知识点和实用建议。",
+    "subcategory": "极端天气",
+    "difficulty": "advanced",
+    "priority": 2,
+    "tags": [
+      "暴风雪",
+      "雪",
+      "自救"
+    ],
+    "season": [
+      "winter"
+    ]
   },
   {
     "_id": "article_039",
@@ -426,7 +846,18 @@
     "coverImage": "/images/scenery/scenery-general.jpg",
     "readTime": "4分钟",
     "likes": 0,
-    "highlights": "山洪预警与逃生的详细指南，涵盖核心知识点和实用建议。"
+    "highlights": "山洪预警与逃生的详细指南，涵盖核心知识点和实用建议。",
+    "subcategory": "极端天气",
+    "difficulty": "advanced",
+    "priority": 3,
+    "tags": [
+      "山洪",
+      "洪水",
+      "逃生"
+    ],
+    "season": [
+      "summer"
+    ]
   },
   {
     "_id": "article_040",
@@ -437,7 +868,18 @@
     "coverImage": "/images/scenery/scenery-general.jpg",
     "readTime": "5分钟",
     "likes": 0,
-    "highlights": "野外导航方法的详细指南，涵盖核心知识点和实用建议。"
+    "highlights": "野外导航方法的详细指南，涵盖核心知识点和实用建议。",
+    "subcategory": "求生技能",
+    "difficulty": "advanced",
+    "priority": 2,
+    "tags": [
+      "导航",
+      "指南针",
+      "地图"
+    ],
+    "season": [
+      "all"
+    ]
   },
   {
     "_id": "article_041",
@@ -448,7 +890,18 @@
     "coverImage": "/images/scenery/scenery-general.jpg",
     "readTime": "4分钟",
     "likes": 0,
-    "highlights": "信号求救方法的详细指南，涵盖核心知识点和实用建议。"
+    "highlights": "信号求救方法的详细指南，涵盖核心知识点和实用建议。",
+    "subcategory": "求生技能",
+    "difficulty": "advanced",
+    "priority": 3,
+    "tags": [
+      "求救",
+      "信号",
+      "SOS"
+    ],
+    "season": [
+      "all"
+    ]
   },
   {
     "_id": "article_042",
@@ -459,7 +912,18 @@
     "coverImage": "/images/scenery/scenery-general.jpg",
     "readTime": "5分钟",
     "likes": 0,
-    "highlights": "动物伤害预防的详细指南，涵盖核心知识点和实用建议。"
+    "highlights": "动物伤害预防的详细指南，涵盖核心知识点和实用建议。",
+    "subcategory": "高原与野外",
+    "difficulty": "intermediate",
+    "priority": 2,
+    "tags": [
+      "动物",
+      "野猪",
+      "羚牛"
+    ],
+    "season": [
+      "all"
+    ]
   },
   {
     "_id": "article_043",
@@ -470,7 +934,19 @@
     "coverImage": "/images/scenery/scenery-general.jpg",
     "readTime": "4分钟",
     "likes": 0,
-    "highlights": "植物中毒预防的详细指南，涵盖核心知识点和实用建议。"
+    "highlights": "植物中毒预防的详细指南，涵盖核心知识点和实用建议。",
+    "subcategory": "高原与野外",
+    "difficulty": "intermediate",
+    "priority": 3,
+    "tags": [
+      "植物",
+      "中毒",
+      "蘑菇"
+    ],
+    "season": [
+      "spring",
+      "summer"
+    ]
   },
   {
     "_id": "article_044",
@@ -481,7 +957,18 @@
     "coverImage": "/images/scenery/scenery-general.jpg",
     "readTime": "4分钟",
     "likes": 0,
-    "highlights": "晒伤处理的详细指南，涵盖核心知识点和实用建议。"
+    "highlights": "晒伤处理的详细指南，涵盖核心知识点和实用建议。",
+    "subcategory": "基础安全",
+    "difficulty": "beginner",
+    "priority": 5,
+    "tags": [
+      "晒伤",
+      "防晒",
+      "夏季"
+    ],
+    "season": [
+      "summer"
+    ]
   },
   {
     "_id": "article_045",
@@ -492,7 +979,18 @@
     "coverImage": "/images/scenery/scenery-general.jpg",
     "readTime": "4分钟",
     "likes": 0,
-    "highlights": "冻伤处理的详细指南，涵盖核心知识点和实用建议。"
+    "highlights": "冻伤处理的详细指南，涵盖核心知识点和实用建议。",
+    "subcategory": "伤害处理",
+    "difficulty": "intermediate",
+    "priority": 5,
+    "tags": [
+      "冻伤",
+      "保暖",
+      "冬季"
+    ],
+    "season": [
+      "winter"
+    ]
   },
   {
     "_id": "article_046",
@@ -503,6 +1001,85 @@
     "coverImage": "/images/scenery/scenery-general.jpg",
     "readTime": "6分钟",
     "likes": 0,
-    "highlights": "户外急救基本技能的详细指南，涵盖核心知识点和实用建议。"
+    "highlights": "户外急救基本技能的详细指南，涵盖核心知识点和实用建议。",
+    "subcategory": "伤害处理",
+    "difficulty": "intermediate",
+    "priority": 6,
+    "tags": [
+      "急救",
+      "包扎",
+      "心肺复苏"
+    ],
+    "season": [
+      "all"
+    ]
+  },
+  {
+    "_id": "article_047",
+    "title": "出行安全检查清单",
+    "category": "安全自救",
+    "subcategory": "基础安全",
+    "difficulty": "beginner",
+    "priority": 6,
+    "tags": [
+      "安全",
+      "清单",
+      "出发"
+    ],
+    "season": [
+      "all"
+    ],
+    "content": "<div class=\"article-body\"><h2>出发前必查10项</h2><p><strong>1. 天气预报：</strong>查看目的地未来24-48小时天气，重点关注降雨、大风、降温。山区天气多变，即使预报晴天也要带雨具。</p><p><strong>2. 路线规划：</strong>提前研究路线，下载离线地图。告诉家人你的路线和预计返回时间。</p><p><strong>3. 手机充电：</strong>满电出发，带充电宝。手机是你最重要的求救工具。</p><p><strong>4. 饮水量：</strong>按每小时300-500ml估算，夏季加倍。宁多勿少。</p><p><strong>5. 急救包：</strong>检查是否齐全、药品是否过期。创可贴、碘伏、绷带、止痛药是最低配置。</p><p><strong>6. 鞋子：</strong>穿磨合好的鞋，不要穿新鞋上山。检查鞋底有无脱胶。</p><p><strong>7. 衣物：</strong>带防风层和保暖层，即使夏天也要带。山上温差大。</p><p><strong>8. 食物：</strong>带高热量零食（能量棒、巧克力、坚果）。多带一份应急。</p><p><strong>9. 身体状态：</strong>感冒、熬夜、宿醉不要上山。身体不舒服就改期。</p><p><strong>10. 紧急联系人：</strong>手机存好紧急联系人电话，设置ICE（紧急联系人）信息。</p><h2>进山后检查</h2><p>每隔1小时检查一次：水还够吗？体力如何？天气有变化吗？如果任何一项有问题，及时调整计划。</p></div>",
+    "summary": "出发前必查10项清单，徒步安全从准备开始",
+    "coverImage": "/images/scenery/scenery-general.jpg",
+    "readTime": "5分钟",
+    "likes": 0,
+    "highlights": "安全不是运气，是准备。这10项检查清单帮你把风险挡在出发前，养成每次出行前对照检查的习惯。"
+  },
+  {
+    "_id": "article_048",
+    "title": "野外如厕指南",
+    "category": "户外礼仪",
+    "subcategory": "营地规范",
+    "difficulty": "beginner",
+    "priority": 3,
+    "tags": [
+      "如厕",
+      "卫生",
+      "LNT",
+      "营地"
+    ],
+    "season": [
+      "all"
+    ],
+    "content": "<div class=\"article-body\"><h2>为什么要专门说这个？</h2><p>这是户外最不愿提但最重要的事之一。处理不当会污染水源、传播疾病、影响他人体验。好的户外人连这个都做得干净利落。</p><h2>小便</h2><p><strong>选址：</strong>离水源、步道、营地至少60米。选在土壤上（不是岩石上），土壤微生物能分解尿液中的盐分。</p><p><strong>注意：</strong>尿液中的盐分会吸引动物舔食，进而啃咬帐篷、背包。在盐碱匮乏的高山区域尤其明显。</p><h2>大便</h2><p><strong>挖猫洞：</strong>找一个远离水源60米以上、远离步道和营地的地方。用小铲子挖一个深约15-20cm、宽约10-15cm的洞。</p><p><strong>使用后：</strong>排入猫洞。用土掩埋压实。纸巾也掩埋（最好用可降解纸巾），或装入密封袋带下山。</p><p><strong>不能挖洞的地方：</strong>岩石区、高山草甸、沙地。此时必须使用WAG袋（废物打包袋）将排泄物带下山。</p><h2>卫生</h2><p>携带免洗洗手液或酒精棉片。如厕后必须清洁双手。女性需要带够卫生用品和密封袋。</p><h2>特别注意</h2><p>永远不要在水源附近如厕！溪流会冲走排泄物但不会消除病菌，下游的人可能因此生病。保护水源就是保护所有户外人的健康。</p></div>",
+    "summary": "挖猫洞、距离水源、带走纸巾，户外卫生基本功",
+    "coverImage": "/images/scenery/scenery-stream-waterfall.jpg",
+    "readTime": "5分钟",
+    "likes": 0,
+    "highlights": "户外如厕看似小事，实则关系到水源保护和公共卫生。学会正确处理，是每个户外人的基本素养。"
+  },
+  {
+    "_id": "article_049",
+    "title": "步道礼让规范",
+    "category": "户外礼仪",
+    "subcategory": "社区礼仪",
+    "difficulty": "beginner",
+    "priority": 1,
+    "tags": [
+      "礼让",
+      "步道",
+      "社交",
+      "礼仪"
+    ],
+    "season": [
+      "all"
+    ],
+    "content": "<div class=\"article-body\"><h2>基本规则</h2><p>步道虽宽，但人与人之间的尊重更宽。几个简单的规则，让每个人都能愉快地享受山野。</p><h2>上坡优先</h2><p>上坡的人有优先通行权。原因：上坡者正在集中体力和节奏，停下来重新启动比下坡者消耗更大。遇到上坡的人，主动侧身让路。</p><h2>靠右行走</h2><p>和公路规则一样，靠右行走。这样对面来人时自然错开，不需要临时让路。在较宽的步道上，也不要横排占满。</p><h2>超车礼仪</h2><p>从后面超越时，提前说一声「麻烦让一下」或「我从左边过」。被超越的人听到后靠右让出空间。快速通过后说声「谢谢」。</p><h2>休息位置</h2><p>不要在步道中间休息！找一个宽敞的地方靠边停下。如果步道很窄，让到能容一人通过的位置。</p><h2>噪音控制</h2><p>不要大声喧哗、外放音乐。山野的宁静是很多人来徒步的原因。说话压低音量，使用耳机听音乐。</p><h2>宠物管理</h2><p>如果带狗上山，全程牵绳。清理狗的粪便。注意：有些路线禁止携带宠物，出发前确认。</p><h2>遇到团队</h2><p>遇到大团队（10人以上），主动让路等待他们通过。团队行进时不便频繁避让个人，体谅一下。</p></div>",
+    "summary": "上坡优先、靠右行走、超车有礼，步道社交基本功",
+    "coverImage": "/images/scenery/scenery-trail.jpg",
+    "readTime": "5分钟",
+    "likes": 0,
+    "highlights": "步道礼让是户外社交的基本功。上坡优先、靠右行走、超车有礼——简单规则让山野更和谐。"
   }
 ]
