@@ -90,11 +90,19 @@
 .header__search-icon { font-size: 34rpx; }
 
 /* ===== 内联搜索栏 — 毛玻璃 ===== */
+/* 搜索行 — 搜索框 + 高级筛选按钮同一行 */
+.search-row {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
 .header__search-inline {
   width: 100%;
 }
 
 .search-inline {
+  flex: 1;
   display: flex;
   align-items: center;
   background: rgba(255, 255, 255, 0.3);
@@ -150,14 +158,9 @@
   opacity: 0.9;
 }
 
-/* 高级筛选按钮行 — 搜索框下方 */
-.search-filter-row {
-  display: flex;
-  align-items: center;
-  margin-top: 12rpx;
-}
-
+/* 高级筛选按钮 — 搜索框同行右侧 */
 .search-advanced-filter-btn {
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -245,6 +248,12 @@
 .quick-card--highlight {
   background: rgba(76,175,80,0.15);
   border-color: rgba(76,175,80,0.25);
+}
+
+/* 徒步助手卡片 — 绿色渐变 */
+.quick-card--assistant {
+  background: linear-gradient(135deg, rgba(200, 230, 201, 0.6) 0%, rgba(165, 214, 167, 0.6) 100%);
+  border-color: rgba(129, 199, 132, 0.35);
 }
 
 /* ===== 高级筛选 — 毛玻璃 ===== */

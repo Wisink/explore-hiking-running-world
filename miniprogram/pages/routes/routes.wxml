@@ -144,7 +144,7 @@
       <view class="quick-card__icon">📍</view>
       <view class="quick-card__text">
         <text class="quick-card__title">附近路线</text>
-        <text class="quick-card__desc">基于定位发现周边</text>
+        <text class="quick-card__desc">基于定位发现周边路线</text>
       </view>
     </view>
     <view class="quick-card quick-card--assistant" bindtap="onAssistantTap">

@@ -18,7 +18,6 @@ function getSeasonTag() {
 
 const FILTER_TAGS = [
   { id: 'all', label: '全部', icon: '' },
-  { id: 'nearby', label: '离我最近', icon: '📍' },
   { id: 'beginner', label: '新手友好', icon: '⭐' },
   { id: 'family', label: '亲子推荐', icon: '👨‍👩‍👧' },
   { id: 'season', label: getSeasonTag().label, icon: getSeasonTag().icon },
@@ -427,12 +426,6 @@ Page({
   onFilterTap: function (e) {
     const filter = e.currentTarget.dataset.filter
     if (filter === this.data.activeFilter) return
-
-    // 「离我最近」跳转到附近路线页面
-    if (filter === 'nearby') {
-      wx.navigateTo({ url: '/pages/nearby/nearby' })
-      return
-    }
 
     this.setData({ activeFilter: filter })
     this.loadRoutes(true)
