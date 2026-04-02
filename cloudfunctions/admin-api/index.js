@@ -787,14 +787,16 @@ async function handleStats(action, params) {
       }
 
       const trendMap = {}
-      const startTs = Math.floor(startDate.getTime() / 1000)
+      // startTs 减去8小时容差，避免时区偏移导致的边界遗漏
+      const startTs = Math.floor(startDate.getTime() / 1000) - 8 * 3600
       for (const user of allUsers) {
-        // _id 前 8 字符是创建时间的 Unix hex
+        // _id 前 8 字符是创建时间的 Unix hex（UTC时间戳）
         if (!user._id || user._id.length < 8) continue
         const tsHex = user._id.substring(0, 8)
         const ts = parseInt(tsHex, 16)
         if (isNaN(ts) || ts < startTs) continue
-        const d = new Date(ts * 1000)
+        // 转北京时间（UTC+8）：与 favoriteTrend / completedTrend 保持一致
+        const d = new Date(ts * 1000 + 8 * 3600000)
         const key = groupFn(d)
         trendMap[key] = (trendMap[key] || 0) + 1
       }
