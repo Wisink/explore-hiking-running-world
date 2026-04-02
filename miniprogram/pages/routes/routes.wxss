@@ -38,19 +38,19 @@
 .header__content {
   position: relative;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: 20rpx;
   padding: 28rpx 32rpx 24rpx;
 }
 
 .header__left {
   display: flex;
   align-items: center;
-  gap: 16rpx;
+  gap: 12rpx;
 }
 
 .header__emoji {
-  font-size: 44rpx;
+  font-size: 40rpx;
 }
 
 .header__text {
@@ -59,7 +59,7 @@
 }
 
 .header__title {
-  font-size: 38rpx;
+  font-size: 34rpx;
   font-weight: 800;
   color: #FFFFFF;
   letter-spacing: 2rpx;
@@ -91,17 +91,16 @@
 
 /* ===== 内联搜索栏 — 毛玻璃 ===== */
 .header__search-inline {
-  flex: 1;
-  margin-left: 20rpx;
+  width: 100%;
 }
 
 .search-inline {
   display: flex;
   align-items: center;
-  background: rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.3);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255,255,255,.2);
+  border: 1px solid rgba(255,255,255,.25);
   border-radius: 44rpx;
   padding: 0 12rpx 0 20rpx;
   height: 76rpx;
@@ -132,14 +131,15 @@
   align-items: center;
   justify-content: center;
   padding: 10rpx 18rpx;
-  background: rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.5);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border-radius: 28rpx;
   font-size: 22rpx;
-  color: #fff;
+  color: #1a2e1a;
+  font-weight: 600;
   white-space: nowrap;
-  border: 1px solid rgba(255,255,255,.2);
+  border: 1px solid rgba(255,255,255,.3);
   transition: all 200ms ease;
 }
 
