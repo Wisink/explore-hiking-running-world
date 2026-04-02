@@ -138,6 +138,24 @@
     </view>
   </view>
 
+  <!-- ★ 功能入口：双卡片横排 -->
+  <view class="quick-actions">
+    <view class="quick-card quick-card--highlight" bindtap="onNearbyTap">
+      <view class="quick-card__icon">📍</view>
+      <view class="quick-card__text">
+        <text class="quick-card__title">附近路线</text>
+        <text class="quick-card__desc">基于定位发现周边</text>
+      </view>
+    </view>
+    <view class="quick-card" bindtap="onAssistantTap">
+      <view class="quick-card__icon">🤖</view>
+      <view class="quick-card__text">
+        <text class="quick-card__title">徒步助手</text>
+        <text class="quick-card__desc">智能推荐适合你的路线</text>
+      </view>
+    </view>
+  </view>
+
   <!-- 筛选标签栏 -->
   <scroll-view class="filter-scroll" scroll-x enable-flex>
     <view

@@ -2,6 +2,8 @@
   "pages": [
     "pages/routes/routes",
     "pages/route-detail/route-detail",
+    "pages/nearby/nearby",
+    "pages/assistant/assistant",
     "pages/checklist/checklist",
     "pages/topic/topic",
     "pages/knowledge/knowledge",

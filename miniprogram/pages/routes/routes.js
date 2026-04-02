@@ -18,6 +18,7 @@ function getSeasonTag() {
 
 const FILTER_TAGS = [
   { id: 'all', label: '全部', icon: '' },
+  { id: 'nearby', label: '离我最近', icon: '📍' },
   { id: 'beginner', label: '新手友好', icon: '⭐' },
   { id: 'family', label: '亲子推荐', icon: '👨‍👩‍👧' },
   { id: 'season', label: getSeasonTag().label, icon: getSeasonTag().icon },
@@ -427,6 +428,12 @@ Page({
     const filter = e.currentTarget.dataset.filter
     if (filter === this.data.activeFilter) return
 
+    // 「离我最近」跳转到附近路线页面
+    if (filter === 'nearby') {
+      wx.navigateTo({ url: '/pages/nearby/nearby' })
+      return
+    }
+
     this.setData({ activeFilter: filter })
     this.loadRoutes(true)
   },
@@ -626,5 +633,19 @@ Page({
       title: '秦人徒步 - 发现西安周边好路线',
       path: '/pages/routes/routes'
     }
+  },
+
+  // 点击「附近路线」入口
+  onNearbyTap: function () {
+    wx.navigateTo({
+      url: '/pages/nearby/nearby'
+    })
+  },
+
+  // 点击「徒步助手」入口
+  onAssistantTap: function () {
+    wx.navigateTo({
+      url: '/pages/assistant/assistant'
+    })
   }
 })

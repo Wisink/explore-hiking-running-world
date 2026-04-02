@@ -1,0 +1,148 @@
+<!--pages/nearby/nearby.wxml-->
+<view class="nearby-page">
+
+  <!-- 状态栏 -->
+  <view class="page-statusbar" style="height: {{statusBarHeight}}px;"></view>
+
+  <!-- 顶部栏 -->
+  <view class="header">
+    <view class="header__bg"></view>
+    <view class="header__content">
+      <view class="header__back" bindtap="onGoBack">
+        <text class="header__back-icon">‹</text>
+      </view>
+      <view class="header__text">
+        <text class="header__title">📍 附近路线</text>
+        <text class="header__sub" wx:if="{{hasLocation}}">{{userLocationName}} · 按距离排序</text>
+        <text class="header__sub" wx:else>发现你身边的徒步路线</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 未定位时：引导区域 -->
+  <view class="locate-area" wx:if="{{!hasLocation && !loading}}">
+    <view class="locate-card">
+      <view class="locate-card__icon">🧭</view>
+      <view class="locate-card__title">发现附近好路线</view>
+      <view class="locate-card__desc">获取你的位置，为你推荐附近的徒步路线</view>
+
+      <view class="locate-card__btn locate-card__btn--primary" bindtap="onUseCurrentLocation">
+        <text>📍 使用当前位置</text>
+      </view>
+      <view class="locate-card__btn locate-card__btn--secondary" bindtap="onChooseLocation">
+        <text>🗺️ 手动选择位置</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 骨架屏 -->
+  <view class="skeleton-wrap" wx:if="{{showSkeleton && hasLocation}}">
+    <view class="skel-card" wx:for="{{3}}" wx:key="index">
+      <view class="skel-cover skel-shimmer"></view>
+      <view class="skel-body">
+        <view class="skel-line skel-line--title skel-shimmer"></view>
+        <view class="skel-line skel-line--desc skel-shimmer"></view>
+        <view class="skel-row">
+          <view class="skel-chip skel-shimmer"></view>
+          <view class="skel-chip skel-shimmer"></view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 已定位：路线列表 -->
+  <view class="route-list" wx:if="{{hasLocation && !showSkeleton}}">
+    <view class="section-header">
+      <text class="section-title">附近路线</text>
+      <text class="section-count">共 {{routes.length}} 条</text>
+    </view>
+
+    <view
+      class="route-card"
+      wx:for="{{routes}}"
+      wx:key="_id"
+      data-id="{{item._id}}"
+      bindtap="onRouteTap"
+      hover-class="route-card--hover"
+      style="animation-delay: {{index * 60}}ms"
+    >
+      <!-- 封面图 -->
+      <view class="route-card__cover">
+        <image
+          class="route-card__image"
+          src="{{item.coverImage || '/images/scenery/scenery-general.jpg'}}"
+          mode="aspectFill"
+          lazy-load
+        />
+        <view class="route-card__overlay"></view>
+
+        <!-- 难度角标 -->
+        <view class="route-card__badge" style="background: {{item.diffColor}}">
+          {{item.diffText}}
+        </view>
+
+        <!-- 距离角标 -->
+        <view class="route-card__distance">
+          📍 距你 {{item.distanceToUser}}km
+        </view>
+
+        <!-- 底部叠加信息 -->
+        <view class="route-card__hero">
+          <text class="route-card__name">{{item.name}}</text>
+          <view class="route-card__meta">
+            <view class="route-card__meta-item" wx:if="{{item.distanceText}}">
+              <text>📏 {{item.distanceText}}</text>
+            </view>
+            <view class="route-card__meta-item" wx:if="{{item.durationText}}">
+              <text>⏱ {{item.durationText}}</text>
+            </view>
+            <view class="route-card__meta-item" wx:if="{{item.cost}}">
+              <text>💰 {{item.isFree ? '免费' : item.cost}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 卡片内容 -->
+      <view class="route-card__body">
+        <text class="route-card__desc">{{item.description || '探索这条美丽的路线'}}</text>
+
+        <view class="route-card__tags" wx:if="{{item.features && item.features.length > 0}}">
+          <text class="route-card__tag" wx:for="{{item.features}}" wx:for-item="feat" wx:key="*this">{{feat}}</text>
+        </view>
+
+        <view class="route-card__family" wx:if="{{item.family_friendly}}">
+          <text>👨‍👩‍👧 亲子友好</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 空状态 -->
+    <view class="empty-wrap" wx:if="{{routes.length === 0 && !loading}}">
+      <text class="empty-icon">🥾</text>
+      <text class="empty-title">附近暂无路线</text>
+      <text class="empty-desc">试试换个位置看看？</text>
+    </view>
+  </view>
+
+  <!-- 定位确认弹窗 -->
+  <view class="modal-overlay" wx:if="{{showLocationModal}}" bindtap="onCancelLocation">
+    <view class="modal-glass" catchtap="">
+      <view class="modal-glass__icon">🧭</view>
+      <view class="modal-glass__title">从当前位置出发吗？</view>
+      <view class="modal-glass__desc">需要获取您的位置，以便为您推荐附近的徒步路线</view>
+      <view class="modal-glass__actions">
+        <view class="modal-glass__btn modal-glass__btn--secondary" bindtap="onChooseLocation">
+          <text>手动选择</text>
+        </view>
+        <view class="modal-glass__btn modal-glass__btn--primary" bindtap="onConfirmLocation">
+          <text>使用当前位置</text>
+        </view>
+      </view>
+      <view class="modal-glass__cancel" bindtap="onCancelLocation">
+        <text>取消</text>
+      </view>
+    </view>
+  </view>
+
+</view>
