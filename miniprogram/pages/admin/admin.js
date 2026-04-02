@@ -193,9 +193,10 @@ Page({
   // ========== 通用 ==========
 
   callAdminApi(module, action, params = {}) {
+    const token = wx.getStorageSync('admin_token') || ''
     return wx.cloud.callFunction({
       name: 'admin-api',
-      data: { module, action, params }
+      data: { module, action, params: { ...params, token } }
     }).then(res => res.result)
   },
 
