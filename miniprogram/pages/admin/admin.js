@@ -1,5 +1,5 @@
 // pages/admin/admin.js
-const echarts = require('../../../components/ec-canvas/echarts')
+const echarts = require('../../components/ec-canvas/echarts')
 
 // ========== 口令强度校验 ==========
 function validatePasswordStrength(password) {
