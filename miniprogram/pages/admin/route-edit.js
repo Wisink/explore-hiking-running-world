@@ -417,11 +417,13 @@ Page({
         if (!res.confirm) return
         this.setData({ saving: true })
         try {
+          const token = wx.getStorageSync('admin_token') || ''
+          const module = this.data.type === 'article' ? 'articles' : 'routes'
           const delRes = await wx.cloud.callFunction({
             name: 'admin-api',
             data: {
-              module: 'routes', action: 'delete',
-              params: { id: this.data.id }
+              module, action: 'delete',
+              params: { id: this.data.id, token }
             }
           })
           if (delRes.result.code === 0) {
