@@ -494,9 +494,14 @@ Page({
           try {
             const cloudSync = require('../../utils/cloud-sync.js')
             cloudSync.removeFavorite(id)
-            // 隐藏该卡片
+            // 即时UI更新：同时更新 favoriteRoutes、displayedFavorites、favoriteCount
             const favoriteRoutes = this.data.favoriteRoutes.filter(r => r._id !== id)
-            this.setData({ favoriteRoutes })
+            const displayedFavorites = this.data.displayedFavorites.filter(r => r._id !== id)
+            this.setData({
+              favoriteRoutes,
+              displayedFavorites,
+              favoriteCount: favoriteRoutes.length
+            })
             showNiceToast(this, '已取消收藏', 'success', 2000)
           } catch (err) {
             console.error('取消收藏失败：', err)
@@ -574,7 +579,14 @@ Page({
       cloudSync.removeFavorite(id)
 
       showNiceToast(this, '已取消收藏', 'success', 2000)
-      this.loadFavorites()
+      // 即时UI更新：同时更新 favoriteRoutes、displayedFavorites、favoriteCount
+      const favoriteRoutes = this.data.favoriteRoutes.filter(r => r._id !== id)
+      const displayedFavorites = this.data.displayedFavorites.filter(r => r._id !== id)
+      this.setData({
+        favoriteRoutes,
+        displayedFavorites,
+        favoriteCount: favoriteRoutes.length
+      })
     } catch (err) {
       console.error('取消收藏失败：', err)
       showNiceToast(this, '操作失败', 'error', 2000)
