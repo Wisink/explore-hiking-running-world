@@ -269,9 +269,6 @@
             <text class="chart-panel__arrow">{{panelTopUsers ? '▼' : '▶'}}</text>
           </view>
           <view class="chart-panel__body" wx:if="{{panelTopUsers}}">
-            <view class="chart-note">
-              <text>ℹ️ 按访问次数排序</text>
-            </view>
             <view class="rank-chart" wx:if="{{topUsers.length > 0}}">
               <view class="rank-row rank-row--user" wx:for="{{topUsers}}" wx:key="_openid">
                 <text class="rank-row__num {{index < 3 ? 'rank-row__num--top' : ''}}">{{index + 1}}</text>
