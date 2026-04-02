@@ -405,7 +405,7 @@ Page({
     }
   },
 
-  _renderTrendChart(componentId, data, field) {
+  _renderTrendChart(componentId, data, field, retryCount = 0) {
     if (!data || data.length === 0) return
     const colors = {
       growth: { line: 'rgb(76, 175, 80)', fill: 'rgba(76, 175, 80, 0.25)' },
@@ -417,7 +417,16 @@ Page({
 
     const ecRef = this.selectComponent('#' + componentId)
     if (!ecRef) {
-      console.warn('ec-canvas component not found:', componentId)
+      // 重试最多5次，每次间隔递增（100ms → 500ms）
+      if (retryCount < 5) {
+        const delay = 100 + retryCount * 100
+        console.warn(`ec-canvas ${componentId} not found, retry ${retryCount + 1}/5 in ${delay}ms`)
+        setTimeout(() => {
+          this._renderTrendChart(componentId, data, field, retryCount + 1)
+        }, delay)
+      } else {
+        console.error('ec-canvas component not found after retries:', componentId)
+      }
       return
     }
 
@@ -438,17 +447,20 @@ Page({
   },
 
   _renderAllTrendCharts() {
-    setTimeout(() => {
-      if (this.data.panelUserGrowth && this.data.userGrowthList.length > 0) {
-        this._renderTrendChart('ec-canvas-growth', this.data.userGrowthList, 'growth')
-      }
-      if (this.data.panelCompletedTrend && this.data.completedTrendList.length > 0) {
-        this._renderTrendChart('ec-canvas-completed', this.data.completedTrendList, 'completed')
-      }
-      if (this.data.panelFavoriteTrend && this.data.favoriteTrendList.length > 0) {
-        this._renderTrendChart('ec-canvas-favorite', this.data.favoriteTrendList, 'favorite')
-      }
-    }, 200)
+    // 先等 setData DOM 更新完毕，再延迟渲染图表
+    wx.nextTick(() => {
+      setTimeout(() => {
+        if (this.data.panelUserGrowth && this.data.userGrowthList.length > 0) {
+          this._renderTrendChart('ec-canvas-growth', this.data.userGrowthList, 'growth')
+        }
+        if (this.data.panelCompletedTrend && this.data.completedTrendList.length > 0) {
+          this._renderTrendChart('ec-canvas-completed', this.data.completedTrendList, 'completed')
+        }
+        if (this.data.panelFavoriteTrend && this.data.favoriteTrendList.length > 0) {
+          this._renderTrendChart('ec-canvas-favorite', this.data.favoriteTrendList, 'favorite')
+        }
+      }, 300)
+    })
   },
 
   _disposeChart(field) {
@@ -505,9 +517,10 @@ Page({
 
     // Re-render chart when panel is expanded
     if (isExpanding) {
-      setTimeout(() => {
-        const fieldMap = {
-          panelUserGrowth: { id: 'ec-canvas-growth', data: 'userGrowthList', field: 'growth' },
+      wx.nextTick(() => {
+        setTimeout(() => {
+          const fieldMap = {
+            panelUserGrowth: { id: 'ec-canvas-growth', data: 'userGrowthList', field: 'growth' },
           panelCompletedTrend: { id: 'ec-canvas-completed', data: 'completedTrendList', field: 'completed' },
           panelFavoriteTrend: { id: 'ec-canvas-favorite', data: 'favoriteTrendList', field: 'favorite' }
         }
@@ -518,6 +531,7 @@ Page({
           this._renderTrendChart(mapping.id, this.data[mapping.data], mapping.field)
         }
       }, 300)
+      })
     }
   },
 
