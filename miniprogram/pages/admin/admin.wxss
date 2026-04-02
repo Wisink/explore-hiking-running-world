@@ -161,13 +161,14 @@
 
 .eye-strike {
   position: absolute;
-  width: 42rpx;
-  height: 2rpx;
+  width: 52rpx;
+  height: 3rpx;
   background: #4a6b4a;
-  top: 50%;
-  left: 50%;
+  top: 46%;
+  left: 52%;
   transform: translate(-50%, -50%) rotate(45deg);
   border-radius: 2rpx;
+  z-index: 2;
 }
 
 .login-btn {
