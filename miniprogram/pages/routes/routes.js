@@ -18,13 +18,14 @@ function getSeasonTag() {
 
 const FILTER_TAGS = [
   { id: 'all', label: '全部', icon: '' },
-  { id: 'beginner', label: '新手友好', icon: '⭐' },
-  { id: 'family', label: '亲子推荐', icon: '👨‍👩‍👧' },
-  { id: 'season', label: getSeasonTag().label, icon: getSeasonTag().icon },
-  { id: 'stream', label: '有溪流', icon: '🌊' },
-  { id: 'waterfall', label: '有瀑布', icon: '💧' },
-  { id: 'forest', label: '有森林', icon: '🌲' },
-  { id: 'free', label: '免费路线', icon: '💰' }
+  { id: 'beginner', label: '新手入门', icon: '🌿' },
+  { id: 'advanced', label: '进阶挑战', icon: '⛰️' },
+  { id: 'stream-waterfall', label: '溪流瀑布', icon: '💧' },
+  { id: 'redleaf', label: '红叶秋色', icon: '🍂' },
+  { id: 'meadow', label: '高山草甸', icon: '🌾' },
+  { id: 'culture', label: '人文古迹', icon: '🏛️' },
+  { id: 'nearby', label: '西安市区', icon: '📍' },
+  { id: 'season', label: getSeasonTag().label, icon: getSeasonTag().icon }
 ]
 
 // 难度映射
@@ -54,6 +55,7 @@ Page({
     activeElevation: '',
     activeSurface: '',
     activeScenery: '',
+    activeDirection: '',
     activeCost: '',
     activeSeason: '',
     // 路线列表
@@ -264,8 +266,14 @@ Page({
       coverImage = this.getFeatureImage(sceneryArr[0])
     }
 
-    // bestSeason: 支持数组和字符串格式
-    const bestSeason = item.bestSeason || item.best_season || []
+    // bestSeason: 处理数组、字符串（逗号分隔）两种格式，统一转为数组
+    let rawSeason = item.bestSeason || item.best_season || ''
+    let bestSeason = []
+    if (Array.isArray(rawSeason)) {
+      bestSeason = rawSeason
+    } else if (typeof rawSeason === 'string' && rawSeason) {
+      bestSeason = rawSeason.split(/[,，、]/).map(s => s.trim()).filter(Boolean)
+    }
 
     // 检查收藏状态
     const favorites = cloudSync.getLocalFavorites()
@@ -320,30 +328,49 @@ Page({
     // 标签筛选
     if (filter !== 'all') {
       result = data.filter(item => {
+        const sf = item.scenery || []
         switch (filter) {
-          case 'beginner': {
-            const dist = item.distance_km || parseFloat((item.distanceText || '').replace(/[^0-9.]/g, '')) || 0
-            return (item.diffLevel <= 2 || (item.suitableFor || []).some(s => s.includes('新人') || s.includes('新手')))
-              && (dist === 0 || dist <= 8)
-          }
-          case 'family': {
-            const dist = item.distance_km || parseFloat((item.distanceText || '').replace(/[^0-9.]/g, '')) || 0
-            return item.family_friendly === true && item.diffLevel <= 2
-              && (dist === 0 || dist <= 8)
-          }
-          case 'stream':
-            return (item.scenery || []).some(f => f.includes('溪流') || f.includes('溪水'))
-          case 'waterfall':
-            return (item.scenery || []).some(f => f.includes('瀑布'))
-          case 'forest':
-            return (item.scenery || []).some(f => f.includes('森林') || f.includes('山林'))
+          case 'beginner':
+            // level <= 1（第一次也能走）
+            return item.diffLevel <= 1
+          case 'advanced':
+            // level >= 2（稍微有点挑战及以上）
+            return item.diffLevel >= 2
+          case 'stream-waterfall':
+            // 合并：scenery含 瀑布/溪流/溪水/峡谷
+            return sf.some(f => f.includes('瀑布') || f.includes('溪流') || f.includes('溪水') || f.includes('峡谷'))
+          case 'redleaf':
+            // scenery含 红叶/金黄/秋色/彩林/银杏 或 best_season含秋
+            const bs1 = item.bestSeason || item.best_season || []
+            const bs1Str = Array.isArray(bs1) ? bs1.join(',') : String(bs1 || '')
+            return sf.some(f => f.includes('红叶') || f.includes('金黄') || f.includes('秋色') || f.includes('彩林') || f.includes('银杏')) || bs1Str.includes('秋')
+          case 'meadow':
+            // scenery含 草甸/高山草甸
+            return sf.some(f => f.includes('草甸'))
+          case 'culture':
+            // scenery含 古寺/古道/历史遗迹/古迹/遗址/古建筑/石窟/佛像/壁塑/历史
+            return sf.some(f => f.includes('古寺') || f.includes('古道') || f.includes('历史遗迹') || f.includes('古迹') || f.includes('遗址') || f.includes('古建筑') || f.includes('石窟') || f.includes('佛像') || f.includes('壁塑'))
+          case 'nearby':
+            // direction含"中线"或"中西线"（离西安最近的核心区域）
+            const dir = item.location_direction || (typeof item.location === 'object' ? (item.location.direction || '') : '')
+            return dir.includes('中线') || dir.includes('中西线')
           case 'season':
-            const curSeason = this.getCurrentSeason() // '春'/'夏'/'秋'/'冬'
-            const bestSeason = item.bestSeason || item.best_season || []
-            const seasonStr = Array.isArray(bestSeason) ? bestSeason.join(',') : String(bestSeason)
-            return seasonStr.includes(curSeason) || (curSeason === '秋' && (item.scenery || []).some(f => f.includes('红叶') || f.includes('银杏') || f.includes('金黄')))
-          case 'free':
-            return item.isFree
+            // 修复匹配逻辑：best_season 支持逗号分隔格式，同时匹配 scenery 关键词
+            const curSeason = this.getCurrentSeason()
+            const bs5 = item.bestSeason || item.best_season || []
+            const bs5Str = Array.isArray(bs5) ? bs5.join(',') : String(bs5 || '')
+            // 同时匹配逗号分隔的格式
+            if (curSeason === '秋') {
+              return bs5Str.includes('秋') || sf.some(f => f.includes('红叶') || f.includes('银杏') || f.includes('金黄'))
+            }
+            if (curSeason === '春') {
+              return bs5Str.includes('春') || sf.some(f => f.includes('山花') || f.includes('桃花') || f.includes('花海') || f.includes('赏花') || f.includes('绿柳') || f.includes('梨花') || f.includes('杏花') || f.includes('草甸') || f.includes('野花'))
+            }
+            if (curSeason === '夏') {
+              return bs5Str.includes('夏') || sf.some(f => f.includes('溪流') || f.includes('溪水') || f.includes('瀑布') || f.includes('森林') || f.includes('避暑'))
+            }
+            // 冬季
+            return bs5Str.includes('冬') || sf.some(f => f.includes('雪') || f.includes('冰') || f.includes('温泉'))
           default:
             return true
         }
@@ -407,7 +434,16 @@ Page({
       })
     }
 
-    // 高级筛选：费用
+    // 高级筛选：方向
+    if (this.data.activeDirection) {
+      result = result.filter(item => {
+        const dir = item.location_direction || (typeof item.location === 'object' ? (item.location.direction || '') : '')
+        // 精确匹配方向值，避免子串误匹配（如中西线包含西线）
+        return dir === this.data.activeDirection
+      })
+    }
+
+    // 高级筛选：费用（已隐藏，保留逻辑兼容）
     if (this.data.activeCost === 'free') {
       result = result.filter(item => item.isFree)
     } else if (this.data.activeCost === 'paid') {
@@ -532,6 +568,7 @@ Page({
       activeElevation: '',
       activeSurface: '',
       activeScenery: '',
+      activeDirection: '',
       activeCost: '',
       activeSeason: ''
     })
@@ -556,6 +593,13 @@ Page({
   onCostFilter: function (e) {
     const value = e.currentTarget.dataset.value
     this.setData({ activeCost: value })
+    this.loadRoutes(true)
+  },
+
+  // 方向筛选
+  onDirectionFilter: function (e) {
+    const value = e.currentTarget.dataset.value
+    this.setData({ activeDirection: value })
     this.loadRoutes(true)
   },
 
