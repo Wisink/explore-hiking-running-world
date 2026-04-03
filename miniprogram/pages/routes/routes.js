@@ -377,14 +377,14 @@ Page({
       })
     }
 
-    // 高级筛选：难度（基于 diffLevel 数值：轻松<=2, 适中3-4, 困难>=5）
+    // 高级筛选：难度（基于实际数据：level 1=第一次也能走, level 2=稍微有点挑战）
     if (this.data.activeDifficulty) {
       result = result.filter(item => {
         const level = item.diffLevel || 0
         switch (this.data.activeDifficulty) {
-          case 'easy': return level > 0 && level <= 2
-          case 'medium': return level >= 3 && level <= 4
-          case 'hard': return level >= 5
+          case 'easy': return level === 1        // 第一次也能走
+          case 'medium': return level === 2      // 稍微有点挑战
+          case 'hard': return level >= 3         // 未来扩展
           default: return true
         }
       })
@@ -395,9 +395,11 @@ Page({
       result = result.filter(item => {
         const dist = item.distance_km || parseFloat((item.distanceText || '').replace(/[^0-9.]/g, '')) || 0
         switch (this.data.activeDistance) {
-          case '0-5': return dist > 0 && dist <= 5
-          case '5-10': return dist > 5 && dist <= 10
-          case '10-20': return dist > 10 && dist <= 20
+          case '0-3': return dist > 0 && dist <= 3
+          case '3-5': return dist > 3 && dist <= 5
+          case '5-8': return dist > 5 && dist <= 8
+          case '8-12': return dist > 8 && dist <= 12
+          case '12-20': return dist > 12 && dist <= 20
           case '20+': return dist > 20
           default: return true
         }
@@ -409,20 +411,29 @@ Page({
       result = result.filter(item => {
         const ele = item.elevation_gain_m || parseFloat((item.elevation || '').replace(/[^0-9.]/g, '')) || 0
         switch (this.data.activeElevation) {
-          case '0-300': return ele >= 0 && ele <= 300
-          case '300-800': return ele > 300 && ele <= 800
-          case '800+': return ele > 800
+          case '0-100': return ele >= 0 && ele <= 100
+          case '100-300': return ele > 100 && ele <= 300
+          case '300-1000': return ele > 300 && ele <= 1000
+          case '1000+': return ele > 1000
           default: return true
         }
       })
     }
 
-    // 高级筛选：路面
+    // 高级筛选：路面（基于实际数据：土路/步道、水泥路/土路、山间小道、山脊/林间路）
     if (this.data.activeSurface) {
       result = result.filter(item => {
         const surface = this.data.activeSurface
-        return (item.sections || []).some(s => s.road && s.road.includes(surface)) ||
-               (item.scenery || []).some(f => f.includes(surface))
+        return (item.sections || []).some(s => {
+          const road = s.road || ''
+          switch (surface) {
+            case '步道/土路': return road === '土路/步道'
+            case '水泥路为主': return road.includes('水泥路')
+            case '山间小道': return road.includes('山间小道')
+            case '山脊/林间路': return road.includes('山脊') || road.includes('林间路')
+            default: return false
+          }
+        })
       })
     }
 

@@ -45,19 +45,20 @@
     <view class="advanced-filter__row">
       <text class="advanced-filter__label">难度</text>
       <view class="advanced-filter__options">
-        <text class="advanced-filter__option {{activeDifficulty === '' ? 'active' : ''}}" data-value="" bindtap="onDifficultyFilter">全部</text>
-        <text class="advanced-filter__option {{activeDifficulty === 'easy' ? 'active' : ''}}" data-value="easy" bindtap="onDifficultyFilter">轻松</text>
-        <text class="advanced-filter__option {{activeDifficulty === 'medium' ? 'active' : ''}}" data-value="medium" bindtap="onDifficultyFilter">适中</text>
-        <text class="advanced-filter__option {{activeDifficulty === 'hard' ? 'active' : ''}}" data-value="hard" bindtap="onDifficultyFilter">困难</text>
+        <text class="advanced-filter__option {{activeDifficulty === '' ? 'active' : ''}}" data-value="" bindtap="onDifficultyFilter">不限</text>
+        <text class="advanced-filter__option {{activeDifficulty === 'easy' ? 'active' : ''}}" data-value="easy" bindtap="onDifficultyFilter">第一次也能走</text>
+        <text class="advanced-filter__option {{activeDifficulty === 'medium' ? 'active' : ''}}" data-value="medium" bindtap="onDifficultyFilter">稍微有点挑战</text>
       </view>
     </view>
     <view class="advanced-filter__row">
       <text class="advanced-filter__label">距离</text>
       <view class="advanced-filter__options">
         <text class="advanced-filter__option {{activeDistance === '' ? 'active' : ''}}" data-value="" bindtap="onDistanceFilter">不限</text>
-        <text class="advanced-filter__option {{activeDistance === '0-5' ? 'active' : ''}}" data-value="0-5" bindtap="onDistanceFilter">0-5km</text>
-        <text class="advanced-filter__option {{activeDistance === '5-10' ? 'active' : ''}}" data-value="5-10" bindtap="onDistanceFilter">5-10km</text>
-        <text class="advanced-filter__option {{activeDistance === '10-20' ? 'active' : ''}}" data-value="10-20" bindtap="onDistanceFilter">10-20km</text>
+        <text class="advanced-filter__option {{activeDistance === '0-3' ? 'active' : ''}}" data-value="0-3" bindtap="onDistanceFilter">3km以内</text>
+        <text class="advanced-filter__option {{activeDistance === '3-5' ? 'active' : ''}}" data-value="3-5" bindtap="onDistanceFilter">3-5km</text>
+        <text class="advanced-filter__option {{activeDistance === '5-8' ? 'active' : ''}}" data-value="5-8" bindtap="onDistanceFilter">5-8km</text>
+        <text class="advanced-filter__option {{activeDistance === '8-12' ? 'active' : ''}}" data-value="8-12" bindtap="onDistanceFilter">8-12km</text>
+        <text class="advanced-filter__option {{activeDistance === '12-20' ? 'active' : ''}}" data-value="12-20" bindtap="onDistanceFilter">12-20km</text>
         <text class="advanced-filter__option {{activeDistance === '20+' ? 'active' : ''}}" data-value="20+" bindtap="onDistanceFilter">20km+</text>
       </view>
     </view>
@@ -65,19 +66,20 @@
       <text class="advanced-filter__label">爬升</text>
       <view class="advanced-filter__options">
         <text class="advanced-filter__option {{activeElevation === '' ? 'active' : ''}}" data-value="" bindtap="onElevationFilter">不限</text>
-        <text class="advanced-filter__option {{activeElevation === '0-300' ? 'active' : ''}}" data-value="0-300" bindtap="onElevationFilter">0-300m</text>
-        <text class="advanced-filter__option {{activeElevation === '300-800' ? 'active' : ''}}" data-value="300-800" bindtap="onElevationFilter">300-800m</text>
-        <text class="advanced-filter__option {{activeElevation === '800+' ? 'active' : ''}}" data-value="800+" bindtap="onElevationFilter">800m+</text>
+        <text class="advanced-filter__option {{activeElevation === '0-100' ? 'active' : ''}}" data-value="0-100" bindtap="onElevationFilter">100m以内</text>
+        <text class="advanced-filter__option {{activeElevation === '100-300' ? 'active' : ''}}" data-value="100-300" bindtap="onElevationFilter">约300m</text>
+        <text class="advanced-filter__option {{activeElevation === '300-1000' ? 'active' : ''}}" data-value="300-1000" bindtap="onElevationFilter">300-1000m</text>
+        <text class="advanced-filter__option {{activeElevation === '1000+' ? 'active' : ''}}" data-value="1000+" bindtap="onElevationFilter">1000m+</text>
       </view>
     </view>
     <view class="advanced-filter__row">
       <text class="advanced-filter__label">路面</text>
       <view class="advanced-filter__options">
         <text class="advanced-filter__option {{activeSurface === '' ? 'active' : ''}}" data-value="" bindtap="onSurfaceFilter">不限</text>
-        <text class="advanced-filter__option {{activeSurface === '水泥路' ? 'active' : ''}}" data-value="水泥路" bindtap="onSurfaceFilter">水泥路</text>
-        <text class="advanced-filter__option {{activeSurface === '土路' ? 'active' : ''}}" data-value="土路" bindtap="onSurfaceFilter">土路</text>
+        <text class="advanced-filter__option {{activeSurface === '步道/土路' ? 'active' : ''}}" data-value="步道/土路" bindtap="onSurfaceFilter">步道/土路</text>
+        <text class="advanced-filter__option {{activeSurface === '水泥路为主' ? 'active' : ''}}" data-value="水泥路为主" bindtap="onSurfaceFilter">水泥路为主</text>
         <text class="advanced-filter__option {{activeSurface === '山间小道' ? 'active' : ''}}" data-value="山间小道" bindtap="onSurfaceFilter">山间小道</text>
-        <text class="advanced-filter__option {{activeSurface === '碎石路' ? 'active' : ''}}" data-value="碎石路" bindtap="onSurfaceFilter">碎石路</text>
+        <text class="advanced-filter__option {{activeSurface === '山脊/林间路' ? 'active' : ''}}" data-value="山脊/林间路" bindtap="onSurfaceFilter">山脊/林间路</text>
       </view>
     </view>
     <view class="advanced-filter__row">
@@ -96,23 +98,21 @@
       <text class="advanced-filter__label">风景</text>
       <view class="advanced-filter__options">
         <text class="advanced-filter__option {{activeScenery === '' ? 'active' : ''}}" data-value="" bindtap="onSceneryFilter">不限</text>
-        <text class="advanced-filter__option {{activeScenery === '山林' ? 'active' : ''}}" data-value="山林" bindtap="onSceneryFilter">山林</text>
+        <text class="advanced-filter__option {{activeScenery === '森林' ? 'active' : ''}}" data-value="森林" bindtap="onSceneryFilter">森林</text>
         <text class="advanced-filter__option {{activeScenery === '草甸' ? 'active' : ''}}" data-value="草甸" bindtap="onSceneryFilter">草甸</text>
         <text class="advanced-filter__option {{activeScenery === '溪流' ? 'active' : ''}}" data-value="溪流" bindtap="onSceneryFilter">溪流</text>
         <text class="advanced-filter__option {{activeScenery === '瀑布' ? 'active' : ''}}" data-value="瀑布" bindtap="onSceneryFilter">瀑布</text>
         <text class="advanced-filter__option {{activeScenery === '湖泊' ? 'active' : ''}}" data-value="湖泊" bindtap="onSceneryFilter">湖泊</text>
         <text class="advanced-filter__option {{activeScenery === '峡谷' ? 'active' : ''}}" data-value="峡谷" bindtap="onSceneryFilter">峡谷</text>
-        <text class="advanced-filter__option {{activeScenery === '竹林' ? 'active' : ''}}" data-value="竹林" bindtap="onSceneryFilter">竹林</text>
+        <text class="advanced-filter__option {{activeScenery === '古道' ? 'active' : ''}}" data-value="古道" bindtap="onSceneryFilter">古道</text>
         <text class="advanced-filter__option {{activeScenery === '红叶' ? 'active' : ''}}" data-value="红叶" bindtap="onSceneryFilter">红叶</text>
         <text class="advanced-filter__option {{activeScenery === '丹霞' ? 'active' : ''}}" data-value="丹霞" bindtap="onSceneryFilter">丹霞</text>
         <text class="advanced-filter__option {{activeScenery === '云海' ? 'active' : ''}}" data-value="云海" bindtap="onSceneryFilter">云海</text>
         <text class="advanced-filter__option {{activeScenery === '古迹' ? 'active' : ''}}" data-value="古迹" bindtap="onSceneryFilter">古迹</text>
         <text class="advanced-filter__option {{activeScenery === '古寺' ? 'active' : ''}}" data-value="古寺" bindtap="onSceneryFilter">古寺</text>
         <text class="advanced-filter__option {{activeScenery === '栈道' ? 'active' : ''}}" data-value="栈道" bindtap="onSceneryFilter">栈道</text>
-        <text class="advanced-filter__option {{activeScenery === '远眺' ? 'active' : ''}}" data-value="远眺" bindtap="onSceneryFilter">远眺</text>
+        <text class="advanced-filter__option {{activeScenery === '遗址' ? 'active' : ''}}" data-value="遗址" bindtap="onSceneryFilter">遗址</text>
         <text class="advanced-filter__option {{activeScenery === '温泉' ? 'active' : ''}}" data-value="温泉" bindtap="onSceneryFilter">温泉</text>
-        <text class="advanced-filter__option {{activeScenery === '森林公园' ? 'active' : ''}}" data-value="森林公园" bindtap="onSceneryFilter">森林公园</text>
-        <text class="advanced-filter__option {{activeScenery === '日出日落' ? 'active' : ''}}" data-value="日出日落" bindtap="onSceneryFilter">日出日落</text>
       </view>
     </view>
     <!-- 费用筛选已隐藏（所有路线均免费，无区分价值）
