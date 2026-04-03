@@ -71,6 +71,7 @@
 
 .detail-page {
   min-height: 100vh;
+  background-color: #c8e6c9;
   background:
     radial-gradient(ellipse at 20% 50%, rgba(129,199,132,.6) 0%, transparent 50%),
     radial-gradient(ellipse at 80% 20%, rgba(165,214,167,.5) 0%, transparent 50%),
@@ -1044,6 +1045,7 @@
   left: 0;
   right: 0;
   padding: 16rpx 32rpx;
+  padding-bottom: calc(16rpx + constant(safe-area-inset-bottom));
   padding-bottom: calc(16rpx + env(safe-area-inset-bottom));
   background: rgba(232, 245, 234, 0.7);
   backdrop-filter: blur(20px);
@@ -1231,6 +1233,7 @@
   border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 32rpx 32rpx 0 0;
   padding: 36rpx;
+  padding-bottom: calc(36rpx + constant(safe-area-inset-bottom));
   padding-bottom: calc(36rpx + env(safe-area-inset-bottom));
   z-index: 201;
   transform: translateY(100%);
