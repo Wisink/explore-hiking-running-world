@@ -15,9 +15,7 @@
   "window": {
     "navigationStyle": "custom",
     "backgroundTextStyle": "light",
-    "backgroundColor": "#c8e6c9",
-    "backgroundColorBottom": "#66bb6a",
-    "backgroundColorTop": "#e8f5e9"
+    "backgroundColor": "#F5F5F5"
   },
   "tabBar": {
     "custom": true,
@@ -55,10 +53,7 @@
     "empty-state": "/components/empty-state/empty-state",
     "skeleton": "/components/skeleton/skeleton"
   },
-  "requiredPrivateInfos": [
-    "getLocation",
-    "chooseLocation"
-  ],
+  "requiredPrivateInfos": ["getLocation", "chooseLocation"],
   "permission": {
     "scope.userLocation": {
       "desc": "用于查找附近路线和推荐徒步目的地"

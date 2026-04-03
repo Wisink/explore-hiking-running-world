@@ -59,13 +59,19 @@ function verifyToken(params) {
 async function handleRoutes(action, params) {
   switch (action) {
     case 'list': {
-      const { page = 1, pageSize = 20, keyword = '' } = params || {}
+      const { page = 1, pageSize = 20, keyword = '', isActive } = params || {}
       let where = {}
       if (keyword) {
         where = _.or([
           { name: db.RegExp({ regexp: keyword, options: 'i' }) },
           { 'location.address': db.RegExp({ regexp: keyword, options: 'i' }) }
         ])
+      }
+      // 支持 isActive 筛选：'true' | 'false' | undefined(全部)
+      if (isActive === 'true' || isActive === true) {
+        where.isActive = true
+      } else if (isActive === 'false' || isActive === false) {
+        where.isActive = _.neq(true)
       }
       const countRes = await db.collection('routes').where(where).count()
       const { data } = await db.collection('routes')
@@ -276,9 +282,15 @@ async function handleUsers(action, params) {
 async function handleArticles(action, params) {
   switch (action) {
     case 'list': {
-      const { page = 1, pageSize = 20, category = '' } = params || {}
+      const { page = 1, pageSize = 20, category = '', isActive } = params || {}
       let where = {}
       if (category) where.category = category
+      // 支持 isActive 筛选：'true' | 'false' | undefined(全部)
+      if (isActive === 'true' || isActive === true) {
+        where.isActive = true
+      } else if (isActive === 'false' || isActive === false) {
+        where.isActive = _.neq(true)
+      }
       const countRes = await db.collection('articles').where(where).count()
       const { data } = await db.collection('articles')
         .where(where).orderBy('order', 'asc')
@@ -307,7 +319,7 @@ async function handleArticles(action, params) {
       return success({ id: res._id }, '添加成功')
     }
     case 'search': {
-      const { keyword = '', searchType = 'all', page = 1, pageSize = 20 } = params || {}
+      const { keyword = '', searchType = 'all', page = 1, pageSize = 20, isActive } = params || {}
       let where = {}
       if (keyword) {
         if (searchType === 'category') {
@@ -324,6 +336,21 @@ async function handleArticles(action, params) {
             { content: db.RegExp({ regexp: keyword, options: 'i' }) },
             { category: db.RegExp({ regexp: keyword, options: 'i' }) }
           ])
+        }
+      }
+      // 支持 isActive 筛选
+      if (isActive === 'true' || isActive === true) {
+        if (where._) {
+          // 已有 _.or 条件，需要套一层 and
+          where = _.and([where, { isActive: true }])
+        } else {
+          where.isActive = true
+        }
+      } else if (isActive === 'false' || isActive === false) {
+        if (where._) {
+          where = _.and([where, { isActive: _.neq(true) }])
+        } else {
+          where.isActive = _.neq(true)
         }
       }
       const countRes = await db.collection('articles').where(where).count()
@@ -694,11 +721,18 @@ async function handleMigrate(action, params) {
             .where({ isActive: _.exists(false) })
             .skip(i * MAX_LIMIT).limit(MAX_LIMIT).get()
 
-          const tasks = data.map(record =>
-            db.collection(col).doc(record._id).update({ data: { isActive: true } })
+          const tasks = data.map(record => {
+            // 对于文章：根据 status 字段判断 isActive
+            // status === 'draft' → isActive: false
+            // 其他情况 → isActive: true
+            let isActiveValue = true
+            if (col === 'articles' && record.status === 'draft') {
+              isActiveValue = false
+            }
+            return db.collection(col).doc(record._id).update({ data: { isActive: isActiveValue } })
               .then(() => { updated++ })
               .catch(e => console.error(`迁移 ${col} ${record._id} 失败:`, e))
-          )
+          })
           await Promise.all(tasks)
         }
 

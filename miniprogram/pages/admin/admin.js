@@ -356,15 +356,18 @@ Page({
     const page = append ? this.data.routesPage + 1 : 1
     this.setData({ routesLoading: true })
     try {
-      const res = await this.callAdminApi('routes', 'list', {
-        page, pageSize: 20, keyword: this.data.routesKeyword
-      })
+      const filter = this.data.routesActiveFilter
+      const params = { page, pageSize: 20, keyword: this.data.routesKeyword }
+      // 服务端 isActive 筛选（与客户端双重过滤，确保可靠）
+      if (filter === 'published') params.isActive = 'true'
+      else if (filter === 'draft') params.isActive = 'false'
+      const res = await this.callAdminApi('routes', 'list', params)
       if (res.code === 0) {
         const rawList = res.data.list.map(item => this.processRouteItem(item))
         const list = append ? this.data.routes.concat(rawList) : rawList
         this.setData({
           routes: list,
-          routesFiltered: this._filterRoutes(list, this.data.routesActiveFilter),
+          routesFiltered: this._filterRoutes(list, filter),
           routesTotal: res.data.total,
           routesPage: page,
           routesHasMore: list.length < res.data.total,
@@ -393,10 +396,8 @@ Page({
   onRoutesFilterChange(e) {
     const filter = e.currentTarget.dataset.filter
     if (filter === this.data.routesActiveFilter) return
-    this.setData({
-      routesActiveFilter: filter,
-      routesFiltered: this._filterRoutes(this.data.routes, filter)
-    })
+    this.setData({ routesActiveFilter: filter, routes: [], routesPage: 1, routesHasMore: true })
+    this.loadRoutes()
   },
 
   _filterRoutes(list, filter) {
@@ -451,24 +452,31 @@ Page({
     this.setData({ articlesLoading: true })
     try {
       const keyword = this.data.articlesKeyword
+      const filter = this.data.articlesActiveFilter
       let res
       if (keyword) {
-        res = await this.callAdminApi('articles', 'search', {
+        const searchParams = {
           keyword,
           searchType: this.data.articlesSearchType,
           page,
           pageSize: 20
-        })
+        }
+        // 服务端 isActive 筛选
+        if (filter === 'published') searchParams.isActive = 'true'
+        else if (filter === 'draft') searchParams.isActive = 'false'
+        res = await this.callAdminApi('articles', 'search', searchParams)
       } else {
-        res = await this.callAdminApi('articles', 'list', {
-          page, pageSize: 20
-        })
+        const listParams = { page, pageSize: 20 }
+        // 服务端 isActive 筛选
+        if (filter === 'published') listParams.isActive = 'true'
+        else if (filter === 'draft') listParams.isActive = 'false'
+        res = await this.callAdminApi('articles', 'list', listParams)
       }
       if (res.code === 0) {
         const list = append ? this.data.articles.concat(res.data.list) : res.data.list
         this.setData({
           articles: list,
-          articlesFiltered: this._filterArticles(list, this.data.articlesActiveFilter),
+          articlesFiltered: this._filterArticles(list, filter),
           articlesTotal: res.data.total,
           articlesPage: page,
           articlesHasMore: list.length < res.data.total,
@@ -512,10 +520,8 @@ Page({
   onArticlesFilterChange(e) {
     const filter = e.currentTarget.dataset.filter
     if (filter === this.data.articlesActiveFilter) return
-    this.setData({
-      articlesActiveFilter: filter,
-      articlesFiltered: this._filterArticles(this.data.articles, filter)
-    })
+    this.setData({ articlesActiveFilter: filter, articles: [], articlesPage: 1, articlesHasMore: true })
+    this.loadArticles()
   },
 
   _filterArticles(list, filter) {
@@ -606,6 +612,11 @@ Page({
           routes,
           routesFiltered: this._filterRoutes(routes, this.data.routesActiveFilter)
         })
+        // 如果当前有筛选，重新加载以获取正确的 total
+        if (this.data.routesActiveFilter !== 'all') {
+          this.setData({ routes: [], routesPage: 1, routesHasMore: true })
+          this.loadRoutes()
+        }
       } else {
         this.showToast(res.message || '操作失败', 'error')
       }
@@ -629,6 +640,11 @@ Page({
           articles,
           articlesFiltered: this._filterArticles(articles, this.data.articlesActiveFilter)
         })
+        // 如果当前有筛选，重新加载以获取正确的 total
+        if (this.data.articlesActiveFilter !== 'all') {
+          this.setData({ articles: [], articlesPage: 1, articlesHasMore: true })
+          this.loadArticles()
+        }
       } else {
         this.showToast(res.message || '操作失败', 'error')
       }

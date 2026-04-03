@@ -76,6 +76,10 @@ Page({
   },
 
   onShow: function () {
+    // 设置自定义tabBar选中状态
+    if (typeof this.getTabBar === 'function' && this.getTabBar()) {
+      this.getTabBar().setData({ selected: 0 })
+    }
     // 每次显示时刷新收藏状态
     this.refreshFavoriteStatus()
   },

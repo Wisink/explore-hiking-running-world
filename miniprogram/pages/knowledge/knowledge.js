@@ -121,6 +121,10 @@ Page({
   },
 
   onShow() {
+    // 设置自定义tabBar选中状态
+    if (typeof this.getTabBar === 'function' && this.getTabBar()) {
+      this.getTabBar().setData({ selected: 1 })
+    }
     // 从globalData读取待切换的分类（通过switchTab从详情页跳转过来）
     const app = getApp()
     if (app.globalData && app.globalData.pendingCategory) {

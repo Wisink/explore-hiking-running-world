@@ -6,6 +6,39 @@ function showNiceToast(that, message, type = 'info', duration = 2000) {
 const app = getApp()
 
 Page({
+  // 轮循欢迎语列表（28条）
+  greetings: [
+    '这里，记录了每一条你喜欢的路线和走过的风景！',       // [0] 首次访问展示
+    '走到没路了，坐下来看云起.',                          // [1]
+    '爬到山顶才知道，别的山都矮了.',                      // [2]
+    '路再长，一步一步总能走完.',                          // [3]
+    '想看得更远，就往山里多走走.',                        // [4]
+    '站得够高，云彩就挡不住眼睛.',                        // [5]
+    '青山和风雨陪着你，不孤单.',                          // [6]
+    '走遍青山人没老，一路好风景.',                        // [7]
+    '两只脚走遍天下，不辜负少年心.',                      // [8]
+    '走一千里一起看月亮，山里就是家.',                    // [9]
+    '走到路尽头，自有云和风在等你.',                      // [10]
+    '爬到山顶，才见天地到底有多宽.',                      // [11]
+    '再远的路，一步一步总能走到头.',                      // [12]
+    '用两只脚，走遍所有想看的好山河.',                    // [13]
+    '走遍青山绿水，人永远有少年劲.',                      // [14]
+    '拐过这道弯，总有新风景在等你.',                      // [15]
+    '出门不是赶路，是赴山水的约会.',                      // [16]
+    '路再长，也挡不住想出发的脚步.',                      // [17]
+    '往山里多走一步，心就静一分.',                        // [18]
+    '踩过溪石，接住山间吹来的清风.',                      // [19]
+    '最难走的路，藏着最好看的风景.',                      // [20]
+    '看过的山水，都成了你的眼界.',                        // [21]
+    '钻进山里，把烦心事全都丢开.',                        // [22]
+    '别停脚，前面的春山正迎着你.',                        // [23]
+    '往高处走，把世界都装进眼里.',                        // [24]
+    '走到旷野里，才懂风有多自由.',                        // [25]
+    '只要不停步，没有翻不过的山.',                        // [26]
+    '走着走着，就跨过了所有难走的路.',                    // [27]
+    '走到山野里，心就有了落脚的地方.',                    // [28]
+  ],
+
   data: {
     // 状态栏高度
     statusBarHeight: 0,
@@ -32,7 +65,9 @@ Page({
     showAllFavorites: false,
     showAllCompleted: false,
     displayedFavorites: [],
-    displayedCompleted: []
+    displayedCompleted: [],
+    // 轮循欢迎语
+    greetingText: '',
   },
 
   onLoad() {
@@ -53,9 +88,26 @@ Page({
   },
 
   onShow() {
+    // 设置自定义tabBar选中状态
+    if (typeof this.getTabBar === 'function' && this.getTabBar()) {
+      this.getTabBar().setData({ selected: 2 })
+    }
     // 每次页面显示时刷新数据（从TabBar切换回来时触发）
     this.loadData()
     this.syncFromCloud()
+
+    // 轮循欢迎语：首次访问→greetings[0]（首访语），之后在greetings[1]-[28]之间轮循
+    let hasVisited = wx.getStorageSync('greetingHasVisited')
+    if (!hasVisited) {
+      wx.setStorageSync('greetingHasVisited', true)
+      wx.setStorageSync('greetingRotateIndex', -1)
+      this.setData({ greetingText: this.greetings[0] })
+    } else {
+      let rotateIndex = wx.getStorageSync('greetingRotateIndex') || 0
+      rotateIndex = (rotateIndex + 1) % 28  // 0-27 对应 greetings[1]-[28]
+      wx.setStorageSync('greetingRotateIndex', rotateIndex)
+      this.setData({ greetingText: this.greetings[rotateIndex + 1] })
+    }
 
     // 从全局数据加载用户信息（等待 app.js initUser 完成）
     const app = getApp()

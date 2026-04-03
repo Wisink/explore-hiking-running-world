@@ -1,0 +1,54 @@
+/* custom-tab-bar/index.wxss */
+
+.tab-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 999;
+  background: #c8e6c9;
+  /* 防止被内容遮挡 */
+  box-shadow: 0 -2rpx 16rpx rgba(0, 0, 0, 0.06);
+}
+
+.tab-bar__inner {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  height: 110rpx;
+  padding-bottom: 0;
+}
+
+.tab-bar__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  height: 110rpx;
+  position: relative;
+}
+
+.tab-bar__icon {
+  width: 48rpx;
+  height: 48rpx;
+  margin-bottom: 4rpx;
+}
+
+.tab-bar__text {
+  font-size: 20rpx;
+  color: #6b8b6b;
+  font-weight: 400;
+}
+
+.tab-bar__item--active .tab-bar__text {
+  color: #1a2e1a;
+  font-weight: 600;
+}
+
+/* 安全区域占位 —— 覆盖小米等安卓手机底部导航栏白色区域 */
+.tab-bar__safe {
+  height: constant(safe-area-inset-bottom);
+  height: env(safe-area-inset-bottom);
+  background: #c8e6c9;
+}

@@ -14,7 +14,7 @@
       </view>
       <text class="profile-nickname">{{hikerNickname}}</text>
       <text class="page-header__title">我的徒步世界！</text>
-      <text class="page-header__sub">徒步过的每一条路线，都是最美好的记忆.</text>
+      <text class="page-header__sub">{{greetingText}}</text>
       <view class="page-header__visit" wx:if="{{userInfo}}">
         <text class="page-header__visit-text">🌍 已访问 {{userInfo.visitCount}} 次</text>
       </view>
