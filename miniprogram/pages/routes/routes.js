@@ -5,6 +5,8 @@ function showNiceToast(that, message, type = 'info', duration = 2000) {
 // pages/routes/routes.js
 const app = getApp()
 const cloudSync = require('../../utils/cloud-sync')
+const { handleError } = require('../../utils/error-handler')
+const { handleError } = require('../../utils/error-handler')
 
 // 筛选标签配置
 // 获取当前季节标签
@@ -637,7 +639,7 @@ Page({
         await cloudSync.removeFavorite(id)
       }
     } catch (err) {
-      console.error('收藏同步失败:', err)
+      handleError(err, '收藏同步失败，请稍后重试')
     }
   },
 
