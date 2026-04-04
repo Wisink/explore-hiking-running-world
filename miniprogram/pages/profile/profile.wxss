@@ -613,3 +613,50 @@
 .route-card__fav:active {
   transform: scale(1.3);
 }
+
+/* 同步状态栏 */
+.sync-status-bar {
+  margin: 16rpx 24rpx;
+  border-radius: 16rpx;
+  padding: 20rpx 24rpx;
+  background: linear-gradient(135deg, #fff5f5 0%, #ffecec 100%);
+  border: 1px solid #ffd0d0;
+  box-shadow: 0 4rpx 16rpx rgba(255, 75, 75, 0.08);
+}
+.sync-status--loading {
+  background: linear-gradient(135deg, #eff6ff 0%, #e6f0ff 100%);
+  border-color: #bed5ff;
+  box-shadow: 0 4rpx 16rpx rgba(59, 130, 246, 0.08);
+}
+.sync-status__content {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  justify-content: space-between;
+}
+.sync-status__left {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+.sync-status__icon {
+  font-size: 32rpx;
+}
+.sync-status__text {
+  font-size: 26rpx;
+  color: #e53e3e;
+}
+.sync-status--loading .sync-status__text {
+  color: #3b82f6;
+}
+.sync-status__retry {
+  background: #e53e3e;
+  color: #fff;
+  padding: 8rpx 24rpx;
+  border-radius: 24rpx;
+  font-size: 24rpx;
+  flex-shrink: 0;
+}
+.sync-status__retry-text {
+  color: #fff;
+}

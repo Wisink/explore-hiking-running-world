@@ -4,6 +4,7 @@ function showNiceToast(that, message, type = 'info', duration = 2000) {
 }
 // pages/profile/profile.js
 const app = getApp()
+const { handleSyncError } = require('../../utils/error-handler')
 
 Page({
   // 轮循欢迎语列表（28条）
@@ -61,6 +62,7 @@ Page({
     totalDistance: 0,
     // 同步状态
     syncStatus: '',
+    syncFailed: false,
     // 查看更多状态
     showAllFavorites: false,
     showAllCompleted: false,
@@ -76,7 +78,7 @@ Page({
     })
     // 初始化头像和昵称
     this.initHikerProfile()
-    // 检查管理员权限
+    // 检查管理员权限（非管理员静默忽略）
     wx.cloud.callFunction({
       name: 'admin-api',
       data: { module: 'check-admin' }
@@ -84,7 +86,9 @@ Page({
       if (res.result && res.result.data && res.result.data.isAdmin) {
         this.setData({ isAdmin: true })
       }
-    }).catch(() => {})
+    }).catch(() => {
+      // 非管理员用户，静默忽略
+    })
   },
 
   onShow() {
@@ -126,7 +130,9 @@ Page({
             this.setData({ hikerNickname: app.globalData.userInfo.nickName })
           }
         }
-      }).catch(() => {})
+      }).catch(() => {
+        // 用户初始化失败，静默忽略（已使用本地头像昵称）
+      })
     }
   },
 
@@ -432,7 +438,7 @@ Page({
         // 重新加载本地数据
         this.loadFavorites()
         this.loadCompleted()
-        this.setData({ syncStatus: 'success' })
+        this.setData({ syncStatus: 'success', syncFailed: false })
         // 3秒后隐藏提示
         setTimeout(() => {
           if (this.data.syncStatus === 'success') {
@@ -442,13 +448,14 @@ Page({
       }
     } catch (err) {
       console.error('同步失败:', err)
-      this.setData({ syncStatus: 'error' })
-      setTimeout(() => {
-        if (this.data.syncStatus === 'error') {
-          this.setData({ syncStatus: '' })
-        }
-      }, 3000)
+      this.setData({ syncStatus: 'error', syncFailed: true })
+      showNiceToast(this, '同步失败，可手动重试', 'error', 2000)
     }
+  },
+
+  // 手动重试同步
+  onRetrySync: function () {
+    this.syncFromCloud()
   },
 
   // ========== Tab 切换 ==========
