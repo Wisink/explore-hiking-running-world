@@ -1,0 +1,274 @@
+/* 
+此文件为开发者工具生成，生成时间: 2026/4/4下午1:00:32
+使用方法：
+在 app.wxss 文件末尾引入样式
+```
+/* @import "./app-wxa-auto-dark.wxss"; */
+```
+ */
+
+@media (prefers-color-scheme: dark) {
+    page {
+        --color-primary: rgb(108, 170, 140);
+        --color-primary-light: rgb(53, 135, 99);
+        --color-primary-dark: rgb(164, 208, 186);
+        --color-primary-50: rgb(20, 29, 21);
+        --color-primary-100: rgb(22, 46, 25);
+        --color-accent: rgb(143, 48, 0);
+        --color-accent-light: rgb(65, 39, 0);
+        --color-accent-50: rgb(27, 22, 0);
+        --color-bg: rgb(19, 25, 19);
+        --color-bg-card: rgba(17, 17, 17, 0.22);
+        --color-bg-soft: rgba(17, 17, 17, 0.15);
+        --color-text: rgb(203, 228, 201);
+        --color-text-secondary: rgb(126, 161, 126);
+        --color-text-hint: rgb(96, 127, 96);
+        --color-text-light: rgb(51, 79, 52);
+        --color-border: rgba(17, 17, 17, 0.25);
+        --color-divider: rgba(17, 17, 17, 0.18);
+        --color-success: rgb(0, 114, 21);
+        --color-warning: rgb(132, 49, 0);
+        --color-danger: rgb(218, 39, 36);
+        --color-info: rgb(0, 88, 146);
+        --glass-bg: rgba(17, 17, 17, 0.22);
+        --glass-bg-light: rgba(17, 17, 17, 0.12);
+        --glass-bg-strong: rgba(17, 17, 17, 0.35);
+        --glass-border: rgba(17, 17, 17, 0.25);
+        background-color: rgb(22, 46, 25);
+        background: rgb(0, 0, 0);
+    }
+
+    button {
+        background: rgba(0, 0, 0, 0);
+        font-size: rgb(0, 0, 0);
+    }
+
+    .text-white {
+        color: rgb(17, 17, 17);
+    }
+
+    .bg-white {
+        background: rgba(17, 17, 17, 0.25);
+    }
+
+    .bg-soft {
+        background: rgba(17, 17, 17, 0.15);
+    }
+
+    .btn-primary {
+        background: rgb(0, 0, 0);
+        color: rgb(17, 17, 17);
+    }
+
+    .btn-outline {
+        background: rgba(17, 17, 17, 0.2);
+    }
+
+    .btn-accent {
+        background: rgb(0, 0, 0);
+        color: rgb(17, 17, 17);
+    }
+
+    .btn-ghost {
+        background: rgba(17, 17, 17, 0.15);
+        color: rgb(17, 17, 17);
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(40rpx);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(100%);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-30rpx);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes scaleBounce {
+        0% {
+            transform: scale(1);
+        }
+
+        30% {
+            transform: scale(1.3);
+        }
+
+        50% {
+            transform: scale(0.9);
+        }
+
+        70% {
+            transform: scale(1.1);
+        }
+
+        100% {
+            transform: scale(1);
+        }
+    }
+
+    @keyframes leafSpin {
+        from {
+            transform: rotate(0deg);
+        }
+
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    @keyframes pulseGlow {
+        0%, 100% {
+            opacity: 1;
+            box-shadow: 0 0 0 0 rgba(46, 125, 50, 0.4);
+        }
+
+        50% {
+            opacity: 0.8;
+            box-shadow: 0 0 0 12rpx rgba(46, 125, 50, 0);
+        }
+    }
+
+    @keyframes shimmer {
+        0% {
+            background-position: -400rpx 0;
+        }
+
+        100% {
+            background-position: 400rpx 0;
+        }
+    }
+
+    .shimmer {
+        background: rgb(0, 0, 0);
+    }
+
+    @keyframes tabSlide {
+        from {
+            width: 0;
+            opacity: 0;
+        }
+
+        to {
+            width: 48rpx;
+            opacity: 1;
+        }
+    }
+
+    @keyframes countUp {
+        from {
+            opacity: 0;
+            transform: translateY(20rpx);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .header-nature {
+        background: rgb(0, 0, 0);
+    }
+
+    .mask {
+        background: rgba(255, 255, 255, 0.45);
+    }
+
+    .diff-1 {
+        background-color: rgb(0, 114, 21);
+    }
+
+    .diff-2 {
+        background-color: rgb(27, 87, 0);
+    }
+
+    .diff-3 {
+        background-color: rgb(87, 45, 0);
+        color: rgb(209, 209, 209) !important;
+    }
+
+    .diff-4 {
+        background-color: rgb(132, 49, 0);
+    }
+
+    .diff-5 {
+        background-color: rgb(218, 39, 36);
+    }
+
+    .divider-space {
+        background: rgba(17, 17, 17, 0.08);
+    }
+
+    .nice-toast {
+        color: rgb(17, 17, 17);
+    }
+
+    .nice-toast--success {
+        background: rgb(0, 0, 0);
+    }
+
+    .nice-toast--error {
+        background: rgb(0, 0, 0);
+    }
+
+    .nice-toast--info {
+        background: rgb(0, 0, 0);
+    }
+
+    .hint-overlay {
+        background: rgba(255, 255, 255, 0.45);
+    }
+
+    .hint-popup {
+        background: rgba(17, 17, 17, 0.35);
+    }
+
+    .hint-popup__title {
+        color: rgb(203, 228, 201);
+    }
+
+    .hint-popup__desc {
+        color: rgb(126, 161, 126);
+    }
+
+    .hint-popup__btn {
+        background: rgb(0, 0, 0);
+        color: rgb(17, 17, 17);
+    }
+}

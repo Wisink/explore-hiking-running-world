@@ -1,0 +1,256 @@
+/* 
+此文件为开发者工具生成，生成时间: 2026/4/4下午1:00:32
+使用方法：
+在 routes.wxss 文件末尾引入样式
+```
+/* @import "./routes-wxa-auto-dark.wxss"; */
+```
+ */
+
+@media (prefers-color-scheme: dark) {
+    .routes-page {
+        background-color: rgb(22, 46, 25);
+        background: rgb(0, 0, 0);
+    }
+
+    .header__title {
+        color: rgb(17, 17, 17);
+    }
+
+    .header__sub {
+        color: rgba(17, 17, 17, 0.75);
+    }
+
+    .header__search {
+        background: rgba(17, 17, 17, 0.2);
+    }
+
+    .search-inline {
+        background: rgba(17, 17, 17, 0.3);
+    }
+
+    .search-inline__field {
+        color: rgb(17, 17, 17);
+    }
+
+    .search-inline__field::placeholder {
+        color: rgba(17, 17, 17, 0.6);
+    }
+
+    .search-inline__clear {
+        color: rgba(17, 17, 17, 0.7);
+    }
+
+    .search-inline__search-btn {
+        color: rgb(17, 17, 17);
+    }
+
+    .search-advanced-filter-btn {
+        background: rgba(17, 17, 17, 0.25);
+        color: rgba(17, 17, 17, 0.9);
+    }
+
+    .search-advanced-filter-btn.active {
+        background: rgba(17, 17, 17, 0.95);
+        color: rgb(108, 170, 140);
+        border-color: rgba(17, 17, 17, 0.4);
+    }
+
+    .quick-card {
+        background: rgba(17, 17, 17, 0.22);
+    }
+
+    .quick-card:active {
+        background: rgba(17, 17, 17, 0.35);
+    }
+
+    .quick-card__icon {
+        background: rgba(17, 17, 17, 0.25);
+    }
+
+    .quick-card__title {
+        color: rgb(203, 228, 201);
+    }
+
+    .quick-card__desc {
+        color: rgb(126, 161, 126);
+    }
+
+    .quick-card--highlight {
+        background: rgba(0, 114, 21, 0.15);
+        border-color: rgba(0, 114, 21, 0.25);
+    }
+
+    .quick-card--assistant {
+        border-color: rgba(4, 84, 26, 0.35);
+    }
+
+    .advanced-filter {
+        background: rgba(17, 17, 17, 0.15);
+    }
+
+    .advanced-filter__label {
+        color: rgb(126, 161, 126);
+    }
+
+    .advanced-filter__option {
+        color: rgb(126, 161, 126);
+        background: rgba(17, 17, 17, 0.25);
+    }
+
+    .advanced-filter__option.active {
+        background: rgba(0, 114, 21, 0.75);
+        color: rgb(17, 17, 17);
+        border-color: rgba(0, 114, 21, 0.5);
+    }
+
+    .advanced-filter__collapse {
+        color: rgb(96, 127, 96);
+    }
+
+    .advanced-filter__reset {
+        background: rgba(17, 17, 17, 0.25);
+        color: rgb(126, 161, 126);
+    }
+
+    .advanced-filter__collapse {
+        background: rgba(17, 17, 17, 0.25);
+        color: rgb(126, 161, 126);
+    }
+
+    .advanced-filter__apply {
+        color: rgb(17, 17, 17);
+    }
+
+    .filter-scroll {
+        background: rgba(17, 17, 17, 0.12);
+    }
+
+    .filter-chip {
+        background: rgba(17, 17, 17, 0.2);
+    }
+
+    .filter-chip--active {
+        border-color: rgba(0, 114, 21, 0.5);
+    }
+
+    .filter-chip__text {
+        color: rgb(126, 161, 126);
+    }
+
+    .filter-chip--active .filter-chip__text {
+        color: rgb(17, 17, 17);
+    }
+
+    .skel-card {
+        background: rgba(17, 17, 17, 0.2);
+    }
+
+    @keyframes skelShimmer {
+        0% {
+            background-position: -400rpx 0;
+        }
+
+        100% {
+            background-position: 400rpx 0;
+        }
+    }
+
+    .route-card {
+        background: rgba(17, 17, 17, 0.22);
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(40rpx);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .route-card__badge {
+        color: rgb(17, 17, 17);
+    }
+
+    .route-card__free {
+        background: rgba(0, 114, 21, 0.85);
+        color: rgb(17, 17, 17);
+    }
+
+    .route-card__fav {
+        background: rgba(17, 17, 17, 0.3);
+    }
+
+    .route-card__fav--on {
+        background: rgba(38, 24, 27, 0.95);
+    }
+
+    .route-card__name {
+        color: rgb(17, 17, 17);
+    }
+
+    .route-card__meta-item {
+        background: rgba(17, 17, 17, 0.2);
+        color: rgba(17, 17, 17, 0.9);
+    }
+
+    .route-card__desc {
+        color: rgb(126, 161, 126);
+    }
+
+    .route-card__tag {
+        background: rgba(4, 84, 26, 0.2);
+        color: rgb(108, 170, 140);
+    }
+
+    .route-card__family {
+        color: rgb(99, 153, 250);
+        background: rgba(18, 30, 38, 0.6);
+    }
+
+    @keyframes emptyPulse {
+        0%, 100% {
+            transform: scale(1);
+            opacity: 0.6;
+        }
+
+        50% {
+            transform: scale(1.08);
+            opacity: 1;
+        }
+    }
+
+    .empty-title {
+        color: rgb(203, 228, 201);
+    }
+
+    .empty-desc {
+        color: rgb(96, 127, 96);
+    }
+
+    .load-spinner {
+        border-top-color: rgb(108, 170, 140);
+    }
+
+    @keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    .load-text {
+        color: rgb(96, 127, 96);
+    }
+
+    .no-more__line {
+        background: rgba(17, 17, 17, 0.3);
+    }
+
+    .no-more__text {
+        color: rgb(96, 127, 96);
+    }
+}

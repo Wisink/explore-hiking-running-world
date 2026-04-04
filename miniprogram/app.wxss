@@ -626,3 +626,5 @@ button::after {
   border-radius: 28px;
   letter-spacing: 2px;
 }
+
+/* @import 'app-wxa-auto-dark.wxss' */
