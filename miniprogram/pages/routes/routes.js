@@ -377,8 +377,17 @@ Page({
       ? item.difficulty.suitableFor
       : []
 
-    // family_friendly: 检查suitableFor是否包含亲子，或原始数据已有family_friendly标记
-    const isFamily = suitableForArr.some(s => s.includes('亲子')) || item.family_friendly === true
+    // family_friendly: 按距离+难度综合判断
+    const dist = item.distance_km || 0
+    let isFamily = false
+    let familyLabel = ''
+    if (diffLevel <= 1 && dist > 0 && dist <= 5) {
+      isFamily = true
+      familyLabel = '亲子5岁+'
+    } else if (diffLevel <= 2 && dist > 0 && dist <= 10) {
+      isFamily = true
+      familyLabel = '亲子8岁+'
+    }
 
     // location_direction: 从 location.direction 提取
     const locationDirection = typeof item.location === 'object' ? (item.location.direction || '') : ''
@@ -421,6 +430,7 @@ Page({
       suitableFor: suitableForArr,
       bestSeason: bestSeason,
       family_friendly: isFamily,
+      familyLabel: familyLabel,
       location_direction: locationDirection
     }
   },

@@ -270,7 +270,7 @@
 
         <!-- 亲子标记 -->
         <view class="route-card__family" wx:if="{{item.family_friendly}}">
-          <text>👨‍👩‍👧 亲子友好</text>
+          <text>👨‍👩‍👧 {{item.familyLabel || '亲子友好'}}</text>
         </view>
       </view>
     </view>

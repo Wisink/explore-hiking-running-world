@@ -5,7 +5,7 @@
   <!-- 导航栏 -->
   <view class="detail-nav">
     <view class="detail-nav__back" bindtap="onBack">
-      <text class="detail-nav__back-icon">‹</text>
+      <text class="detail-nav__back-icon">←</text>
     </view>
     <text class="detail-nav__title">{{article.title}}</text>
     <view class="detail-nav__spacer"></view>
