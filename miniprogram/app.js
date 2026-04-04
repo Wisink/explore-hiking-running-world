@@ -20,12 +20,10 @@ App({
     this.globalData.screenWidth = systemInfo.screenWidth
     this.globalData.screenHeight = systemInfo.screenHeight
 
-    // 同步用户数据和初始化用户编号（并行执行，提高启动速度）
-    this._userReady = Promise.all([
-      this.syncUserData(),
-      this.initUser()
-    ])
-    await this._userReady
+    // 同步用户数据（收藏/已走过）—— 阻塞启动，确保统计不丢数据
+    await this.syncUserData()
+    // 初始化用户编号（后台异步执行，不阻塞启动流程）
+    this._userInitPromise = this.initUser()
   },
 
   // 初始化用户编号和访问次数（通过云函数服务端分配，保证编号唯一递增）
