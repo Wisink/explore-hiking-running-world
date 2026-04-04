@@ -253,7 +253,14 @@ Page({
         if (reset) {
           this.setData({ routes: [], loading: false })
         }
-        showNiceToast(this, '网络错误，请重试', 'error', 2000)
+        // 最终降级：尝试使用缓存
+        const cached = cloudSync.getRoutesCache()
+        if (cached && cached.length > 0) {
+          this.processRoutes(cached, page, reset, true)
+          wx.showToast({ title: '当前离线，显示缓存数据', icon: 'none', duration: 2000 })
+        } else {
+          wx.showToast({ title: '网络异常，请检查网络连接', icon: 'none', duration: 2000 })
+        }
       }
     })
     resolve()

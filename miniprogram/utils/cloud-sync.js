@@ -83,7 +83,7 @@ async function addFavorite(routeId) {
   return await callUserDataAPI('add-favorite', { routeId })
 }
 
-// 取消收藏（本地+云端）
+// 取消收藏（本地优先，云端异步同步，失败提醒）
 async function removeFavorite(routeId) {
   // 更新本地
   let favorites = wx.getStorageSync('route_favorites') || []
@@ -99,8 +99,12 @@ async function removeFavorite(routeId) {
   })
   wx.setStorageSync('favorites_full', favoritesFull)
 
-  // 同步到云端
-  return await callUserDataAPI('remove-favorite', { routeId })
+  // 同步到云端，失败时提醒但不阻塞本地操作
+  const result = await callUserDataAPI('remove-favorite', { routeId })
+  if (result.code !== 0) {
+    wx.showToast({ title: '收藏同步失败，将在网络恢复后重试', icon: 'none' })
+  }
+  return { ...result, syncSuccess: result.code === 0 }
 }
 
 // 添加已走过（本地+云端）- 允许同一条路线多次标记
@@ -131,8 +135,12 @@ async function addCompleted(routeId, date, extra = {}) {
   completed.push(newItem)
   wx.setStorageSync('completed', completed)
 
-  // 同步到云端
-  return await callUserDataAPI('add-completed', { routeId, date, note, weather, feeling, difficultyFeeling, companions, name })
+  // 同步到云端，失败时提醒
+  const result = await callUserDataAPI('add-completed', { routeId, date, note, weather, feeling, difficultyFeeling, companions, name })
+  if (result.code !== 0) {
+    wx.showToast({ title: '记录同步失败，将在网络恢复后重试', icon: 'none' })
+  }
+  return { ...result, syncSuccess: result.code === 0 }
 }
 
 // 更新已走过记录
@@ -154,20 +162,26 @@ function updateCompleted(routeId, completedAt, updates) {
   completed[index] = item
   wx.setStorageSync('completed', completed)
 
-  // 同步到云端（全量替换）
-  syncCompletedToCloud(completed)
+  // 同步到云端（全量替换），失败时提醒
+  syncCompletedToCloud(completed).catch(() => {
+    wx.showToast({ title: '记录同步失败，将在网络恢复后重试', icon: 'none' })
+  })
   return true
 }
 
-// 删除已走过记录（本地+云端）
+// 删除已走过记录（本地优先，云端异步同步，失败提醒）
 async function removeCompleted(routeId) {
   // 更新本地
   let completed = wx.getStorageSync('completed') || []
   completed = completed.filter(item => item.routeId !== routeId)
   wx.setStorageSync('completed', completed)
 
-  // 同步到云端
-  return await callUserDataAPI('remove-completed', { routeId })
+  // 同步到云端，失败时提醒但不阻塞本地操作
+  const result = await callUserDataAPI('remove-completed', { routeId })
+  if (result.code !== 0) {
+    wx.showToast({ title: '记录同步失败，将在网络恢复后重试', icon: 'none' })
+  }
+  return { ...result, syncSuccess: result.code === 0 }
 }
 
 // 删除单条已走过记录（本地+云端）
@@ -176,8 +190,10 @@ function deleteCompleted(routeId, completedAt) {
   completed = completed.filter(item => !(item.routeId === routeId && item.completedAt === completedAt))
   wx.setStorageSync('completed', completed)
 
-  // 同步到云端
-  syncCompletedToCloud(completed)
+  // 同步到云端，失败时提醒
+  syncCompletedToCloud(completed).catch(() => {
+    wx.showToast({ title: '记录同步失败，将在网络恢复后重试', icon: 'none' })
+  })
   return true
 }
 
