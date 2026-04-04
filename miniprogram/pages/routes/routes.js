@@ -137,26 +137,39 @@ Page({
         success: (res) => {
           clearTimeout(timeoutId)
           if (res.result && res.result.code === 0 && res.result.data && res.result.data.list) {
+            // 云端加载成功后自动缓存数据
+            cloudSync.saveRoutesCache(res.result.data.list)
             this.processRoutes(res.result.data.list, page, reset)
           } else {
-            // 数据加载异常
-            if (reset) {
-              this.setData({ routes: [], loading: false })
-            }
-            showNiceToast(this, '数据加载失败，请重试', 'error', 2000)
+            // 数据加载异常，降级使用缓存
+            this._loadFromCache(reset, page, resolve)
+            return
           }
           resolve()
         },
         fail: () => {
           clearTimeout(timeoutId)
-          if (reset) {
-            this.setData({ routes: [], loading: false })
-          }
-          showNiceToast(this, '网络错误，请重试', 'error', 2000)
-          resolve()
+          // 网络失败，降级使用缓存
+          this._loadFromCache(reset, page, resolve)
+          return
         }
       })
     })
+  },
+
+  // 从缓存加载路线（离线降级）
+  _loadFromCache: function (reset, page, resolve) {
+    const cached = cloudSync.getRoutesCache()
+    if (cached && cached.length > 0) {
+      this.processRoutes(cached, page, reset, true)
+      wx.showToast({ title: '当前离线，显示缓存数据', icon: 'none', duration: 2000 })
+    } else {
+      if (reset) {
+        this.setData({ routes: [], loading: false })
+      }
+      wx.showToast({ title: '网络异常，请检查网络连接', icon: 'none', duration: 2000 })
+    }
+    resolve()
   },
 
   // 处理路线数据

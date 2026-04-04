@@ -230,6 +230,47 @@ async function getChecklist(routeId) {
   return wx.getStorageSync(`checklist_${routeId}`) || {}
 }
 
+// ========== 路线缓存（离线降级） ==========
+
+const ROUTES_CACHE_KEY = 'routes_cache'
+const CACHE_TTL = 24 * 60 * 60 * 1000 // 24小时
+
+// 保存路线数据到缓存
+function saveRoutesCache(routes) {
+  try {
+    wx.setStorageSync(ROUTES_CACHE_KEY, {
+      data: routes,
+      timestamp: Date.now()
+    })
+  } catch (e) {
+    console.error('保存路线缓存失败:', e)
+  }
+}
+
+// 从缓存读取路线数据，超过24小时返回 null
+function getRoutesCache() {
+  try {
+    const cache = wx.getStorageSync(ROUTES_CACHE_KEY)
+    if (!cache || !cache.data || !cache.timestamp) return null
+    if (Date.now() - cache.timestamp > CACHE_TTL) return null
+    return cache.data
+  } catch (e) {
+    console.error('读取路线缓存失败:', e)
+    return null
+  }
+}
+
+// 检查缓存是否有效（24小时内）
+function isCacheValid() {
+  try {
+    const cache = wx.getStorageSync(ROUTES_CACHE_KEY)
+    if (!cache || !cache.timestamp) return false
+    return Date.now() - cache.timestamp <= CACHE_TTL
+  } catch (e) {
+    return false
+  }
+}
+
 module.exports = {
   pullFromCloud,
   syncFavoritesToCloud,
@@ -246,5 +287,8 @@ module.exports = {
   isFavorited,
   isCompleted,
   syncChecklist,
-  getChecklist
+  getChecklist,
+  saveRoutesCache,
+  getRoutesCache,
+  isCacheValid
 }

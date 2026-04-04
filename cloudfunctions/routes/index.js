@@ -12,22 +12,46 @@ function fail(message = '操作失败', data = null) {
   return { code: -1, message, data }
 }
 
+// 解析范围字符串如 "0-3"、"1000+" 为 {min, max}
+function parseRange(rangeStr) {
+  if (!rangeStr) return null
+  if (rangeStr.includes('+')) {
+    return { min: parseFloat(rangeStr.replace('+', '')), max: Infinity }
+  }
+  const parts = rangeStr.split('-').map(Number)
+  if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
+    return { min: parts[0], max: parts[1] }
+  }
+  return null
+}
+
 /**
  * 获取路线列表（支持分页、筛选）
- * 入参：{ action: "list", page, pageSize, filter }
- * filter 可以是字符串（前端标签筛选）或对象（高级筛选）
+ * 入参：{ action: "list", page, pageSize, filterType, filter, keyword }
+ * filterType: "tag" | "advanced" | "search" | "keyword" | "all"
+ * - filterType === "tag": filter 是字符串标签（beginner/family/free/stream/waterfall/forest/season 等）
+ * - filterType === "advanced": filter 是 { difficulty, distance, elevation, surface, scenery, direction, cost }
+ * - filterType === "search": keyword 做综合搜索
+ * - filterType === "keyword": keyword 做名称模糊搜索
+ * - filterType === "all" 或未传: 不做额外筛选
  */
 async function list(event) {
-  let { page = 0, pageSize = 20, filter } = event
+  let { page = 0, pageSize = 20, filterType, filter, keyword } = event
   // 兼容前端传 0-indexed 的 page
-  const skip = Math.max(0, page) * pageSize
+  let skip = Math.max(0, page) * pageSize
   const where = {}
 
   // 过滤无效路线
   where.isActive = true
 
-  // 如果 filter 是字符串（前端标签筛选），转换为查询条件
-  if (typeof filter === 'string' && filter && filter !== 'all') {
+  // 兼容旧调用：没有 filterType 时，按 filter 类型推断
+  if (!filterType) {
+    filterType = typeof filter === 'string' ? 'tag' : (filter ? 'advanced' : 'all')
+  }
+
+  // === 根据 filterType 构建查询条件 ===
+  if (filterType === 'tag') {
+    // 标签筛选：用现有的 switch-case 逻辑
     switch (filter) {
       case 'beginner':
         where['difficulty.label'] = _.in(['第一次也能走', '初级'])
@@ -62,29 +86,24 @@ async function list(event) {
       case 'season': {
         const month = new Date().getMonth() + 1
         if (month >= 3 && month <= 5) {
-          // 春天
           where['best_season'] = _.in(['春', '春季', '全年', '春夏'])
         } else if (month >= 6 && month <= 8) {
-          // 夏天
           where['best_season'] = _.in(['夏', '夏季', '全年', '春夏', '夏秋'])
         } else if (month >= 9 && month <= 11) {
-          // 秋天
           where['scenery'] = _.in(['红叶', '红叶漫山', '红叶|古寺|环线', '银杏林', '金黄', '秋色', '彩林'])
         } else {
-          // 冬天
           where['best_season'] = _.in(['冬', '冬季', '全年'])
         }
         break
       }
       case 'hot':
-        // 本周热门：按用户完成次数降序（需要user_data集合）
-        // 先按默认顺序返回，后续可以接入用户数据
+        // 热门：暂时按 order 排序
         break
       default:
         break
     }
-  } else if (typeof filter === 'object' && filter) {
-    // 高级筛选对象
+  } else if (filterType === 'advanced' && typeof filter === 'object' && filter !== null) {
+    // ===== 高级筛选：逐项构建查询条件 =====
     if (filter.difficulty && filter.difficulty.length > 0) {
       where['difficulty.level'] = _.in(filter.difficulty)
     }
@@ -97,7 +116,46 @@ async function list(event) {
     if (filter.suitableFor) {
       where['difficulty.suitableFor'] = _.elemMatch(_.eq(filter.suitableFor))
     }
+    // 距离 (distance_km)
+    if (filter.distance) {
+      const range = parseRange(filter.distance)
+      if (range) {
+        where.distance_km = _.gte(range.min).and(_.lte(range.max))
+      }
+    }
+    // 爬升 (elevation_gain_m)
+    if (filter.elevation) {
+      const range = parseRange(filter.elevation)
+      if (range) {
+        where.elevation_gain_m = _.gte(range.min).and(_.lte(range.max))
+      }
+    }
+    // 路面 (sections 数组中 road 字段)
+    if (filter.surface) {
+      switch (filter.surface) {
+        case '步道/土路':
+          where['sections.road'] = db.RegExp({ regexp: '土路|步道', options: 'i' })
+          break
+        case '水泥路为主':
+          where['sections.road'] = db.RegExp({ regexp: '水泥路', options: 'i' })
+          break
+        case '山间小道':
+          where['sections.road'] = '山间小道'
+          break
+        case '山脊/林间路':
+          where['sections.road'] = db.RegExp({ regexp: '山脊|林间路', options: 'i' })
+          break
+      }
+    }
+    // 风景 (scenery 数组包含关键字)
+    if (filter.scenery) {
+      where['scenery'] = db.RegExp({ regexp: filter.scenery, options: 'i' })
+    }
+  } else if (filterType === 'keyword' && keyword) {
+    // 名称模糊搜索
+    where['name'] = db.RegExp({ regexp: keyword, options: 'i' })
   }
+  // filterType === 'search' 或 'all' 不做额外筛选，由 search action 处理
 
   try {
     const countRes = await db.collection('routes').where(where).count()
@@ -160,7 +218,6 @@ async function search(event) {
   const skip = Math.max(0, page) * pageSize
   const kw = keyword.trim()
 
-  // 名称、描述、地址、风景标签模糊搜索 + 仅搜索有效路线
   const searchCondition = _.and([
     { isActive: true },
     _.or([
