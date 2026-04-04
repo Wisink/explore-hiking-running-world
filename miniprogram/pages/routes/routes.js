@@ -132,7 +132,11 @@ Page({
       // 根据当前筛选状态构建请求参数
       let filterType = 'all'
       let filterVal = 'all'
-      if (this.data.activeFilter !== 'all') {
+      let keyword = ''
+      if (this.data.searchKeyword) {
+        filterType = 'search'
+        keyword = this.data.searchKeyword
+      } else if (this.data.activeFilter !== 'all') {
         filterType = 'tag'
         filterVal = this.data.activeFilter
       } else if (this._hasAdvancedFilters()) {
@@ -146,6 +150,7 @@ Page({
           action: 'list',
           filterType: filterType,
           filter: filterVal,
+          keyword: keyword,
           page: page,
           pageSize: PAGE_SIZE
         },
@@ -182,8 +187,7 @@ Page({
     return this.data.activeDifficulty || this.data.activeDistance ||
            this.data.activeElevation || this.data.activeSurface ||
            this.data.activeScenery || this.data.activeDirection ||
-           this.data.activeCost || this.data.activeSeason ||
-           this.data.searchKeyword
+           this.data.activeCost || this.data.activeSeason
   },
 
   // 构建高级筛选对象
