@@ -53,6 +53,9 @@ exports.main = async (event, context) => {
       case 'init-user':
         return await initUser(openid)
 
+      case 'migrate-formats':
+        return await migrateDataFormats(openid)
+
       default:
         return { code: -1, message: '未知操作' }
     }
@@ -270,130 +273,120 @@ async function addFavorite(openid, routeId) {
   return { code: 0, message: '收藏成功' }
 }
 
-// 取消收藏
+// 取消收藏 — 使用事务保护
 async function removeFavorite(openid, routeId) {
-  // 检查是否确实收藏过，避免错误减计数
   const res = await db.collection('user_data').where({ _openid: openid }).get()
-  const wasFavorited = res.data.length > 0 && hasFavorite(res.data[0].favorites || [], routeId)
+  if (res.data.length === 0) return { code: 0, message: '取消收藏成功' }
 
-  // 兼容新旧格式：过滤掉匹配的 routeId（字符串或对象）
-  const currentFavorites = res.data.length > 0 ? (res.data[0].favorites || []) : []
+  const userDataDocId = res.data[0]._id
+  const wasFavorited = hasFavorite(res.data[0].favorites || [], routeId)
+  const currentFavorites = res.data[0].favorites || []
   const newFavorites = currentFavorites.filter(item => {
     if (typeof item === 'string') return item !== routeId
     if (item && item.routeId) return item.routeId !== routeId
     return true
   })
 
-  await db.collection('user_data').where({ _openid: openid }).update({
-    data: {
-      favorites: newFavorites,
-      updatedAt: db.serverDate()
-    }
-  })
-
-  // 更新路线收藏计数（原子操作）
-  if (wasFavorited) {
-    try {
-      await db.collection('routes').doc(routeId).update({
-        data: { favoriteCount: _.inc(-1) }
+  try {
+    await db.runTransaction(async (txn) => {
+      await txn.collection('user_data').doc(userDataDocId).update({
+        data: { favorites: newFavorites, updatedAt: db.serverDate() }
       })
-    } catch (e) {
-      console.error('更新收藏计数失败:', e)
-    }
+      if (wasFavorited) {
+        await txn.collection('routes').doc(routeId).update({ data: { favoriteCount: _.inc(-1) } })
+      }
+    })
+  } catch (e) {
+    console.error('取消收藏事务失败:', e)
+    try {
+      await db.collection('user_data').doc(userDataDocId).update({
+        data: { favorites: newFavorites, updatedAt: db.serverDate() }
+      })
+      if (wasFavorited) {
+        await db.collection('routes').doc(routeId).update({ data: { favoriteCount: _.inc(-1) } })
+      }
+    } catch (e2) { console.error('取消收藏降级更新失败:', e2) }
   }
 
   return { code: 0, message: '取消收藏成功' }
 }
 
-// 添加已走过 - 同一路线同一天不能重复标记
+// 添加已走过 - 同一路线同一天不能重复标记 — 使用事务保护
 async function addCompleted(openid, routeId, date, note, weather, feeling, difficultyFeeling, companions, name, distance) {
   const completedDate = date || new Date().toISOString().split('T')[0]
   const completedItem = {
-    routeId: routeId,
-    date: completedDate,
-    name: name || '',
-    weather: weather || '',
-    feeling: feeling || '',
-    difficultyFeeling: difficultyFeeling || '',
-    companions: companions || '',
-    distance: distance || 0,
-    note: note || '',
+    routeId, date: completedDate, name: name || '', weather: weather || '',
+    feeling: feeling || '', difficultyFeeling: difficultyFeeling || '',
+    companions: companions || '', distance: distance || 0, note: note || '',
     completedAt: Date.now()
   }
 
   const res = await db.collection('user_data').where({ _openid: openid }).get()
 
-  // 新建记录
   if (res.data.length === 0) {
     await db.collection('user_data').add({
-      data: {
-        _openid: openid,
-        favorites: [],
-        completed: [completedItem],
-        updatedAt: db.serverDate()
-      }
+      data: { _openid: openid, favorites: [], completed: [completedItem], updatedAt: db.serverDate() }
     })
-    // 更新路线已走过计数
     try {
-      await db.collection('routes').doc(routeId).update({
-        data: { completedCount: _.inc(1) }
+      await db.runTransaction(async (txn) => {
+        await txn.collection('routes').doc(routeId).update({ data: { completedCount: _.inc(1) } })
       })
-    } catch (e) {
-      console.error('更新已走过计数失败:', e)
-    }
+    } catch (e) { console.error('更新已走过计数失败:', e) }
   } else {
-    // 检查：同一天同一路线不能重复标记
     const existing = res.data[0].completed || []
     const duplicate = existing.some(item => item.routeId === routeId && item.date === completedDate)
-    if (duplicate) {
-      return { code: -1, message: '这一天已经标记过这条路线了' }
-    }
+    if (duplicate) return { code: -1, message: '这一天已经标记过这条路线了' }
 
-    await db.collection('user_data').where({ _openid: openid }).update({
-      data: {
-        completed: _.push([completedItem]),
-        updatedAt: db.serverDate()
-      }
-    })
-    // 更新路线已走过计数
+    const userDataDocId = res.data[0]._id
     try {
-      await db.collection('routes').doc(routeId).update({
-        data: { completedCount: _.inc(1) }
+      await db.runTransaction(async (txn) => {
+        await txn.collection('user_data').doc(userDataDocId).update({
+          data: { completed: _.push([completedItem]), updatedAt: db.serverDate() }
+        })
+        await txn.collection('routes').doc(routeId).update({ data: { completedCount: _.inc(1) } })
       })
     } catch (e) {
-      console.error('更新已走过计数失败:', e)
+      try {
+        await db.runTransaction(async (txn) => {
+          await txn.collection('user_data').doc(userDataDocId).update({
+            data: { completed: _.push([completedItem]), updatedAt: db.serverDate() }
+          })
+          await txn.collection('routes').doc(routeId).update({ data: { completedCount: _.inc(1) } })
+        })
+      } catch (e2) { console.error('更新已走过计数失败(重试):', e2) }
     }
   }
 
   return { code: 0, message: '记录成功' }
 }
 
-// 删除已走过记录
+// 删除已走过记录 — 使用事务保护
 async function removeCompleted(openid, routeId) {
   const res = await db.collection('user_data').where({ _openid: openid }).get()
+  if (res.data.length === 0) return { code: 0, message: '删除成功' }
 
-  if (res.data.length > 0) {
-    const completed = res.data[0].completed || []
-    const removedCount = completed.filter(item => item.routeId === routeId).length
-    const newCompleted = completed.filter(item => item.routeId !== routeId)
+  const userDataDocId = res.data[0]._id
+  const completed = res.data[0].completed || []
+  const removedCount = completed.filter(item => item.routeId === routeId).length
+  const newCompleted = completed.filter(item => item.routeId !== routeId)
 
-    await db.collection('user_data').where({ _openid: openid }).update({
-      data: {
-        completed: newCompleted,
-        updatedAt: db.serverDate()
-      }
+  if (removedCount === 0) return { code: 0, message: '删除成功' }
+
+  try {
+    await db.runTransaction(async (txn) => {
+      await txn.collection('user_data').doc(userDataDocId).update({
+        data: { completed: newCompleted, updatedAt: db.serverDate() }
+      })
+      await txn.collection('routes').doc(routeId).update({ data: { completedCount: _.inc(-removedCount) } })
     })
-
-    // 更新路线已走过计数
-    if (removedCount > 0) {
-      try {
-        await db.collection('routes').doc(routeId).update({
-          data: { completedCount: _.inc(-removedCount) }
-        })
-      } catch (e) {
-        console.error('更新已走过计数失败:', e)
-      }
-    }
+  } catch (e) {
+    console.error('删除已走过事务失败:', e)
+    try {
+      await db.collection('user_data').doc(userDataDocId).update({
+        data: { completed: newCompleted, updatedAt: db.serverDate() }
+      })
+      await db.collection('routes').doc(routeId).update({ data: { completedCount: _.inc(-removedCount) } })
+    } catch (e2) { console.error('删除已走过降级更新失败:', e2) }
   }
 
   return { code: 0, message: '删除成功' }
@@ -508,4 +501,132 @@ async function getChecklist(openid, routeId) {
   const data = checklists[routeId] || { checked: [], custom: [] }
 
   return { code: 0, data: data }
+}
+
+/**
+ * 数据格式迁移函数（一次性执行）
+ * 将 user_data 集合中的旧格式数据迁移为新格式
+ * - favorites: 旧格式 ["route_001", ...] → 新格式 [{routeId: "route_001", date: "..."}, ...]
+ * - completed: 补充缺失的 completedAt 字段
+ *
+ * 触发方式：通过 admin-api 或手动调用云函数
+ * { action: 'migrate-formats' }
+ */
+async function migrateDataFormats(openid) {
+  const startTime = Date.now()
+  let totalUsers = 0
+  let migratedUsers = 0
+  let favoritesMigrated = 0
+  let completedMigrated = 0
+  let errors = 0
+
+  try {
+    // 分页查询所有 user_data 记录
+    let hasMore = true
+    let skip = 0
+    const batchSize = 100
+
+    while (hasMore) {
+      const res = await db.collection('user_data')
+        .skip(skip)
+        .limit(batchSize)
+        .get()
+
+      if (!res.data || res.data.length === 0) {
+        hasMore = false
+        break
+      }
+
+      totalUsers += res.data.length
+
+      for (const doc of res.data) {
+        try {
+          let needUpdate = false
+          const updateData = {}
+
+          // 1. 迁移 favorites: 字符串数组 → 对象数组
+          const favorites = doc.favorites || []
+          if (Array.isArray(favorites) && favorites.some(item => typeof item === 'string')) {
+            const migratedFavorites = favorites.map(item => {
+              if (typeof item === 'string') {
+                return { routeId: item, date: new Date().toISOString() }
+              }
+              return item
+            })
+            updateData.favorites = migratedFavorites
+            favoritesMigrated += favorites.filter(item => typeof item === 'string').length
+            needUpdate = true
+          }
+
+          // 2. 迁移 completed: 补充缺失的 completedAt 字段
+          const completed = doc.completed || []
+          if (Array.isArray(completed) && completed.some(item => !item.completedAt)) {
+            const migratedCompleted = completed.map(item => {
+              if (!item.completedAt) {
+                // 用 date 字段生成时间戳，如果没有 date 则用当前时间
+                let timestamp = Date.now()
+                if (item.date) {
+                  const dateObj = new Date(item.date)
+                  if (!isNaN(dateObj.getTime())) {
+                    timestamp = dateObj.getTime()
+                  }
+                }
+                return { ...item, completedAt: timestamp }
+              }
+              return item
+            })
+            updateData.completed = migratedCompleted
+            completedMigrated += completed.filter(item => !item.completedAt).length
+            needUpdate = true
+          }
+
+          // 执行更新
+          if (needUpdate) {
+            updateData.updatedAt = db.serverDate()
+            await db.collection('user_data').doc(doc._id).update({
+              data: updateData
+            })
+            migratedUsers++
+          }
+        } catch (err) {
+          console.error(`迁移用户 ${doc._id} 失败:`, err)
+          errors++
+        }
+      }
+
+      skip += res.data.length
+      if (res.data.length < batchSize) {
+        hasMore = false
+      }
+    }
+
+    const elapsed = Date.now() - startTime
+    console.log('迁移完成:', { totalUsers, migratedUsers, favoritesMigrated, completedMigrated, errors, elapsed })
+
+    return {
+      code: 0,
+      message: '迁移完成',
+      data: {
+        totalUsers,
+        migratedUsers,
+        favoritesMigrated,
+        completedMigrated,
+        errors,
+        elapsed: `${elapsed}ms`
+      }
+    }
+  } catch (err) {
+    console.error('迁移失败:', err)
+    return {
+      code: -1,
+      message: '迁移失败: ' + err.message,
+      data: {
+        totalUsers,
+        migratedUsers,
+        favoritesMigrated,
+        completedMigrated,
+        errors: errors + 1
+      }
+    }
+  }
 }
