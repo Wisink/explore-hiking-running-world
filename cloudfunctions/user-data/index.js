@@ -91,41 +91,31 @@ async function getUserData(openid) {
   }
 }
 
-// 同步收藏列表（全量替换）
+// 同步收藏列表（全量替换）— 使用事务保护
 async function syncFavorites(openid, favorites) {
   const res = await db.collection('user_data').where({ _openid: openid }).get()
-
   let oldFavoriteIds = []
+  let userDataDocId = null
+  const favObjects = (favorites || []).map(id => {
+    if (typeof id === 'object' && id.routeId) return id
+    return { routeId: id, date: new Date().toISOString() }
+  })
+
   if (res.data.length === 0) {
-    // 创建新记录 — favorites 传入的应为 routeId 数组，转为对象数组
-    const favObjects = (favorites || []).map(id => {
-      if (typeof id === 'object' && id.routeId) return id
-      return { routeId: id, date: new Date().toISOString() }
+    const addRes = await db.collection('user_data').add({
+      data: { _openid: openid, favorites: favObjects, completed: [], updatedAt: db.serverDate() }
     })
-    await db.collection('user_data').add({
-      data: {
-        _openid: openid,
-        favorites: favObjects,
-        completed: [],
-        updatedAt: db.serverDate()
-      }
-    })
+    userDataDocId = addRes._id
   } else {
     oldFavoriteIds = extractFavoriteIds(res.data[0].favorites || [])
-    // 转为对象数组
-    const favObjects = (favorites || []).map(id => {
-      if (typeof id === 'object' && id.routeId) return id
-      return { routeId: id, date: new Date().toISOString() }
-    })
-    await db.collection('user_data').where({ _openid: openid }).update({
-      data: {
-        favorites: favObjects,
-        updatedAt: db.serverDate()
-      }
+    userDataDocId = res.data[0]._id
+    await db.runTransaction(async (txn) => {
+      await txn.collection('user_data').doc(userDataDocId).update({
+        data: { favorites: favObjects, updatedAt: db.serverDate() }
+      })
     })
   }
 
-  // 计算差异并更新路线收藏计数
   const newFavoriteIds = (favorites || []).map(id => {
     if (typeof id === 'object' && id.routeId) return id.routeId
     return id
@@ -135,73 +125,64 @@ async function syncFavorites(openid, favorites) {
 
   for (const routeId of added) {
     try {
-      await db.collection('routes').doc(routeId).update({
-        data: { favoriteCount: _.inc(1) }
+      await db.runTransaction(async (txn) => {
+        await txn.collection('routes').doc(routeId).update({ data: { favoriteCount: _.inc(1) } })
       })
-    } catch (e) { console.error('sync-fav inc error:', e) }
+    } catch (e) { console.error('sync-fav inc txn error:', e) }
   }
   for (const routeId of removed) {
     try {
-      await db.collection('routes').doc(routeId).update({
-        data: { favoriteCount: _.inc(-1) }
+      await db.runTransaction(async (txn) => {
+        await txn.collection('routes').doc(routeId).update({ data: { favoriteCount: _.inc(-1) } })
       })
-    } catch (e) { console.error('sync-fav dec error:', e) }
+    } catch (e) { console.error('sync-fav dec txn error:', e) }
   }
 
   return { code: 0, message: '收藏同步成功' }
 }
 
-// 同步已走过列表（全量替换）
+
+// 同步已走过列表（全量替换）— 使用事务保护
 async function syncCompleted(openid, completed) {
   const res = await db.collection('user_data').where({ _openid: openid }).get()
-
   let oldCompleted = []
+  let userDataDocId = null
   if (res.data.length === 0) {
-    await db.collection('user_data').add({
-      data: {
-        _openid: openid,
-        favorites: [],
-        completed: completed || [],
-        updatedAt: db.serverDate()
-      }
+    const addRes = await db.collection('user_data').add({
+      data: { _openid: openid, favorites: [], completed: completed || [], updatedAt: db.serverDate() }
     })
+    userDataDocId = addRes._id
   } else {
     oldCompleted = res.data[0].completed || []
-    await db.collection('user_data').where({ _openid: openid }).update({
-      data: {
-        completed: completed || [],
-        updatedAt: db.serverDate()
-      }
+    userDataDocId = res.data[0]._id
+    await db.runTransaction(async (txn) => {
+      await txn.collection('user_data').doc(userDataDocId).update({
+        data: { completed: completed || [], updatedAt: db.serverDate() }
+      })
     })
   }
 
-  // 计算差异（按 routeId+completedAt 唯一标识）并更新计数
   const newCompleted = completed || []
   const oldKeys = new Set(oldCompleted.map(item => `${item.routeId}_${item.completedAt}`))
   const newKeys = new Set(newCompleted.map(item => `${item.routeId}_${item.completedAt}`))
 
-  // 统计每个 routeId 的增减量
   const routeDelta = {}
   for (const item of oldCompleted) {
     const key = `${item.routeId}_${item.completedAt}`
-    if (!newKeys.has(key)) {
-      routeDelta[item.routeId] = (routeDelta[item.routeId] || 0) - 1
-    }
+    if (!newKeys.has(key)) routeDelta[item.routeId] = (routeDelta[item.routeId] || 0) - 1
   }
   for (const item of newCompleted) {
     const key = `${item.routeId}_${item.completedAt}`
-    if (!oldKeys.has(key)) {
-      routeDelta[item.routeId] = (routeDelta[item.routeId] || 0) + 1
-    }
+    if (!oldKeys.has(key)) routeDelta[item.routeId] = (routeDelta[item.routeId] || 0) + 1
   }
 
   for (const [routeId, delta] of Object.entries(routeDelta)) {
     if (delta !== 0) {
       try {
-        await db.collection('routes').doc(routeId).update({
-          data: { completedCount: _.inc(delta) }
+        await db.runTransaction(async (txn) => {
+          await txn.collection('routes').doc(routeId).update({ data: { completedCount: _.inc(delta) } })
         })
-      } catch (e) { console.error('sync-completed count error:', e) }
+      } catch (e) { console.error('sync-completed txn count error:', e) }
     }
   }
 
@@ -228,45 +209,44 @@ function hasFavorite(favorites, routeId) {
   })
 }
 
-// 添加收藏
 async function addFavorite(openid, routeId) {
   const res = await db.collection('user_data').where({ _openid: openid }).get()
-
-  let shouldIncCount = true
   const favoriteItem = { routeId: routeId, date: new Date().toISOString() }
 
   if (res.data.length === 0) {
     await db.collection('user_data').add({
-      data: {
-        _openid: openid,
-        favorites: [favoriteItem],
-        completed: [],
-        updatedAt: db.serverDate()
-      }
+      data: { _openid: openid, favorites: [favoriteItem], completed: [], updatedAt: db.serverDate() }
     })
-  } else {
-    // 检查是否已收藏（兼容新旧格式），避免重复计数
-    const currentFavorites = res.data[0].favorites || []
-    if (hasFavorite(currentFavorites, routeId)) {
-      shouldIncCount = false
-    }
-    // 添加收藏对象（用 push，addToSet 对对象无法深层比较）
-    await db.collection('user_data').where({ _openid: openid }).update({
-      data: {
-        favorites: _.push([favoriteItem]),
-        updatedAt: db.serverDate()
-      }
-    })
-  }
-
-  // 更新路线收藏计数（原子操作）
-  if (shouldIncCount) {
     try {
-      await db.collection('routes').doc(routeId).update({
-        data: { favoriteCount: _.inc(1) }
+      await db.runTransaction(async (txn) => {
+        await txn.collection('routes').doc(routeId).update({ data: { favoriteCount: _.inc(1) } })
+      })
+    } catch (e) { console.error('更新收藏计数失败:', e) }
+  } else {
+    const userDataDocId = res.data[0]._id
+    const currentFavorites = res.data[0].favorites || []
+    const alreadyFavorited = hasFavorite(currentFavorites, routeId)
+
+    try {
+      await db.runTransaction(async (txn) => {
+        await txn.collection('user_data').doc(userDataDocId).update({
+          data: { favorites: _.push([favoriteItem]), updatedAt: db.serverDate() }
+        })
+        if (!alreadyFavorited) {
+          await txn.collection('routes').doc(routeId).update({ data: { favoriteCount: _.inc(1) } })
+        }
       })
     } catch (e) {
-      console.error('更新收藏计数失败:', e)
+      try {
+        await db.runTransaction(async (txn) => {
+          await txn.collection('user_data').doc(userDataDocId).update({
+            data: { favorites: _.push([favoriteItem]), updatedAt: db.serverDate() }
+          })
+          if (!alreadyFavorited) {
+            await txn.collection('routes').doc(routeId).update({ data: { favoriteCount: _.inc(1) } })
+          }
+        })
+      } catch (e2) { console.error('更新收藏计数失败(重试):', e2) }
     }
   }
 
