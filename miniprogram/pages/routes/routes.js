@@ -100,7 +100,7 @@ Page({
     }
   },
 
-  // 加载路线列表
+  // 加载路线列表（服务端分页）
   loadRoutes: function (reset) {
     if (this.data.loading) return Promise.resolve()
 
@@ -117,58 +117,145 @@ Page({
         resolve()
       }, 8000)
 
-      // 如果已有全量缓存，直接筛选
-      if (!reset && this._allProcessedData) {
-        clearTimeout(timeoutId)
-        this.processRoutes(this._allProcessedData, page, false, true)
-        resolve()
-        return
+      // 根据当前筛选状态构建请求参数
+      let filterType = 'all'
+      let filterVal = 'all'
+      if (this.data.activeFilter !== 'all') {
+        filterType = 'tag'
+        filterVal = this.data.activeFilter
+      } else if (this._hasAdvancedFilters()) {
+        filterType = 'advanced'
+        filterVal = this._buildAdvancedFilter()
       }
 
       wx.cloud.callFunction({
         name: 'routes',
         data: {
           action: 'list',
-          filter: 'all',
-          keyword: '',
-          page: 0,
-          pageSize: 2000 // 拉取全量数据供客户端筛选
+          filterType: filterType,
+          filter: filterVal,
+          page: page,
+          pageSize: PAGE_SIZE
         },
         success: (res) => {
           clearTimeout(timeoutId)
           if (res.result && res.result.code === 0 && res.result.data && res.result.data.list) {
-            // 云端加载成功后自动缓存数据
-            cloudSync.saveRoutesCache(res.result.data.list)
-            this.processRoutes(res.result.data.list, page, reset)
+            const pageData = res.result.data
+            // 服务端返回的分页数据，缓存追加（reset 时全量替换）
+            if (reset) {
+              cloudSync.saveRoutesCache(pageData.list)
+              this._serverTotal = pageData.total
+            } else {
+              const cached = cloudSync.getRoutesCache() || []
+              cloudSync.saveRoutesCache(cached.concat(pageData.list))
+            }
+            this._processServerPage(pageData.list, page, reset)
           } else {
-            // 数据加载异常，降级使用缓存
-            this._loadFromCache(reset, page, resolve)
-            return
+            // 数据加载异常，降级
+            this._fallbackToFullLoad(reset, page, resolve)
           }
           resolve()
         },
         fail: () => {
           clearTimeout(timeoutId)
-          // 网络失败，降级使用缓存
-          this._loadFromCache(reset, page, resolve)
-          return
+          // 降级：走缓存或全量加载
+          this._tryFallbackCacheForPage(reset, page, resolve)
         }
       })
     })
   },
 
-  // 从缓存加载路线（离线降级）
-  _loadFromCache: function (reset, page, resolve) {
-    const cached = cloudSync.getRoutesCache()
-    if (cached && cached.length > 0) {
-      this.processRoutes(cached, page, reset, true)
+  // 检查是否有高级筛选条件
+  _hasAdvancedFilters: function () {
+    return this.data.activeDifficulty || this.data.activeDistance ||
+           this.data.activeElevation || this.data.activeSurface ||
+           this.data.activeScenery || this.data.activeDirection ||
+           this.data.activeCost || this.data.activeSeason ||
+           this.data.searchKeyword
+  },
+
+  // 构建高级筛选对象
+  _buildAdvancedFilter: function () {
+    const f = {}
+    if (this.data.activeDifficulty) {
+      if (this.data.activeDifficulty === 'easy') f.difficulty = [1]
+      else if (this.data.activeDifficulty === 'medium') f.difficulty = [2]
+      else if (this.data.activeDifficulty === 'hard') f.difficulty = [3, 4, 5]
+    }
+    if (this.data.activeDistance) f.distance = this.data.activeDistance
+    if (this.data.activeElevation) f.elevation = this.data.activeElevation
+    if (this.data.activeSurface) f.surface = this.data.activeSurface
+    if (this.data.activeScenery) f.scenery = this.data.activeScenery
+    if (this.data.activeDirection) f.direction = this.data.activeDirection
+    if (this.data.activeCost) f.cost = this.data.activeCost
+    if (this.data.activeSeason) f.season = this.data.activeSeason
+    return f
+  },
+
+  // 处理服务端分页数据
+  _processServerPage: function (serverList, page, reset) {
+    const processedData = serverList.map(item => this.processRouteItem(item))
+
+    // accumulate or replace
+    let allData = reset ? processedData : (this._allProcessedData || []).concat(processedData)
+    // 客户端二次筛选兜底
+    let filteredData = this.applyFilter(allData)
+
+    // 用服务端 total 判断是否还有更多页
+    const hasMore = filteredData.length < (this._serverTotal || Infinity)
+
+    this.setData({
+      routes: filteredData,
+      page: page + 1,
+      hasMore: hasMore,
+      loading: false,
+      showSkeleton: false
+    })
+    this._allProcessedData = filteredData
+  },
+
+  // 降级方案：尝试使用缓存
+  _tryFallbackCacheForPage: function (reset, page, resolve) {
+    const cache = cloudSync.getRoutesCache()
+    if (cache && cache.length > 0) {
+      console.log('使用本地缓存路线数据（服务端失败降级）')
+      this.processRoutes(cache, page, reset, true)
       wx.showToast({ title: '当前离线，显示缓存数据', icon: 'none', duration: 2000 })
     } else {
-      if (reset) {
-        this.setData({ routes: [], loading: false })
-      }
-      wx.showToast({ title: '网络异常，请检查网络连接', icon: 'none', duration: 2000 })
+      this._fallbackToFullLoad(reset, page, resolve)
     }
+    resolve()
+  },
+
+  // 最终降级：尝试全量加载（兼容旧行为）
+  _fallbackToFullLoad: function (reset, page, resolve) {
+    wx.cloud.callFunction({
+      name: 'routes',
+      data: {
+        action: 'list',
+        filter: 'all',
+        keyword: '',
+        page: 0,
+        pageSize: 2000
+      },
+      success: (res) => {
+        if (res.result && res.result.code === 0 && res.result.data && res.result.data.list) {
+          cloudSync.saveRoutesCache(res.result.data.list)
+          this.processRoutes(res.result.data.list, page, reset)
+        } else {
+          if (reset) {
+            this.setData({ routes: [], loading: false })
+          }
+          showNiceToast(this, '数据加载失败，请重试', 'error', 2000)
+        }
+      },
+      fail: () => {
+        if (reset) {
+          this.setData({ routes: [], loading: false })
+        }
+        showNiceToast(this, '网络错误，请重试', 'error', 2000)
+      }
+    })
     resolve()
   },
 
