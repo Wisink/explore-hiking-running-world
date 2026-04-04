@@ -6,7 +6,7 @@ function showNiceToast(that, message, type = 'info', duration = 2000) {
 const app = getApp()
 const cloudSync = require('../../utils/cloud-sync')
 const { handleError } = require('../../utils/error-handler')
-const { handleError } = require('../../utils/error-handler')
+const { formatDifficulty, formatCost, formatDistance, formatDuration, debounce } = require('../../utils/util')
 
 // 筛选标签配置
 // 获取当前季节标签
@@ -76,6 +76,16 @@ Page({
     this.setData({
       statusBarHeight: wx.getSystemInfoSync().statusBarHeight
     })
+    // 防抖搜索函数（创建一次）
+    this._debouncedSearch = debounce((keyword) => {
+      if (keyword.trim().length < 2 && keyword.trim().length > 0) {
+        wx.showToast({ title: '请输入至少2个字符', icon: 'none', duration: 1500 })
+        return
+      }
+      if (keyword !== this.data.searchKeyword) {
+        this.setData({ searchKeyword: keyword })
+      }
+    }, 300)
     this.loadRoutes(true)
   },
 
@@ -580,20 +590,50 @@ Page({
       })
     }
 
-    // 搜索关键词过滤（统一在这里处理，确保与标签/高级筛选一致）
+    // 搜索关键词过滤（按匹配度排序）
     if (this.data.searchKeyword) {
-      const keyword = this.data.searchKeyword.toLowerCase()
-      result = result.filter(item =>
-        (item.name && item.name.toLowerCase().includes(keyword)) ||
-        (item.location && item.location.toLowerCase().includes(keyword)) ||
-        (item.description && item.description.toLowerCase().includes(keyword)) ||
-        (item.scenery && item.scenery.some(s => s.includes(keyword))) ||
-        (item.features && item.features.some(f => f.includes(keyword))) ||
-        (item.bestSeason && (Array.isArray(item.bestSeason) ? item.bestSeason : [item.bestSeason]).some(s => s.includes(keyword)))
-      )
+      result = this._searchWithRank(result, this.data.searchKeyword)
     }
 
     return result
+  },
+
+  // 搜索排序：按匹配度评分（名称全匹配 > 名称包含 > 标签匹配 > 描述/地址包含）
+  _searchWithRank: function (data, keyword) {
+    const kw = keyword.trim()
+    if (!kw) return data
+    // 搜索"免费"特殊处理
+    if (kw === '免费') {
+      wx.showToast({ title: '所有路线均为免费', icon: 'none', duration: 2000 })
+      return data
+    }
+    const lowerKw = kw.toLowerCase()
+
+    const scored = data.map(item => {
+      let score = 0
+      const name = (item.name || '').toLowerCase()
+      const loc = (item.location || '').toLowerCase()
+      const desc = (item.description || '').toLowerCase()
+      const scenery = (item.scenery || []).join('').toLowerCase()
+      const features = (item.features || []).join('').toLowerCase()
+      const tags = [...(item.scenery || []), ...(item.bestSeason || []), ...(item.features || [])].join('').toLowerCase()
+
+      // 名称完全匹配（权重最高）
+      if (name === lowerKw) score = 100
+      // 名称包含
+      else if (name.includes(lowerKw)) score = 80
+      // 标签匹配
+      else if (tags.includes(lowerKw)) score = 50
+      // 描述/地址包含
+      else if (desc.includes(lowerKw) || loc.includes(lowerKw)) score = 30
+      // 风景/特色包含
+      else if (scenery.includes(lowerKw) || features.includes(lowerKw)) score = 10
+
+      return { ...item, _searchScore: score }
+    })
+
+    // 过滤出有匹配的结果，按分数降序
+    return scored.filter(item => item._searchScore > 0).sort((a, b) => b._searchScore - a._searchScore)
   },
 
   // 切换筛选标签
@@ -648,9 +688,10 @@ Page({
     this.setData({ showSearch: true })
   },
 
-  // 搜索输入
+  // 搜索输入（debounce 300ms 实时匹配）
   onSearchInput: function (e) {
-    this.setData({ searchKeyword: e.detail.value })
+    const keyword = e.detail.value || ''
+    this._debouncedSearch(keyword)
   },
 
   // 执行搜索
