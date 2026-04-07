@@ -2,13 +2,13 @@
 const cloudSync = require('./utils/cloud-sync')
 
 App({
-  onLaunch: async function () {
-    // 初始化云开发
+  onLaunch: function () {
+    // 初始化云开发 - 使用动态环境，避免硬编码
     if (!wx.cloud) {
       console.error('请使用 2.2.3 或以上的基础库以使用云能力')
     } else {
       wx.cloud.init({
-        env: 'cloud1-1ghoxvn859e9d0df', // 云开发环境ID
+        env: wx.cloud.DYNAMIC_CURRENT_ENV, // 动态获取当前云环境
         traceUser: true,
       })
     }
@@ -20,9 +20,8 @@ App({
     this.globalData.screenWidth = systemInfo.screenWidth
     this.globalData.screenHeight = systemInfo.screenHeight
 
-    // 同步用户数据（收藏/已走过）—— 阻塞启动，确保统计不丢数据
-    await this.syncUserData()
-    // 初始化用户编号（后台异步执行，不阻塞启动流程）
+    // 用户数据同步和初始化均异步执行，不阻塞启动
+    this._syncUserDataPromise = this.syncUserData()
     this._userInitPromise = this.initUser()
   },
 
