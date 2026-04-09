@@ -1,5 +1,7 @@
 {
-  "usingComponents": {},
+  "usingComponents": {
+    "route-card": "/miniprogram/components/route-card/route-card"
+  },
   "navigationBarTitleText": "秦人徒步路线分享",
   "enablePullDownRefresh": true,
   "backgroundColorTop": "#2d6a4f",

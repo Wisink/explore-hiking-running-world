@@ -1,4 +1,4 @@
-<!-- 路线卡片组件 v2.0 -->
+<!-- 路线卡片组件 v4.0 - 适配新版 routes 数据集（数字字段） -->
 <view
   class="route-card"
   bindtap="onTap"
@@ -9,7 +9,7 @@
   <view class="route-card__cover">
     <image
       class="route-card__image"
-      src="{{route.coverImage || route.cover || '/images/scenery/scenery-general.jpg'}}"
+      src="{{route.coverImage || '/images/scenery/scenery-general.jpg'}}"
       mode="aspectFill"
       lazy-load
       binderror="onImageError"
@@ -17,9 +17,12 @@
     <!-- 渐变遮罩 -->
     <view class="route-card__overlay"></view>
 
-    <!-- 难度角标 -->
-    <view class="route-card__badge diff-{{route.difficulty.level}}">
-      {{route.difficulty.label || difficultyText}}
+    <!-- 难度角标：纯色背景颜色映射 -->
+    <view
+      class="route-card__badge"
+      style="background: {{route.diffColor || diffColor}}"
+    >
+      {{route.diffText || difficultyText}}
     </view>
 
     <!-- 收藏按钮 -->
@@ -34,17 +37,21 @@
     <view class="route-card__hero">
       <text class="route-card__name">{{route.name}}</text>
       <view class="route-card__meta">
-        <view class="route-card__meta-item" wx:if="{{route.distance_km}}">
+        <view class="route-card__meta-item" wx:if="{{route.distance > 0}}">
           <text class="meta-icon">📏</text>
-          <text>{{route.distance_km}}km</text>
+          <text>{{route.distance}}km</text>
         </view>
-        <view class="route-card__meta-item" wx:if="{{route.duration_hours}}">
+        <view class="route-card__meta-item" wx:if="{{route.durationText}}">
           <text class="meta-icon">⏱</text>
-          <text>{{route.duration_hours}}h</text>
+          <text>{{route.durationText}}</text>
         </view>
-        <view class="route-card__meta-item" wx:if="{{route.elevation_gain_m}}">
+        <view class="route-card__meta-item" wx:if="{{route.elevationGain > 0}}">
           <text class="meta-icon">⛰️</text>
-          <text>{{route.elevation_gain_m}}m↑</text>
+          <text>{{route.elevationGain}}m↑</text>
+        </view>
+        <view class="route-card__meta-item" wx:if="{{route.district}}">
+          <text class="meta-icon">📍</text>
+          <text>{{route.district}}</text>
         </view>
       </view>
     </view>
@@ -52,10 +59,29 @@
 
   <!-- 内容区 -->
   <view class="route-card__body">
-    <!-- 描述 -->
-    <text class="route-card__desc ellipsis">{{route.description}}</text>
+    <!-- 简短描述 -->
+    <text class="route-card__desc ellipsis">{{route.shortDesc || route.description || '探索这条美丽的路线'}}</text>
 
-    <!-- 底部行 -->
+    <!-- 地形类型标签（中文，最多3个） -->
+    <view class="route-card__tags" wx:if="{{terrainLabels.length > 0}}">
+      <text
+        class="route-card__tag"
+        wx:for="{{terrainLabels}}"
+        wx:key="*this"
+      >{{item}}</text>
+    </view>
+
+    <!-- 路线DNA标签（中文，最多2个） -->
+    <view class="route-card__tags route-card__tags--dna" wx:if="{{dnaLabels.length > 0}}">
+      <text
+        class="route-card__tag route-card__tag--dna"
+        wx:for="{{dnaLabels}}"
+        wx:for-item="dna"
+        wx:key="*this"
+      >{{dna}}</text>
+    </view>
+
+    <!-- 底部行：难度星级 + 费用 -->
     <view class="route-card__footer">
       <!-- 难度星级 -->
       <view class="route-card__stars">
@@ -63,18 +89,13 @@
           class="route-card__star"
           wx:for="{{5}}"
           wx:key="*this"
-        >{{index < route.difficulty.level ? '★' : '☆'}}</text>
+        >{{index < difficultyValue ? '★' : '☆'}}</text>
       </view>
 
       <!-- 费用 -->
-      <view class="route-card__cost {{route.cost.type === '免费' ? 'route-card__cost--free' : ''}}">
-        <text>{{route.cost.type === '免费' ? '免费' : '¥' + (route.cost.amount || '?')}}</text>
+      <view class="route-card__cost route-card__cost--free">
+        <text>免费</text>
       </view>
-    </view>
-
-    <!-- 风景标签 -->
-    <view class="route-card__tags" wx:if="{{route.scenery && route.scenery.length}}">
-      <text class="route-card__tag" wx:for="{{route.scenery}}" wx:key="*this">{{item}}</text>
     </view>
   </view>
 </view>

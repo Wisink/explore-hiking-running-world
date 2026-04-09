@@ -48,19 +48,17 @@
   pointer-events: none;
 }
 
-/* 难度角标 */
+/* 难度角标（内联 style 传入颜色，纯色背景） */
 .route-card__badge {
   position: absolute;
   top: 16rpx;
-  right: 16rpx;
-  padding: 8rpx 18rpx;
+  left: 16rpx;
+  padding: 6rpx 16rpx;
   border-radius: 8rpx;
   font-size: 22rpx;
   font-weight: 600;
   color: #FFFFFF;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.15);
+  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.2);
 }
 
 /* 收藏按钮 — 毛玻璃 */

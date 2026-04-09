@@ -8,34 +8,63 @@ const cloudSync = require('../../utils/cloud-sync')
 const { handleError } = require('../../utils/error-handler')
 const { formatDifficulty, formatCost, formatDistance, formatDuration, debounce } = require('../../utils/util')
 
-// 筛选标签配置
-// 获取当前季节标签
-function getSeasonTag() {
-  const month = new Date().getMonth() + 1
-  if (month >= 3 && month <= 5) return { label: '春天去', icon: '🌸' }
-  if (month >= 6 && month <= 8) return { label: '夏天去', icon: '☀️' }
-  if (month >= 9 && month <= 11) return { label: '秋天去', icon: '🍂' }
-  return { label: '冬天去', icon: '❄️' }
+// ========== 中英文对照 Map（与云函数 / 新版数据集保持一致） ==========
+const DIFFICULTY_ZH = {
+  1: '轻松', 2: '简单', 3: '适中', 4: '较难', 5: '困难'
+}
+const TERRAIN_ZH = {
+  mountain_path: '山间小路', forest: '穿越森林', stream: '溪流路段',
+  ridge: '山脊行走', rock_scramble: '岩石攀爬', grassland: '高山草甸', paved: '景区步道'
+}
+const ROUTEDNA_ZH = {
+  wet_environment: '亲水栈道', forest_shade: '林荫清凉', significant_climb: '持续爬升',
+  technical: '技术路段', high_altitude: '高海拔', water_crossing: '涉水过河',
+  exposed_ridge: '悬岩峭壁', long_distance: '长距离', remote: '人迹罕至',
+  paved_comfort: '舒适步道', scenic_viewpoint: '观景台'
+}
+const SEASON_ZH = {
+  spring: '春季', summer: '夏季', autumn: '秋季', winter: '冬季'
+}
+const DIFFICULTY_COLOR = {
+  1: '#4CAF50', 2: '#8BC34A', 3: '#FFC107', 4: '#FF9800', 5: '#F44336'
 }
 
+// ========== 当前季节判断（用于筛选标签动态高亮） ==========
+function getCurrentSeason() {
+  const month = new Date().getMonth() + 1
+  if (month >= 3 && month <= 5) return 'spring'
+  if (month >= 6 && month <= 8) return 'summer'
+  if (month >= 9 && month <= 11) return 'autumn'
+  return 'winter'
+}
+function getSeasonEmoji(season) {
+  return { spring: '🌸', summer: '☀️', autumn: '🍂', winter: '❄️' }[season] || ''
+}
+const currentSeason = getCurrentSeason()
+const seasonLabel = { spring: '春季', summer: '夏季', autumn: '秋季', winter: '冬季' }[currentSeason]
+
+// ========== 筛选标签配置（新设计，适配新版 routes 数据集） ==========
 const FILTER_TAGS = [
-  { id: 'all', label: '全部', icon: '' },
-  { id: 'beginner', label: '新手入门', icon: '🌿' },
-  { id: 'advanced', label: '进阶挑战', icon: '⛰️' },
-  { id: 'stream-waterfall', label: '溪流瀑布', icon: '💧' },
-  { id: 'redleaf', label: '红叶秋色', icon: '🍂' },
-  { id: 'meadow', label: '高山草甸', icon: '🌾' },
-  { id: 'culture', label: '人文古迹', icon: '🏛️' },
-  { id: 'nearby', label: '西安市区', icon: '📍' },
-  { id: 'season', label: getSeasonTag().label, icon: getSeasonTag().icon }
+  { id: 'all', label: '全部', icon: '🏔️' },
+  { id: 'beginner', label: '新手友好', icon: '🌱', desc: '难度1-2星，8km以内' },
+  { id: 'family', label: '亲子休闲', icon: '👨‍👩‍👧', desc: '难度1-2星，适合带娃' },
+  { id: 'scenic', label: '观景路线', icon: '🌅', desc: '含观景台/草甸' },
+  { id: 'stream', label: '亲水溯溪', icon: '💧', desc: '溪流瀑布路线' },
+  { id: 'forest', label: '森林漫步', icon: '🌲', desc: '穿越森林路线' },
+  { id: 'climb', label: '挑战爬升', icon: '⛰️', desc: '爬升800m以上' },
+  { id: currentSeason, label: seasonLabel + '推荐', icon: getSeasonEmoji(currentSeason), isSeason: true },
+  { id: 'advanced', label: '进阶挑战', icon: '🔥', desc: '难度4-5星' },
 ]
 
-// 难度映射
-const DIFFICULTY_MAP = {
-  '初级': { level: 1, color: '#4CAF50', text: '轻松' },
-  '中级': { level: 3, color: '#FFC107', text: '适中' },
-  '中级-高级': { level: 4, color: '#FF9800', text: '较难' },
-  '高级': { level: 5, color: '#F44336', text: '困难' }
+// ========== 辅助函数 ==========
+function terrainToZh(terrains) {
+  if (!terrains || !Array.isArray(terrains)) return []
+  return terrains.map(t => TERRAIN_ZH[t] || t).filter(Boolean).slice(0, 3)
+}
+
+function dnaToZh(dnas) {
+  if (!dnas || !Array.isArray(dnas)) return []
+  return dnas.map(d => ROUTEDNA_ZH[d] || d).filter(Boolean).slice(0, 2)
 }
 
 // 每页条数
@@ -319,119 +348,181 @@ Page({
   },
 
   // 处理单条路线数据
+  // 支持两种数据格式：
+  // 1. 新版 routes 数据集（数字字段）：difficulty=数字, distance=浮点数, elevationGain=数字等
+  // 2. 旧版 structured 格式：difficulty={level,label}, distance_km, elevation_gain_m 等
   processRouteItem: function (item) {
-    // 兼容 flat（本地）和 structured（云数据库）两种格式
-    const difficultyStr = typeof item.difficulty === 'object' ? (item.difficulty.label || '中级') : (item.difficulty || '中级')
-    // 优先使用 difficulty.level 数值（云数据库），其次查映射表（本地数据）
-    let diffLevel, diffColor, diffText
-    if (typeof item.difficulty === 'object' && item.difficulty.level) {
-      diffLevel = item.difficulty.level
-      // 根据 level 推导颜色和文案
-      if (diffLevel <= 1) { diffColor = '#4CAF50'; diffText = '轻松' }
-      else if (diffLevel <= 2) { diffColor = '#FFC107'; diffText = '适中' }
-      else if (diffLevel <= 4) { diffColor = '#FF9800'; diffText = '较难' }
-      else { diffColor = '#F44336'; diffText = '困难' }
+    // ---------- 难度处理 ----------
+    let diffLevel, diffColor, diffText, difficultyLevel
+    if (typeof item.difficulty === 'number') {
+      // 新版数字字段
+      difficultyLevel = item.difficulty
+      diffLevel = difficultyLevel
+      diffText = DIFFICULTY_ZH[difficultyLevel] || '适中'
+      diffColor = DIFFICULTY_COLOR[difficultyLevel] || '#FFC107'
+    } else if (typeof item.difficulty === 'object' && item.difficulty.level) {
+      // 旧版 structured：difficulty={level, label}
+      difficultyLevel = item.difficulty.level
+      diffLevel = difficultyLevel
+      diffText = DIFFICULTY_ZH[difficultyLevel] || (item.difficulty.label || '适中')
+      diffColor = DIFFICULTY_COLOR[difficultyLevel] || '#FFC107'
     } else {
-      const diffInfo = DIFFICULTY_MAP[difficultyStr] || { level: 3, color: '#FFC107', text: difficultyStr || '适中' }
-      diffLevel = diffInfo.level
-      diffColor = diffInfo.color
-      diffText = diffInfo.text
+      // fallback
+      const diffStr = typeof item.difficulty === 'string' ? item.difficulty : '适中'
+      const diffInfo = DIFFICULTY_MAP ? DIFFICULTY_MAP[diffStr] : null
+      diffLevel = diffInfo ? diffInfo.level : 3
+      diffText = diffInfo ? diffInfo.text : diffStr
+      diffColor = diffInfo ? diffInfo.color : '#FFC107'
+      difficultyLevel = diffLevel
     }
 
-    // 解析距离和耗时
-    let distanceText, durationText
-    if (typeof item.distance === 'string' && item.distance.includes('/')) {
+    // ---------- 距离处理 ----------
+    let distance, distanceText
+    if (typeof item.distance === 'number') {
+      // 新版数字字段
+      distance = item.distance
+      distanceText = `约${item.distance}km`
+    } else if (item.distance !== undefined) {
+      // 旧版字段
+      const km = item.distance
+      distance = typeof km === 'number' ? km : parseFloat(km) || 0
+      distanceText = `约${distance}km`
+    } else if (typeof item.distance === 'string' && item.distance.includes('/')) {
+      // 旧版 flat 格式 "8km/4h"
       const parts = item.distance.split('/')
+      distance = parseFloat(parts[0]) || 0
       distanceText = parts[0].trim()
-      durationText = parts[1] ? parts[1].trim() : ''
-    } else if (item.distance_km) {
-      distanceText = `约${item.distance_km}公里`
-      durationText = item.duration_hours ? `约${item.duration_hours}小时` : ''
     } else {
+      distance = 0
       distanceText = item.distance || ''
-      durationText = ''
     }
 
-    // location: flat=string, structured=object
-    const locationStr = typeof item.location === 'object' ? (item.location.address || '') : (item.location || '')
-
-    // cost: flat=string, structured=object
-    const costStr = typeof item.cost === 'object'
-      ? (item.cost.type === '免费' ? '免费' : `${item.cost.note || ''} ${item.cost.amount ? item.cost.amount + '元' : ''}`.trim())
-      : (item.cost || '免费')
-
-    // scenery: 支持数组和字符串（"瀑布|溪流"）两种格式
-    let sceneryArr = []
-    if (Array.isArray(item.scenery)) {
-      sceneryArr = item.scenery
-    } else if (typeof item.scenery === 'string' && item.scenery) {
-      // 字符串格式，按 | 或 , 分割
-      sceneryArr = item.scenery.split(/[|,，、]/).map(s => s.trim()).filter(Boolean)
+    // ---------- 时长处理 ----------
+    let durationMin, durationMax, durationText
+    if (item.durationMin !== undefined || item.durationMax !== undefined) {
+      // 新版
+      durationMin = item.durationMin
+      durationMax = item.durationMax
+      if (durationMin !== undefined && durationMax !== undefined && durationMax > 0) {
+        if (String(durationMin) !== String(durationMax)) {
+          durationText = `${durationMin}-${durationMax}小时`
+        } else {
+          durationText = `${durationMax}小时`
+        }
+      } else if (durationMin !== undefined && durationMin > 0) {
+        durationText = `${durationMin}小时`
+      } else if (durationMax !== undefined && durationMax > 0) {
+        durationText = `${durationMax}小时`
+      }
+    } else if (item.duration_hours !== undefined) {
+      // 旧版
+      durationMin = item.duration_hours
+      durationMax = item.duration_hours
+      durationText = `约${item.duration_hours}小时`
     }
 
-    // sections: 云端是数组，供路面筛选用
-    const sectionsArr = Array.isArray(item.sections) ? item.sections : []
-
-    // suitableFor: 从 difficulty.suitableFor 提取，供family筛选用
-    const suitableForArr = (typeof item.difficulty === 'object' && item.difficulty.suitableFor)
-      ? item.difficulty.suitableFor
-      : []
-
-    // family_friendly: 按距离+难度综合判断
-    const dist = item.distance_km || 0
-    let isFamily = false
-    let familyLabel = ''
-    if (diffLevel <= 1 && dist > 0 && dist <= 5) {
-      isFamily = true
-      familyLabel = '亲子5岁+'
-    } else if (diffLevel <= 2 && dist > 0 && dist <= 10) {
-      isFamily = true
-      familyLabel = '亲子8岁+'
+    // ---------- 爬升处理 ----------
+    let elevationGain
+    if (item.elevationGain !== undefined) {
+      elevationGain = item.elevationGain
+    } else {
+      elevationGain = item.elevationGain || 0
     }
 
-    // location_direction: 从 location.direction 提取
-    const locationDirection = typeof item.location === 'object' ? (item.location.direction || '') : ''
-
-    // 获取封面图
+    // ---------- 封面图 ----------
     let coverImage = item.image || item.coverImage || ''
-    if (!coverImage && sceneryArr.length > 0) {
-      coverImage = this.getFeatureImage(sceneryArr[0])
+    if (!coverImage) {
+      coverImage = '/images/scenery/scenery-general.jpg'
     }
 
-    // bestSeason: 处理数组、字符串（逗号分隔）两种格式，统一转为数组
-    let rawSeason = item.bestSeason || item.best_season || ''
-    let bestSeason = []
-    if (Array.isArray(rawSeason)) {
-      bestSeason = rawSeason
-    } else if (typeof rawSeason === 'string' && rawSeason) {
-      bestSeason = rawSeason.split(/[,，、]/).map(s => s.trim()).filter(Boolean)
+    // ---------- 区县 ----------
+    const district = (item.location && typeof item.location === 'object' && item.location.district)
+      ? item.location.district
+      : (item.district || '')
+
+    // ---------- cost ----------
+    let costStr
+    if (item.cost && typeof item.cost === 'object') {
+      costStr = item.cost.type === '免费' ? '免费' : `${item.cost.note || ''} ${item.cost.amount ? item.cost.amount + '元' : ''}`.trim()
+    } else {
+      costStr = item.cost || '免费'
     }
 
-    // 检查收藏状态
+    // ---------- 地形（新版英文数组 -> 中文标签） ----------
+    let terrainLabels
+    if (Array.isArray(item.terrainLabels)) {
+      terrainLabels = item.terrainLabels
+    } else if (Array.isArray(item.terrainTypes)) {
+      terrainLabels = terrainToZh(item.terrainTypes)
+    } else if (Array.isArray(item.scenery)) {
+      terrainLabels = item.scenery.slice(0, 3)
+    } else if (typeof item.scenery === 'string') {
+      terrainLabels = item.scenery.split(/[|,，、]/).map(s => s.trim()).filter(Boolean).slice(0, 3)
+    } else {
+      terrainLabels = []
+    }
+
+    // ---------- 路线DNA（新版英文数组 -> 中文标签） ----------
+    let dnaLabels
+    if (Array.isArray(item.dnaLabels)) {
+      dnaLabels = item.dnaLabels
+    } else if (Array.isArray(item.routeDNA)) {
+      dnaLabels = dnaToZh(item.routeDNA)
+    } else {
+      dnaLabels = []
+    }
+
+    // ---------- 季节 ----------
+    let bestSeasons
+    if (Array.isArray(item.bestSeasons)) {
+      bestSeasons = item.bestSeasons
+    } else if (Array.isArray(item.bestSeason) || Array.isArray(item.best_season)) {
+      bestSeasons = item.bestSeason || item.best_season
+    } else {
+      bestSeasons = []
+    }
+
+    // ---------- family_friendly ----------
+    let isFamily = false, familyLabel = ''
+    if (diffLevel <= 1 && distance > 0 && distance <= 5) {
+      isFamily = true; familyLabel = '亲子5岁+'
+    } else if (diffLevel <= 2 && distance > 0 && distance <= 10) {
+      isFamily = true; familyLabel = '亲子8岁+'
+    }
+
+    // ---------- 收藏状态 ----------
     const favorites = cloudSync.getLocalFavorites()
     const isFavorited = favorites.includes(item._id)
 
     return {
       ...item,
+      _id: item._id,
+      name: item.name,
+      shortDesc: item.shortDesc || '',
       coverImage: coverImage,
-      difficulty: difficultyStr,
-      location: locationStr,
-      cost: costStr,
+      difficulty: difficultyLevel,
+      difficultyLevel: diffLevel,
       diffLevel: diffLevel,
-      diffColor: diffColor,
       diffText: diffText,
+      diffColor: diffColor,
+      distance: distance,
       distanceText: distanceText,
-      durationText: durationText,
-      isFavorited: isFavorited,
+      durationMin: durationMin,
+      durationMax: durationMax,
+      durationText: durationText || '',
+      elevationGain: elevationGain,
+      terrainTypes: item.terrainTypes || [],
+      terrainLabels: terrainLabels,
+      routeDNA: item.routeDNA || [],
+      dnaLabels: dnaLabels,
+      bestSeasons: bestSeasons,
+      district: district,
+      location: district,
+      cost: costStr,
       isFree: costStr.includes('免费'),
-
-      scenery: sceneryArr,
-      sections: sectionsArr,
-      suitableFor: suitableForArr,
-      bestSeason: bestSeason,
+      isFavorited: isFavorited,
       family_friendly: isFamily,
       familyLabel: familyLabel,
-      location_direction: locationDirection
     }
   },
 
@@ -458,52 +549,45 @@ Page({
     let result = data
     const filter = this.data.activeFilter
 
-    // 标签筛选
+    // 标签筛选（适配新版 routes 数据集字段）
     if (filter !== 'all') {
       result = data.filter(item => {
-        const sf = item.scenery || []
         switch (filter) {
           case 'beginner':
-            // level <= 1（第一次也能走）
-            return item.diffLevel <= 1
+            // 新版 difficulty 是数字 1~5，难度 1-2 星
+            return (item.difficulty || 3) <= 2 && (item.distance || 0) <= 8
+          case 'family':
+            return (item.difficulty || 3) <= 2 && (item.distance || 0) <= 10
+          case 'scenic':
+            // routeDNA 含 scenic_viewpoint / exposed_ridge / paved_comfort
+            return (item.routeDNA || []).some(d =>
+              d === 'scenic_viewpoint' || d === 'exposed_ridge' || d === 'paved_comfort'
+            ) || (item.terrainTypes || []).includes('grassland')
+          case 'stream':
+            // terrainTypes 含 stream
+            return (item.terrainTypes || []).includes('stream')
+          case 'forest':
+            // terrainTypes 含 forest
+            return (item.terrainTypes || []).includes('forest')
+          case 'climb':
+            // elevationGain >= 800m
+            return (item.elevationGain || 0) >= 800
+          case 'spring':
+            return (item.bestSeasons || []).includes('spring')
+          case 'summer':
+            return (item.bestSeasons || []).includes('summer')
+          case 'autumn':
+            return (item.bestSeasons || []).includes('autumn')
+          case 'winter':
+            return (item.bestSeasons || []).includes('winter')
           case 'advanced':
-            // level >= 2（稍微有点挑战及以上）
-            return item.diffLevel >= 2
-          case 'stream-waterfall':
-            // 合并：scenery含 瀑布/溪流/溪水/峡谷
-            return sf.some(f => f.includes('瀑布') || f.includes('溪流') || f.includes('溪水') || f.includes('峡谷'))
-          case 'redleaf':
-            // scenery含 红叶/金黄/秋色/彩林/银杏 或 best_season含秋
-            const bs1 = item.bestSeason || item.best_season || []
-            const bs1Str = Array.isArray(bs1) ? bs1.join(',') : String(bs1 || '')
-            return sf.some(f => f.includes('红叶') || f.includes('金黄') || f.includes('秋色') || f.includes('彩林') || f.includes('银杏')) || bs1Str.includes('秋')
-          case 'meadow':
-            // scenery含 草甸/高山草甸
-            return sf.some(f => f.includes('草甸'))
-          case 'culture':
-            // scenery含 古寺/古道/历史遗迹/古迹/遗址/古建筑/石窟/佛像/壁塑/历史
-            return sf.some(f => f.includes('古寺') || f.includes('古道') || f.includes('历史遗迹') || f.includes('古迹') || f.includes('遗址') || f.includes('古建筑') || f.includes('石窟') || f.includes('佛像') || f.includes('壁塑'))
-          case 'nearby':
-            // direction含"中线"或"中西线"（离西安最近的核心区域）
-            const dir = item.location_direction || (typeof item.location === 'object' ? (item.location.direction || '') : '')
-            return dir.includes('中线') || dir.includes('中西线')
+            // 难度 4-5 星
+            return (item.difficulty || 3) >= 4
           case 'season':
-            // 修复匹配逻辑：best_season 支持逗号分隔格式，同时匹配 scenery 关键词
+            // 动态当季推荐
             const curSeason = this.getCurrentSeason()
-            const bs5 = item.bestSeason || item.best_season || []
-            const bs5Str = Array.isArray(bs5) ? bs5.join(',') : String(bs5 || '')
-            // 同时匹配逗号分隔的格式
-            if (curSeason === '秋') {
-              return bs5Str.includes('秋') || sf.some(f => f.includes('红叶') || f.includes('银杏') || f.includes('金黄'))
-            }
-            if (curSeason === '春') {
-              return bs5Str.includes('春') || sf.some(f => f.includes('山花') || f.includes('桃花') || f.includes('花海') || f.includes('赏花') || f.includes('绿柳') || f.includes('梨花') || f.includes('杏花') || f.includes('草甸') || f.includes('野花'))
-            }
-            if (curSeason === '夏') {
-              return bs5Str.includes('夏') || sf.some(f => f.includes('溪流') || f.includes('溪水') || f.includes('瀑布') || f.includes('森林') || f.includes('避暑'))
-            }
-            // 冬季
-            return bs5Str.includes('冬') || sf.some(f => f.includes('雪') || f.includes('冰') || f.includes('温泉'))
+            const bs = item.bestSeasons || item.bestSeason || []
+            return bs.includes(curSeason)
           default:
             return true
         }
@@ -513,7 +597,7 @@ Page({
     // 高级筛选：难度（基于实际数据：level 1=第一次也能走, level 2=稍微有点挑战）
     if (this.data.activeDifficulty) {
       result = result.filter(item => {
-        const level = item.diffLevel || 0
+        const level = item.difficulty || 0
         switch (this.data.activeDifficulty) {
           case 'easy': return level === 1        // 第一次也能走
           case 'medium': return level === 2      // 稍微有点挑战
@@ -526,7 +610,7 @@ Page({
     // 高级筛选：距离
     if (this.data.activeDistance) {
       result = result.filter(item => {
-        const dist = item.distance_km || parseFloat((item.distanceText || '').replace(/[^0-9.]/g, '')) || 0
+        const dist = item.distance || parseFloat((item.distanceText || '').replace(/[^0-9.]/g, '')) || 0
         switch (this.data.activeDistance) {
           case '0-3': return dist > 0 && dist <= 3
           case '3-5': return dist > 3 && dist <= 5
@@ -542,7 +626,7 @@ Page({
     // 高级筛选：爬升
     if (this.data.activeElevation) {
       result = result.filter(item => {
-        const ele = item.elevation_gain_m || parseFloat((item.elevation || '').replace(/[^0-9.]/g, '')) || 0
+        const ele = item.elevationGain || parseFloat((item.elevation || '').replace(/[^0-9.]/g, '')) || 0
         switch (this.data.activeElevation) {
           case '0-100': return ele >= 0 && ele <= 100
           case '100-300': return ele > 100 && ele <= 300
