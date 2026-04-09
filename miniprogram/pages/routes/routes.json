@@ -1,9 +1,1 @@
-{
-  "usingComponents": {
-    "route-card": "/components/route-card"
-  },
-  "navigationBarTitleText": "秦人徒步路线分享",
-  "enablePullDownRefresh": true,
-  "backgroundColorTop": "#2d6a4f",
-  "backgroundColor": "#c8e6c9"
-}
+{"usingComponents":{"route-card":"../../components/route-card"},"navigationBarTitleText":"秦人徒步路线分享","enablePullDownRefresh":true,"backgroundColorTop":"#2d6a4f","backgroundColor":"#c8e6c9"}
