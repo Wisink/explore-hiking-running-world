@@ -1,6 +1,6 @@
 {
   "usingComponents": {
-    "route-card": "/miniprogram/components/route-card/route-card"
+    "route-card": "/miniprogram/components/route-card"
   },
   "navigationBarTitleText": "秦人徒步路线分享",
   "enablePullDownRefresh": true,
