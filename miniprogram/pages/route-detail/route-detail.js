@@ -6,13 +6,40 @@ function showNiceToast(that, message, type = 'info', duration = 2000) {
 const app = getApp()
 const cloudSync = require('../../utils/cloud-sync')
 
-// 难度映射
+// 难度映射（旧版字符串格式）
 const DIFFICULTY_MAP = {
   '初级': { level: 1, stars: 1, color: '#4CAF50', text: '新手也能轻松走', icon: '🟢' },
   '中级': { level: 3, stars: 3, color: '#FFC107', text: '需要一定体力', icon: '🟡' },
   '中级-高级': { level: 4, stars: 4, color: '#FF9800', text: '有经验者推荐', icon: '🟠' },
   '高级': { level: 5, stars: 5, color: '#F44336', text: '挑战者专属', icon: '🔴' }
 }
+
+// ============ 新版 routes 数据集字段映射 ============
+const DIFFICULTY_ZH = { 1: '轻松', 2: '简单', 3: '适中', 4: '较难', 5: '困难' }
+const DIFFICULTY_COLORS = { 1: '#4CAF50', 2: '#8BC34A', 3: '#FFC107', 4: '#FF9800', 5: '#F44336' }
+const DIFFICULTY_TEXTS = { 1: '新手也能轻松走', 2: '简单徒步无压力', 3: '需要一定体力', 4: '有经验者推荐', 5: '挑战者专属' }
+const DIFFICULTY_ICONS = { 1: '🟢', 2: '🟢', 3: '🟡', 4: '🟠', 5: '🔴' }
+
+const TERRAIN_ZH = {
+  mountain_path: '山间小路', forest: '穿越森林', stream: '溪流路段',
+  ridge: '山脊行走', rock_scramble: '岩石攀爬', grassland: '高山草甸', paved: '景区步道'
+}
+const ROUTEDNA_ZH = {
+  wet_environment: '亲水栈道', forest_shade: '林荫清凉', significant_climb: '持续爬升',
+  technical: '技术路段', high_altitude: '高海拔', water_crossing: '涉水过河',
+  exposed_ridge: '悬岩峭壁', long_distance: '长距离', remote: '人迹罕至',
+  paved_comfort: '舒适步道', scenic_viewpoint: '观景台'
+}
+const SEASON_ZH = { spring: '春', summer: '夏', autumn: '秋', winter: '冬' }
+const TECHNICAL_GRADE_ZH = { 1: '入门', 2: '进阶', 3: '专业' }
+const WATER_SUPPLY_ZH = { 1: '需自带', 2: '部分补充', 3: '充足' }
+const CELL_COVERAGE_ZH = { 1: '无信号', 2: '部分区域', 3: '良好' }
+const TRAIL_MARKING_ZH = { 1: '差', 2: '一般', 3: '良好' }
+const SAFETY_ZH = { 1: '危险', 2: '较危险', 3: '一般', 4: '较安全', 5: '安全' }
+const FAMILY_ZH = { 1: '不适合', 2: '不太适合', 3: '一般', 4: '较适合', 5: '非常适合' }
+
+// 判断是否为新版数据（新版 difficulty 是数字 1-5）
+const isNewRouteData = (data) => typeof data.difficulty === 'number' && data.difficulty >= 1 && data.difficulty <= 5
 
 Page({
   data: {
@@ -30,8 +57,11 @@ Page({
       scenery: false,
       traffic: false,
       timeplan: false,
-      equipment: false
+      equipment: false,
+      basic: false
     },
+    // 路线描述展开状态
+    descExpanded: false,
     // 天气
     weather: null,
     // 已走过
@@ -234,6 +264,194 @@ Page({
       return []
     }
 
+    // ========== 新版数据处理 ==========
+    if (isNewRouteData(data)) {
+      // 新版 difficulty 是数字 1-5
+      const diffLevel = data.difficulty || 3
+      const diffColor = DIFFICULTY_COLORS[diffLevel] || '#FFC107'
+      const diffText = DIFFICULTY_ZH[diffLevel] || '适中'
+      const diffIcon = DIFFICULTY_ICONS[diffLevel] || '🟡'
+      const diffHintText = DIFFICULTY_TEXTS[diffLevel] || '需要一定体力'
+
+      // 位置信息
+      const district = (data.location && data.location.district) ? data.location.district : ''
+
+      // 距离和时长
+      const distanceText = data.distance ? `${data.distance}km` : ''
+      const distanceKm = data.distance || 0
+      let durationText = ''
+      if (data.durationMin && data.durationMax) {
+        durationText = `${data.durationMin}-${data.durationMax}小时`
+      } else if (data.durationMin) {
+        durationText = `约${data.durationMin}小时`
+      }
+
+      // 爬升
+      const elevationText = data.elevationGain ? `${data.elevationGain}m爬升` : ''
+
+      // terrainTypes → 中文标签
+      const terrainLabels = Array.isArray(data.terrainTypes) && data.terrainTypes.length > 0
+        ? data.terrainTypes.slice(0, 5).map(t => TERRAIN_ZH[t] || t)
+        : []
+
+      // routeDNA → 中文标签
+      const routeDNALabels = Array.isArray(data.routeDNA) && data.routeDNA.length > 0
+        ? data.routeDNA.slice(0, 4).map(d => ROUTEDNA_ZH[d] || d)
+        : []
+
+      // bestSeasons → 中文标签
+      const bestSeasonLabels = Array.isArray(data.bestSeasons) && data.bestSeasons.length > 0
+        ? data.bestSeasons.map(s => SEASON_ZH[s] || s)
+        : []
+
+      // 实用信息
+      const waterSupplyLabel = WATER_SUPPLY_ZH[data.waterSupply] || ''
+      const cellCoverageLabel = CELL_COVERAGE_ZH[data.cellCoverage] || ''
+      const trailMarkingLabel = TRAIL_MARKING_ZH[data.trailMarking] || ''
+      const safetyLabel = SAFETY_ZH[data.safetyLevel] || ''
+      const familyLabel = FAMILY_ZH[data.familyFriendly] || ''
+      const technicalGradeLabel = TECHNICAL_GRADE_ZH[data.technicalGrade] || ''
+
+      // 起点/终点
+      const startName = (data.trailhead && data.trailhead.startName) ? data.trailhead.startName : ''
+      const endName = (data.trailhead && data.trailhead.endName) ? data.trailhead.endName : ''
+
+      // 交通
+      const hasParking = !!(data.transport && data.transport.hasParking)
+      const parkingNote = (data.transport && data.transport.parkingNote) ? data.transport.parkingNote : ''
+      const publicTransport = (data.transport && data.transport.publicTransport) ? data.transport.publicTransport : ''
+      const drivingGuide = (data.transport && data.transport.drivingGuide) ? data.transport.drivingGuide : ''
+
+      // 获取图片列表
+      let images = []
+      let cloudPaths = []
+      const isDirectUrl = (val) => typeof val === 'string' && (val.startsWith('http://') || val.startsWith('https://') || val.startsWith('/'))
+      const isCloudPath = (val) => typeof val === 'string' && val.startsWith('cloud://')
+
+      // 处理 coverImage
+      if (data.coverImage && isDirectUrl(data.coverImage)) {
+        images.push(data.coverImage)
+      }
+      // 处理 images 数组
+      if (Array.isArray(data.images)) {
+        data.images.forEach(item => {
+          if (isDirectUrl(item)) images.push(item)
+          else if (isCloudPath(item)) cloudPaths.push(item)
+        })
+      }
+
+      // 默认图片
+      if (images.length === 0 && cloudPaths.length === 0) {
+        images = ['/images/scenery/scenery-general.jpg']
+      }
+
+      // 默认装备
+      const defaultEquipment = {
+        must: [
+          { name: '防滑运动鞋', reason: '路面有碎石和土路，防滑很重要' },
+          { name: '饮用水（至少1L）', reason: '山里没有补给点，必须自带' },
+          { name: '干粮/零食', reason: '及时补充体力，避免低血糖' },
+          { name: '手机充满电', reason: '导航、拍照、紧急联络都需要' }
+        ],
+        suggest: [
+          { name: '登山杖', reason: '上下坡减轻膝盖压力约30%' },
+          { name: '防晒帽', reason: '山脊段无遮挡，容易晒伤' },
+          { name: '充电宝', reason: '拍照+导航耗电快' }
+        ],
+        noNeed: [
+          { name: '专业登山鞋', reason: '运动鞋够了，路况不复杂' },
+          { name: '帐篷', reason: '一日往返，不需要露营' }
+        ]
+      }
+
+      // 季节动态时间规划
+      const month = new Date().getMonth() + 1
+      let timeplanAdvice = {}
+      if (month >= 6 && month <= 8) {
+        timeplanAdvice = { depart: '7:00 - 8:00', return: '14:00 前', tip: '夏季天长，建议早出发避开午后高温' }
+      } else if (month >= 12 || month <= 2) {
+        timeplanAdvice = { depart: '9:00 - 10:00', return: '13:00 前', tip: '⚠️ 冬季17:00天黑，建议天黑前2小时返程' }
+      } else {
+        timeplanAdvice = { depart: '8:00 - 9:00', return: '14:00 前', tip: '春秋舒适，建议按计划出发' }
+      }
+
+      // 返回新版数据格式的处理结果
+      return {
+        _id: data._id,
+        name: data.name,
+        description: data.shortDesc || data.fullDesc || '',
+        fullDesc: data.fullDesc || '',
+        images: images,
+        _cloudPaths: cloudPaths,
+        // ========== 新版核心字段 ==========
+        diffLevel: diffLevel,
+        diffColor: diffColor,
+        diffText: diffText,
+        diffIcon: diffIcon,
+        diffHintText: diffHintText,
+        diffStars: diffLevel,
+        distance: distanceText,
+        distanceKm: distanceKm,
+        duration: durationText,
+        elevation: elevationText,
+        elevationGain: data.elevationGain || 0,
+        elevationMax: data.elevationMax || 0,
+        elevationMin: data.elevationMin || 0,
+        district: district,
+        terrainLabels: terrainLabels,
+        routeDNALabels: routeDNALabels,
+        bestSeasonLabels: bestSeasonLabels,
+        waterSupplyLabel: waterSupplyLabel,
+        cellCoverageLabel: cellCoverageLabel,
+        trailMarkingLabel: trailMarkingLabel,
+        safetyLabel: safetyLabel,
+        familyLabel: familyLabel,
+        technicalGradeLabel: technicalGradeLabel,
+        startName: startName,
+        endName: endName,
+        hasParking: hasParking,
+        parkingNote: parkingNote,
+        publicTransport: publicTransport,
+        drivingGuide: drivingGuide,
+        estimatedCalories: data.estimatedCalories || 0,
+        restPoints: data.restPoints || 0,
+        // ========== 兼容旧 WXML 字段 ==========
+        difficulty: diffText,
+        cost: '',
+        location: district,
+        navAddress: district || `导航搜索：${data.name}`,
+        publicTransport: publicTransport,
+        suitableFor: [],
+        bestSeason: bestSeasonLabels,
+        family_friendly: data.familyFriendly || 3,
+        sections: [],
+        routeSurfaceSummary: '',
+        highlights: '',
+        checkpoints: '',
+        equipment: data.equipment || defaultEquipment,
+        safety_tips: parseArray(data.safety_tips),
+        law_tips: parseArray(data.law_tips),
+        eco_tips: parseArray(data.eco_tips),
+        emergencyPhone: data.emergencyPhone || '西安救援：029-12345',
+        ticket_info: '',
+        food: '',
+        pitfall: '',
+        tips: '',
+        best_time: '',
+        likes_count: data.likes_count || 0,
+        favorites_count: data.favorites_count || 0,
+        view_count: data.view_count || 0,
+        favoriteCount: data.favoriteCount || 0,
+        completedCount_global: data.completedCount || 0,
+        timeplanAdvice: timeplanAdvice,
+        updatedAt: data.updatedAt ? (typeof data.updatedAt === 'string' ? data.updatedAt.split('T')[0] : '') : '',
+        latitude: (data.location && data.location.lat) ? data.location.lat : null,
+        longitude: (data.location && data.location.lng) ? data.location.lng : null,
+        traffic: { hasParking: hasParking, parkingNote: parkingNote, publicTransport: publicTransport }
+      }
+    }
+
+    // ========== 旧版数据处理（保留原逻辑） ==========
     // 兼容两种数据格式：flat 和 structured（云数据库）
     // difficulty: flat="高级", structured={level:1, label:"第一次也能走", suitableFor:[...]}
     let difficultyStr = typeof data.difficulty === 'object' ? (data.difficulty.label || '中级') : (data.difficulty || '中级')
@@ -503,6 +721,11 @@ Page({
     const sectionOpen = { ...this.data.sectionOpen }
     sectionOpen[key] = !sectionOpen[key]
     this.setData({ sectionOpen })
+  },
+
+  // 切换路线描述展开/收起
+  onToggleDesc: function () {
+    this.setData({ descExpanded: !this.data.descExpanded })
   },
 
   // 收藏/取消收藏
