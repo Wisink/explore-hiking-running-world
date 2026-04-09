@@ -1,5 +1,4 @@
 // pages/nearby/nearby.js
-const routesData = require('../../data/routes-data')
 
 // Haversine公式计算两点间距离（km）
 function calcDistance(lat1, lng1, lat2, lng2) {
@@ -11,12 +10,6 @@ function calcDistance(lat1, lng1, lat2, lng2) {
     Math.sin(dLng / 2) * Math.sin(dLng / 2)
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
   return R * c
-}
-
-// 难度映射
-const DIFFICULTY_MAP = {
-  '第一次也能走': { level: 1, color: '#4CAF50', text: '轻松' },
-  '稍微有点挑战': { level: 2, color: '#FFC107', text: '适中' }
 }
 
 Page({
@@ -180,87 +173,85 @@ Page({
 
   // 加载附近路线
   loadNearbyRoutes: function () {
-    const { userLat, userLng } = this.data
-    if (!userLat || !userLng) return
-
+    const that = this
     this.setData({ loading: true, showSkeleton: true })
 
-    // 计算距离并排序
-    const routesWithDist = routesData
-      .filter(r => r.latitude && r.longitude)
-      .map(r => {
-        const dist = calcDistance(userLat, userLng, r.latitude, r.longitude)
-        const diffStr = (r.difficulty && r.difficulty.label) || '稍微有点挑战'
-        const diffInfo = DIFFICULTY_MAP[diffStr] || DIFFICULTY_MAP['稍微有点挑战']
-
-        // 距离文本
-        let distanceText = r.distance_km ? `约${r.distance_km}公里` : ''
-        let durationText = r.duration_hours ? `约${r.duration_hours}小时` : ''
-
-        // 封面图
-        let coverImage = r.image || r.coverImage || ''
-        if (!coverImage && r.scenery && r.scenery.length > 0) {
-          coverImage = this.getFeatureImage(r.scenery[0])
+    wx.cloud.callFunction({
+      name: 'routes',
+      data: { action: 'list', filterType: 'all', filter: 'all', page: 0, pageSize: 200 },
+      success: (res) => {
+        let list = []
+        if (res.result && res.result.data && res.result.data.list) {
+          list = res.result.data.list
         }
 
-        // 费用
-        const costStr = typeof r.cost === 'object'
-          ? (r.cost.type === '免费' ? '免费' : `${r.cost.note || ''} ${r.cost.amount ? r.cost.amount + '元' : ''}`.trim())
-          : (r.cost || '免费')
+        // 计算距离
+        const { userLat, userLng } = that.data
+        const routesWithDist = list
+          .filter(r => r.latitude && r.longitude)
+          .map(r => {
+            const dist = calcDistance(userLat, userLng, r.latitude, r.longitude)
 
-        // 风景标签
-        const sceneryArr = Array.isArray(r.scenery) ? r.scenery : (typeof r.scenery === 'string' ? r.scenery.split(/[|,，、]/).map(s => s.trim()).filter(Boolean) : [])
+            // 新版数据处理
+            const difficultyLevel = typeof r.difficulty === 'number' ? r.difficulty : 3
+            const DIFFICULTY_COLOR = { 1: '#4CAF50', 2: '#8BC34A', 3: '#FFC107', 4: '#FF9800', 5: '#F44336' }
+            const DIFFICULTY_ZH = { 1: '轻松', 2: '简单', 3: '适中', 4: '较难', 5: '困难' }
 
-        return {
-          ...r,
-          distanceToUser: Math.round(dist * 10) / 10,
-          distanceText,
-          durationText,
-          diffColor: diffInfo.color,
-          diffText: diffInfo.text,
-          diffLevel: diffInfo.level,
-          coverImage,
-          cost: costStr,
-          isFree: costStr.includes('免费'),
-          scenery: sceneryArr,
-          features: sceneryArr.slice(0, 3),
-          family_friendly: r.difficulty && r.difficulty.suitableFor && r.difficulty.suitableFor.some(s => s.includes('亲子'))
-        }
-      })
-      .sort((a, b) => {
-        // 综合排序：距离权重 + 难度权重
-        const scoreA = a.distanceToUser + (a.diffLevel - 1) * 3
-        const scoreB = b.distanceToUser + (b.diffLevel - 1) * 3
-        return scoreA - scoreB
-      })
+            // 封面图
+            let coverImage = r.image || r.coverImage || ''
+            if (!coverImage) coverImage = '/images/scenery/scenery-general.jpg'
 
-    setTimeout(() => {
-      this.setData({
-        routes: routesWithDist,
-        showSkeleton: false,
-        loading: false
-      })
-    }, 300)
-  },
+            // 距离文本
+            let distanceText = r.distance ? `约${r.distance}km` : ''
+            let durationText = ''
+            if (r.durationMin !== undefined) {
+              if (r.durationMax !== undefined && r.durationMax > r.durationMin) {
+                durationText = `${r.durationMin}-${r.durationMax}小时`
+              } else {
+                durationText = `${r.durationMin || r.durationMax}小时`
+              }
+            }
 
-  // 根据特色获取图片
-  getFeatureImage: function (feature) {
-    const imageMap = {
-      '森林': '/images/scenery/scenery-forest.jpg',
-      '溪流': '/images/scenery/scenery-stream-waterfall.jpg',
-      '瀑布': '/images/scenery/scenery-stream-waterfall.jpg',
-      '古道': '/images/scenery/scenery-trail.jpg',
-      '山脊': '/images/scenery/scenery-trail.jpg',
-      '花海': '/images/scenery/scenery-flowers.jpg',
-      '云海': '/images/scenery/scenery-cloud-sea.jpg',
-      '湖泊': '/images/scenery/scenery-lake.jpg',
-      '峡谷': '/images/scenery/scenery-canyon.jpg',
-      '田园': '/images/scenery/scenery-pastoral.jpg',
-      '古迹': '/images/scenery/scenery-historic.jpg',
-      '盘山公路': '/images/scenery/scenery-general.jpg',
-      '古寺': '/images/scenery/scenery-historic.jpg'
-    }
-    return imageMap[feature] || '/images/scenery/scenery-general.jpg'
+            // 费用
+            let isFree = true
+            let cost = '免费'
+            if (r.cost && typeof r.cost === 'object') {
+              isFree = r.cost.type === '免费'
+              cost = isFree ? '免费' : `${r.cost.note || ''} ${r.cost.amount ? r.cost.amount + '元' : ''}`.trim()
+            } else {
+              isFree = String(r.cost || '').includes('免费')
+              cost = r.cost || '免费'
+            }
+
+            // 区县
+            const district = (r.location && typeof r.location === 'object') ? r.location.district : (r.district || '')
+
+            return {
+              ...r,
+              _id: r._id,
+              distanceToUser: dist.toFixed(1),
+              diffLevel: difficultyLevel,
+              diffColor: DIFFICULTY_COLOR[difficultyLevel] || '#FFC107',
+              diffText: DIFFICULTY_ZH[difficultyLevel] || '适中',
+              coverImage,
+              distanceText,
+              durationText,
+              isFree,
+              cost,
+              district,
+              name: r.name,
+              description: r.shortDesc || r.description || '',
+            }
+          })
+
+        routesWithDist.sort((a, b) => parseFloat(a.distanceToUser) - parseFloat(b.distanceToUser))
+
+        that.setData({ routes: routesWithDist, loading: false, showSkeleton: false })
+      },
+      fail: () => {
+        that.setData({ routes: [], loading: false, showSkeleton: false })
+      }
+    })
   },
 
   // 点击路线卡片

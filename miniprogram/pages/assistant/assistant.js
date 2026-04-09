@@ -1,52 +1,4 @@
 // pages/assistant/assistant.js
-const routesData = require('../../data/routes-data')
-
-// 难度映射
-const DIFFICULTY_MAP = {
-  '第一次也能走': { level: 1, color: '#4CAF50', text: '轻松' },
-  '稍微有点挑战': { level: 2, color: '#FFC107', text: '适中' }
-}
-
-// Step1 选项 → 筛选条件
-const PLAY_OPTIONS = {
-  easy: { maxDist: 5, maxDiffLevel: 1, label: '轻松散步' },
-  serious: { minDist: 5, maxDist: 20, maxDiffLevel: 2, label: '认真徒步' },
-  family: { maxDist: 3, maxDiffLevel: 1, familyFriendly: true, label: '亲子徒步' }
-}
-
-// Step2 选项 → 关键词
-const SCENERY_OPTIONS = {
-  stream: { keywords: ['溪', '水', '河', '瀑布', '溪流', '溪水'], label: '溪水' },
-  forest: { keywords: ['林', '森林', '竹', '山林', '原始森林'], label: '森林' },
-  mountain: { keywords: ['山', '峰', '顶', '塬', '草甸', '山脊'], label: '山顶' },
-  historic: { keywords: ['古', '寺', '庙', '遗址', '陵', '城墙', '古迹', '古寺'], label: '古迹' },
-  any: { keywords: [], label: '都行' }
-}
-
-// Step3 选项 → 距离范围
-const DURATION_OPTIONS = {
-  half: { maxDist: 5, label: '半天' },
-  most: { minDist: 5, maxDist: 10, label: '大半天' },
-  all: { minDist: 10, label: '一整天' },
-  flexible: { label: '看情况' }
-}
-
-// 推荐理由模板
-const REASON_TEMPLATES = {
-  easy: '难度低，轻松好走，适合放松',
-  serious: '距离适中，挑战与风景兼得',
-  family: '距离短、路况好，适合带小朋友',
-  stream: '沿途有溪水相伴，清凉惬意',
-  forest: '穿行林间，满目绿意，洗肺之旅',
-  mountain: '登高望远，山巅风景绝美',
-  historic: '沿途有古迹遗址，边走边感受历史',
-  any: '风景多样，不虚此行',
-  half: '半天时间刚刚好，不赶不累',
-  most: '时间充裕，可以慢慢欣赏风景',
-  all: '一日行程，充实又满足',
-  flexible: '时间灵活，随心而行'
-}
-
 Page({
   data: {
     statusBarHeight: 0,
@@ -57,7 +9,8 @@ Page({
     showResult: false,
     results: [],
     allMatched: [],
-    resultReason: ''
+    resultReason: '',
+    loading: false
   },
 
   onLoad: function () {
@@ -93,118 +46,169 @@ Page({
 
   // 执行推荐
   doRecommend: function () {
+    const that = this
     const { step1Choice, step2Choice, step3Choice } = this.data
+    this.setData({ showResult: false, loading: true })
 
-    // 预处理所有路线
-    const processed = routesData.map(r => {
-      const diffStr = (r.difficulty && r.difficulty.label) || '稍微有点挑战'
-      const diffInfo = DIFFICULTY_MAP[diffStr] || DIFFICULTY_MAP['稍微有点挑战']
+    wx.cloud.callFunction({
+      name: 'routes',
+      data: { action: 'list', filterType: 'all', filter: 'all', page: 0, pageSize: 200 },
+      success: (res) => {
+        let list = []
+        if (res.result && res.result.data && res.result.data.list) {
+          list = res.result.data.list
+        }
 
-      const sceneryArr = Array.isArray(r.scenery) ? r.scenery : (typeof r.scenery === 'string' ? r.scenery.split(/[|,，、]/).map(s => s.trim()).filter(Boolean) : [])
+        // 预处理所有路线（新格式）
+        const DIFFICULTY_MAP = {
+          1: { level: 1, color: '#4CAF50', text: '轻松' },
+          2: { level: 2, color: '#8BC34A', text: '简单' },
+          3: { level: 3, color: '#FFC107', text: '适中' },
+          4: { level: 4, color: '#FF9800', text: '较难' },
+          5: { level: 5, color: '#F44336', text: '困难' }
+        }
 
-      const costStr = typeof r.cost === 'object'
-        ? (r.cost.type === '免费' ? '免费' : `${r.cost.amount ? r.cost.amount + '元' : ''}`.trim())
-        : (r.cost || '免费')
+        const processed = list.map(r => {
+          const difficultyLevel = typeof r.difficulty === 'number' ? r.difficulty : 3
+          const diffInfo = DIFFICULTY_MAP[difficultyLevel] || DIFFICULTY_MAP[3]
 
-      const isFamily = r.difficulty && r.difficulty.suitableFor && r.difficulty.suitableFor.some(s => s.includes('亲子'))
+          // terrainLabels（英文数组 -> 中文）
+          const TERRAIN_ZH = {
+            mountain_path: '山间小路', forest: '穿越森林', stream: '溪流路段',
+            ridge: '山脊行走', rock_scramble: '岩石攀爬', grassland: '高山草甸', paved: '景区步道'
+          }
+          const terrainLabels = (r.terrainTypes || []).map(t => TERRAIN_ZH[t] || t)
+          const sceneryArr = terrainLabels
 
-      let coverImage = r.image || r.coverImage || ''
-      if (!coverImage && sceneryArr.length > 0) {
-        coverImage = this.getFeatureImage(sceneryArr[0])
-      }
+          // 封面图
+          let coverImage = r.image || r.coverImage || ''
+          if (!coverImage) coverImage = '/images/scenery/scenery-general.jpg'
 
-      return {
-        ...r,
-        diffLevel: diffInfo.level,
-        diffColor: diffInfo.color,
-        diffText: diffInfo.text,
-        scenery: sceneryArr,
-        features: sceneryArr.slice(0, 3),
-        isFree: costStr.includes('免费'),
-        cost: costStr,
-        family_friendly: isFamily,
-        coverImage,
-        distanceText: r.distance_km ? `约${r.distance_km}公里` : '',
-        durationText: r.duration_hours ? `约${r.duration_hours}小时` : ''
-      }
-    })
+          // 距离/时长
+          let distanceText = r.distance ? `约${r.distance}km` : ''
+          let durationText = ''
+          if (r.durationMin !== undefined) {
+            if (r.durationMax !== undefined && r.durationMax > r.durationMin) {
+              durationText = `${r.durationMin}-${r.durationMax}小时`
+            } else {
+              durationText = `${r.durationMin || r.durationMax}小时`
+            }
+          }
 
-    // 筛选
-    let matched = processed
+          // 费用
+          let isFree = true
+          let costStr = '免费'
+          if (r.cost && typeof r.cost === 'object') {
+            isFree = r.cost.type === '免费'
+            costStr = isFree ? '免费' : `${r.cost.note || ''} ${r.cost.amount ? r.cost.amount + '元' : ''}`.trim()
+          } else {
+            isFree = String(r.cost || '').includes('免费')
+            costStr = r.cost || '免费'
+          }
 
-    // Step1 难度+距离筛选
-    const playRule = PLAY_OPTIONS[step1Choice]
-    if (playRule) {
-      matched = matched.filter(r => {
-        if (playRule.maxDiffLevel && r.diffLevel > playRule.maxDiffLevel) return false
-        if (playRule.maxDist && r.distance_km > playRule.maxDist) return false
-        if (playRule.minDist && r.distance_km < playRule.minDist) return false
-        if (playRule.familyFriendly && !r.family_friendly) return false
-        return true
-      })
-    }
-
-    // Step2 风景关键词筛选
-    const sceneryRule = SCENERY_OPTIONS[step2Choice]
-    if (sceneryRule && sceneryRule.keywords.length > 0) {
-      const kws = sceneryRule.keywords
-      matched = matched.filter(r => {
-        // 匹配风景标签、路线名称、描述
-        const sceneryText = (r.scenery || []).join('')
-        const nameText = r.name || ''
-        const descText = r.description || ''
-        const fullText = sceneryText + nameText + descText
-        return kws.some(kw => fullText.includes(kw))
-      })
-    }
-
-    // Step3 距离筛选
-    const durationRule = DURATION_OPTIONS[step3Choice]
-    if (durationRule) {
-      if (durationRule.maxDist) {
-        matched = matched.filter(r => r.distance_km <= durationRule.maxDist)
-      }
-      if (durationRule.minDist) {
-        matched = matched.filter(r => r.distance_km >= durationRule.minDist)
-      }
-    }
-
-    // 排序：距离短、难度低优先
-    matched.sort((a, b) => {
-      const scoreA = (a.distance_km || 0) + (a.diffLevel - 1) * 3
-      const scoreB = (b.distance_km || 0) + (b.diffLevel - 1) * 3
-      return scoreA - scoreB
-    })
-
-    // 如果匹配太少，放宽条件
-    if (matched.length < 3) {
-      // 只保留Step1的条件
-      let fallback = processed
-      if (playRule) {
-        fallback = fallback.filter(r => {
-          if (playRule.maxDiffLevel && r.diffLevel > playRule.maxDiffLevel) return false
-          if (playRule.familyFriendly && !r.family_friendly) return false
-          return true
+          return {
+            ...r,
+            diffLevel: difficultyLevel,
+            diffColor: diffInfo.color,
+            diffText: diffInfo.text,
+            scenery: sceneryArr,
+            features: sceneryArr.slice(0, 3),
+            isFree,
+            cost: costStr,
+            family_friendly: difficultyLevel <= 2,
+            coverImage,
+            distanceText,
+            durationText,
+            _id: r._id
+          }
         })
+
+        // ========== 筛选逻辑 ==========
+        let matched = processed
+
+        // Step1 难度+距离筛选
+        const PLAY_OPTIONS = {
+          easy: { maxDist: 5, maxDiffLevel: 2 },
+          serious: { minDist: 5, maxDist: 20, maxDiffLevel: 3 },
+          family: { maxDist: 5, maxDiffLevel: 2, familyFriendly: true }
+        }
+        const playRule = PLAY_OPTIONS[step1Choice]
+        if (playRule) {
+          matched = matched.filter(r => {
+            if (playRule.maxDiffLevel && r.diffLevel > playRule.maxDiffLevel) return false
+            if (playRule.maxDist && r.distance > playRule.maxDist) return false
+            if (playRule.minDist && r.distance < playRule.minDist) return false
+            if (playRule.familyFriendly && !r.family_friendly) return false
+            return true
+          })
+        }
+
+        // Step2 风景筛选
+        const SCENERY_OPTIONS = {
+          stream: ['stream', '溪流', '溪'],
+          forest: ['forest', '森林', '林'],
+          mountain: ['mountain_path', 'ridge', '草甸', '山'],
+          historic: ['historic', '古', '寺'],
+          any: []
+        }
+        const sceneryRule = SCENERY_OPTIONS[step2Choice]
+        if (sceneryRule && sceneryRule.length > 0) {
+          matched = matched.filter(r => {
+            const all = [...(r.terrainTypes || []), ...sceneryArr, r.name || ''].join('')
+            return sceneryRule.some(kw => all.includes(kw))
+          })
+        }
+
+        // Step3 距离筛选
+        const DURATION_OPTIONS = {
+          half: { maxDist: 5 },
+          most: { minDist: 5, maxDist: 10 },
+          all: { minDist: 10 },
+          flexible: {}
+        }
+        const durationRule = DURATION_OPTIONS[step3Choice]
+        if (durationRule) {
+          if (durationRule.maxDist) matched = matched.filter(r => (r.distance || 0) <= durationRule.maxDist)
+          if (durationRule.minDist) matched = matched.filter(r => (r.distance || 0) >= durationRule.minDist)
+        }
+
+        // 排序
+        matched.sort((a, b) => {
+          const scoreA = (a.distance || 0) + (a.diffLevel - 1) * 3
+          const scoreB = (b.distance || 0) + (b.diffLevel - 1) * 3
+          return scoreA - scoreB
+        })
+
+        // 生成推荐理由
+        const REASON_TEMPLATES = {
+          easy: '难度低，轻松好走，适合放松',
+          serious: '距离适中，挑战与风景兼得',
+          family: '距离短、路况好，适合带小朋友',
+          stream: '沿途有溪水相伴，清凉惬意',
+          forest: '穿行林间，满目绿意，洗肺之旅',
+          mountain: '登高望远，山巅风景绝美',
+          historic: '沿途有古迹遗址，边走边感受历史',
+          any: '风景多样，不虚此行',
+          half: '半天时间刚刚好，不赶不累',
+          most: '时间充裕，可以慢慢欣赏风景',
+          all: '一日行程，充实又满足',
+          flexible: '时间灵活，随心而行'
+        }
+        let reason = REASON_TEMPLATES[step1Choice] || ''
+        if (step2Choice !== 'any') reason += '，' + (REASON_TEMPLATES[step2Choice] || '')
+        if (step3Choice !== 'flexible') reason += '，' + (REASON_TEMPLATES[step3Choice] || '')
+
+        this.setData({
+          results: matched.slice(0, 6),
+          allMatched: matched,
+          resultReason: reason,
+          showResult: true,
+          loading: false
+        })
+      },
+      fail: () => {
+        this.setData({ results: [], showResult: true, loading: false })
       }
-      fallback.sort((a, b) => (a.distance_km || 0) - (b.distance_km || 0))
-      matched = fallback
-    }
-
-    // 生成推荐理由
-    let reason = REASON_TEMPLATES[step1Choice] || ''
-    if (sceneryRule && sceneryRule.label !== '都行') {
-      reason += '，' + (REASON_TEMPLATES[step2Choice] || '')
-    }
-    if (durationRule && durationRule.label !== '看情况') {
-      reason += '，' + (REASON_TEMPLATES[step3Choice] || '')
-    }
-
-    this.setData({
-      showResult: true,
-      allMatched: matched,
-      results: matched.slice(0, 3),
-      resultReason: reason
     })
   },
 
@@ -256,26 +260,6 @@ Page({
         url: `/pages/route-detail/route-detail?id=${id}`
       })
     }
-  },
-
-  // 根据特色获取图片
-  getFeatureImage: function (feature) {
-    const imageMap = {
-      '森林': '/images/scenery/scenery-forest.jpg',
-      '溪流': '/images/scenery/scenery-stream-waterfall.jpg',
-      '瀑布': '/images/scenery/scenery-stream-waterfall.jpg',
-      '古道': '/images/scenery/scenery-trail.jpg',
-      '山脊': '/images/scenery/scenery-trail.jpg',
-      '花海': '/images/scenery/scenery-flowers.jpg',
-      '云海': '/images/scenery/scenery-cloud-sea.jpg',
-      '湖泊': '/images/scenery/scenery-lake.jpg',
-      '峡谷': '/images/scenery/scenery-canyon.jpg',
-      '田园': '/images/scenery/scenery-pastoral.jpg',
-      '古迹': '/images/scenery/scenery-historic.jpg',
-      '盘山公路': '/images/scenery/scenery-general.jpg',
-      '古寺': '/images/scenery/scenery-historic.jpg'
-    }
-    return imageMap[feature] || '/images/scenery/scenery-general.jpg'
   },
 
   // 返回

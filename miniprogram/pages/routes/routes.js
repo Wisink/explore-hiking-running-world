@@ -88,6 +88,8 @@ Page({
     activeScenery: '',
     activeDirection: '',
     activeCost: '',
+    activeTerrain: '',
+    activeDistrict: '',
     activeSeason: '',
     // 路线列表
     routes: [],
@@ -216,7 +218,8 @@ Page({
     return this.data.activeDifficulty || this.data.activeDistance ||
            this.data.activeElevation || this.data.activeSurface ||
            this.data.activeScenery || this.data.activeDirection ||
-           this.data.activeCost || this.data.activeSeason
+           this.data.activeCost || this.data.activeSeason ||
+           this.data.activeTerrain || this.data.activeDistrict
   },
 
   // 构建高级筛选对象
@@ -234,6 +237,8 @@ Page({
     if (this.data.activeDirection) f.direction = this.data.activeDirection
     if (this.data.activeCost) f.cost = this.data.activeCost
     if (this.data.activeSeason) f.season = this.data.activeSeason
+    if (this.data.activeTerrain) f.terrain = this.data.activeTerrain
+    if (this.data.activeDistrict) f.district = this.data.activeDistrict
     return f
   },
 
@@ -612,11 +617,10 @@ Page({
       result = result.filter(item => {
         const dist = item.distance || parseFloat((item.distanceText || '').replace(/[^0-9.]/g, '')) || 0
         switch (this.data.activeDistance) {
-          case '0-3': return dist > 0 && dist <= 3
-          case '3-5': return dist > 3 && dist <= 5
-          case '5-8': return dist > 5 && dist <= 8
-          case '8-12': return dist > 8 && dist <= 12
-          case '12-20': return dist > 12 && dist <= 20
+          case '0-5': return dist > 0 && dist <= 5
+          case '5-10': return dist > 5 && dist <= 10
+          case '10-15': return dist > 10 && dist <= 15
+          case '15-20': return dist > 15 && dist <= 20
           case '20+': return dist > 20
           default: return true
         }
@@ -628,9 +632,9 @@ Page({
       result = result.filter(item => {
         const ele = item.elevationGain || parseFloat((item.elevation || '').replace(/[^0-9.]/g, '')) || 0
         switch (this.data.activeElevation) {
-          case '0-100': return ele >= 0 && ele <= 100
-          case '100-300': return ele > 100 && ele <= 300
-          case '300-1000': return ele > 300 && ele <= 1000
+          case '0-300': return ele >= 0 && ele <= 300
+          case '300-600': return ele > 300 && ele <= 600
+          case '600-1000': return ele > 600 && ele <= 1000
           case '1000+': return ele > 1000
           default: return true
         }
@@ -685,6 +689,22 @@ Page({
         const bestSeason = item.best_season || item.bestSeason || []
         const seasonStr = Array.isArray(bestSeason) ? bestSeason.join(',') : String(bestSeason)
         return seasonStr.includes(this.data.activeSeason)
+      })
+    }
+
+    // 高级筛选：地形
+    if (this.data.activeTerrain) {
+      result = result.filter(item => {
+        return (item.terrainTypes || []).includes(this.data.activeTerrain)
+      })
+    }
+
+    // 高级筛选：区县
+    if (this.data.activeDistrict) {
+      result = result.filter(item => {
+        return (item.location && typeof item.location === 'object'
+          ? item.location.district
+          : item.location) === this.data.activeDistrict
       })
     }
 
@@ -745,10 +765,10 @@ Page({
 
   // 点击路线卡片
   onRouteTap: function (e) {
-    const id = e.currentTarget.dataset.id
-    if (id) {
+    const route = e.detail.route
+    if (route && route._id) {
       wx.navigateTo({
-        url: `/pages/route-detail/route-detail?id=${id}`
+        url: `/pages/route-detail/route-detail?id=${route._id}`
       })
     }
   },
@@ -829,6 +849,8 @@ Page({
       activeScenery: '',
       activeDirection: '',
       activeCost: '',
+      activeTerrain: '',
+      activeDistrict: '',
       activeSeason: ''
     })
     this.loadRoutes(true)
@@ -873,6 +895,27 @@ Page({
   onElevationFilter: function (e) {
     const value = e.currentTarget.dataset.value
     this.setData({ activeElevation: value })
+    this.loadRoutes(true)
+  },
+
+  // 地形筛选（新增）
+  onTerrainFilter: function (e) {
+    const value = e.currentTarget.dataset.value
+    this.setData({ activeTerrain: value })
+    this.loadRoutes(true)
+  },
+
+  // 季节筛选（新增）
+  onSeasonFilter: function (e) {
+    const value = e.currentTarget.dataset.value
+    this.setData({ activeSeason: value })
+    this.loadRoutes(true)
+  },
+
+  // 区县筛选（新增）
+  onDistrictFilter: function (e) {
+    const value = e.currentTarget.dataset.value
+    this.setData({ activeDistrict: value })
     this.loadRoutes(true)
   },
 
