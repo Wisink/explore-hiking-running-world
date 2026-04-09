@@ -252,13 +252,13 @@
       <text class="action-bar__btn-icon">🧭</text>
       <text class="action-bar__btn-text">导航去起点</text>
     </view>
-    <view class="action-bar__btn">
+    <view class="action-bar__btn" bindtap="onCacheTap">
       <text class="action-bar__btn-icon">📵</text>
-      <text class="action-bar__btn-text">查看离线地图</text>
+      <text class="action-bar__btn-text">缓存路线详情</text>
     </view>
     <view class="action-bar__btn" bindtap="onGoChecklist">
       <text class="action-bar__btn-icon">📋</text>
-      <text class="action-bar__btn-text">加入清单</text>
+      <text class="action-bar__btn-text">整理装备清单</text>
     </view>
     <view class="action-bar__btn action-bar__btn--fav {{isFavorited ? 'action-bar__btn--on' : ''}}" bindtap="onFavorite">
       <text class="action-bar__btn-icon">{{isFavorited ? '❤️' : '🤍'}}</text>
@@ -297,8 +297,3 @@
 
   <view class="nice-toast nice-toast--{{toastType}} {{showToast ? 'nice-toast--show' : ''}}">{{toastMessage}}</view>
 </view>
-
-function showNiceToast(that, message, type = 'info', duration = 2000) {
-  that.setData({ showToast: true, toastMessage: message, toastType: type })
-  setTimeout(function() { that.setData({ showToast: false }) }, duration)
-}

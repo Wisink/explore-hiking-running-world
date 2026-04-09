@@ -406,17 +406,34 @@ Page({
   },
 
   /**
-   * 获取难度标签
+   * 获取难度标签（接受 level 数字或 route 对象）
    */
-  getDifficultyLabel(level) {
-    const labels = ['', '轻松', '初级', '中级', '高级', '挑战']
-    return labels[level] || '未知'
+  getDifficultyLabel(levelOrItem) {
+    const level = typeof levelOrItem === 'object'
+      ? (levelOrItem.difficultyLevel || levelOrItem.difficulty || 3)
+      : (levelOrItem || 3)
+    const labels = { 1: '轻松', 2: '简单', 3: '适中', 4: '较难', 5: '困难' }
+    return labels[level] || '适中'
   },
 
   /**
-   * 获取难度颜色
+   * 获取难度文本（中文）
    */
-  getDifficultyColor(level) {
+  getDifficultyText(levelOrItem) {
+    const level = typeof levelOrItem === 'object'
+      ? (levelOrItem.difficultyLevel || levelOrItem.difficulty || 3)
+      : (levelOrItem || 3)
+    const map = { 1: '轻松', 2: '简单', 3: '适中', 4: '较难', 5: '困难' }
+    return map[level] || '适中'
+  },
+
+  /**
+   * 获取难度颜色（接受 level 数字或 route 对象）
+   */
+  getDifficultyColor(levelOrItem) {
+    const level = typeof levelOrItem === 'object'
+      ? (levelOrItem.difficultyLevel || levelOrItem.difficulty || 3)
+      : (levelOrItem || 3)
     const colors = {
       1: '#4CAF50',
       2: '#8BC34A',
@@ -424,7 +441,7 @@ Page({
       4: '#FF9800',
       5: '#F44336'
     }
-    return colors[level] || '#9E9E9E'
+    return colors[level] || '#FFC107'
   },
 
   // ========== 云端同步 ==========

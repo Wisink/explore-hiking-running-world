@@ -88,7 +88,7 @@
           <image class="route-card__img" src="{{item.coverImage || '/images/scenery/scenery-trail.jpg'}}" mode="aspectFill" lazy-load></image>
           <view class="route-card__overlay"></view>
           <view class="route-card__badge" style="background: {{getDifficultyColor(item.difficultyLevel)}}">
-            <text>{{item.difficulty || '未知'}}</text>
+            <text>{{getDifficultyText(item)}}</text>
           </view>
         </view>
         <view class="route-card__body">

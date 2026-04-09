@@ -888,6 +888,26 @@ Page({
     })
   },
 
+  // 缓存路线详情到本地
+  onCacheTap: function () {
+    if (!this.data.trailId || !this.data.trail || !this.data.trail.name) {
+      showNiceToast(this, '请先加载路线详情', 'error', 2000)
+      return
+    }
+    const cacheKey = `trail_detail_${this.data.trailId}`
+    const dataToCache = this.data.trail._rawData || this.data.trail
+    try {
+      wx.setStorageSync(cacheKey, {
+        data: dataToCache,
+        timestamp: Date.now()
+      })
+      showNiceToast(this, '路线详情已缓存，可离线查看', 'success', 2500)
+    } catch (e) {
+      showNiceToast(this, '缓存失败，请重试', 'error', 2000)
+    }
+  },
+
+
   // 加载清单完成度
   loadChecklistProgress: function () {
     if (!this.data.trailId) return
