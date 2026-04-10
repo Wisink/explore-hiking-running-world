@@ -66,8 +66,7 @@
     </view>
     <view class="core-data-card__divider"></view>
     <view class="core-data-card__item">
-      <text class="core-data-card__val">{{trail.durationMin || '--'}}{{trail.durationMax ? '-' + trail.durationMax : ''}}</text>
-      <text class="core-data-card__unit">h</text>
+      <text class="core-data-card__val">{{trail.duration || '--'}}</text>
       <text class="core-data-card__label">时长</text>
     </view>
     <view class="core-data-card__divider"></view>

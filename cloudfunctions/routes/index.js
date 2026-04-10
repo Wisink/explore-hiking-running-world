@@ -71,8 +71,10 @@ function _processListItem(item) {
     terrainTypes: item.terrainTypes || [],
     routeDNA: item.routeDNA || [],
     bestSeasons: item.bestSeasons || [],
-    location: { district },
+    location: { district, latitude: item.latitude, longitude: item.longitude },
     district: district,
+    latitude: item.latitude,
+    longitude: item.longitude,
     status: item.status,
     familyFriendly: item.familyFriendly,
     safetyLevel: item.safetyLevel

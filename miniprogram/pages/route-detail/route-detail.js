@@ -115,6 +115,15 @@ Page({
     this.loadTrailDetail()
   },
 
+  // 分享
+  onShareTap: function () {
+    wx.showShareMenu({
+      withShareTicket: true,
+      menus: ['shareAppMessage', 'shareTimeline']
+    })
+    wx.showToast({ title: '转发给好友吧', icon: 'none', duration: 1500 })
+  },
+
   // 返回上一页
   onBack() {
     wx.navigateBack()
@@ -393,6 +402,8 @@ Page({
         distance: distanceText,
         distanceKm: distanceKm,
         duration: durationText,
+        durationMin: data.durationMin,
+        durationMax: data.durationMax,
         elevation: elevationText,
         elevationGain: data.elevationGain || 0,
         elevationMax: data.elevationMax || 0,

@@ -243,8 +243,8 @@ Page({
             _id: _.in(batchIds)
           }).field({
             _id: true, name: true, description: true, coverImage: true,
-            difficulty: true, distance_km: true, distance: true, duration_hours: true,
-            cost: true, scenery: true, location: true
+            difficulty: true, distance: true, durationMin: true, durationMax: true,
+            shortDesc: true, location: true
           }).get()
           allRoutes = allRoutes.concat(res.data)
         } catch (e) {
@@ -303,8 +303,8 @@ Page({
             _id: _.in(routeIds.slice(i, i + 20))
           }).field({
             _id: true, name: true, description: true, coverImage: true,
-            difficulty: true, distance_km: true, distance: true, duration_hours: true,
-            cost: true, scenery: true, location: true
+            difficulty: true, distance: true, durationMin: true, durationMax: true,
+            shortDesc: true, location: true
           }).get()
           allRoutes = allRoutes.concat(res.data)
         } catch (e) {
@@ -330,7 +330,7 @@ Page({
           const cloudRoute = allRoutes.find(t => t._id === item.routeId)
           if (cloudRoute) {
             const route = this.normalizeRoute(cloudRoute)
-            const distStr = String(route.distance || route.distance_km || '0')
+            const distStr = String(route.distance || '0')
             const distMatch = distStr.match(/[\d.]+/)
             totalDistance += distMatch ? parseFloat(distMatch[0]) : 0
           }
@@ -391,17 +391,19 @@ Page({
    * 将不同来源的路线数据统一格式
    */
   normalizeRoute(trail) {
+    if (!trail) return {}
+    const diffLevel = typeof trail.difficulty === 'number' ? trail.difficulty : 3
     return {
       _id: trail._id,
-      name: trail.name || '未知路线',
-      description: trail.description || '',
-      coverImage: trail.coverImage || (trail.images && trail.images[0]) || '',
-      location: trail.location?.address || trail.location || '',
-      distance: trail.distance_km ? trail.distance_km + 'km' : (trail.distance || ''),
-      duration: trail.duration_hours ? trail.duration_hours + 'h' : (trail.duration || ''),
-      difficulty: this.getDifficultyLabel(trail.difficulty?.level || trail.difficultyLevel || 0),
-      difficultyLevel: trail.difficulty?.level || trail.difficultyLevel || 0,
-      sceneryTags: trail.scenery || trail.sceneryTags || []
+      name: trail.name || '路线详情',
+      description: trail.shortDesc || trail.description || '',
+      coverImage: trail.coverImage || '/images/scenery/scenery-general.jpg',
+      difficulty: this.getDifficultyLabel(diffLevel),
+      difficultyLevel: diffLevel,
+      distance: trail.distance ? `${trail.distance}km` : '',
+      duration: trail.durationText || trail.duration || '',
+      location: trail.location && typeof trail.location === 'object' ? trail.location.district : (trail.location || ''),
+      sceneryTags: []
     }
   },
 
@@ -525,40 +527,36 @@ Page({
    * 点击路线卡片 -> 进入详情页
    */
   onRouteTap(e) {
-    const id = e.currentTarget.dataset.id
-    if (id) {
-      // 缓存路线名称（供后续显示用）
-      const route = this.data.favoriteRoutes.find(r => r._id === id) ||
-                    this.data.completedRoutes.find(r => r._id === id)
-      if (route && route.name) {
-        wx.setStorageSync('routeName_' + id, route.name)
-      }
-      
-      wx.navigateTo({
-        url: `/pages/route-detail/route-detail?id=${id}`
-      })
+    // route-card 组件通过 e.detail.route 传递；直接调用时用 dataset.id
+    const route = e.detail ? e.detail.route : null
+    const id = route ? route._id : e.currentTarget.dataset.id
+    if (!id) return
+    const routeObj = route || this.data.favoriteRoutes.find(r => r._id === id) ||
+                          this.data.completedRoutes.find(r => r._id === id)
+    if (routeObj && routeObj.name) {
+      wx.setStorageSync('routeName_' + id, routeObj.name)
     }
+    wx.navigateTo({ url: `/pages/route-detail/route-detail?id=${id}` })
   },
 
   // 已走过卡片点击 -> 进入详情页并自动滚动到徒步记录
   onCompletedRouteTap(e) {
-    const id = e.currentTarget.dataset.id
-    if (id) {
-      const route = this.data.completedRoutes.find(r => r._id === id)
-      if (route && route.name) {
-        wx.setStorageSync('routeName_' + id, route.name)
-      }
-      wx.navigateTo({
-        url: `/pages/route-detail/route-detail?id=${id}&scrollToRecords=1`
-      })
+    const route = e.detail ? e.detail.route : null
+    const id = route ? route._id : e.currentTarget.dataset.id
+    if (!id) return
+    const routeObj = route || this.data.completedRoutes.find(r => r._id === id)
+    if (routeObj && routeObj.name) {
+      wx.setStorageSync('routeName_' + id, routeObj.name)
     }
+    wx.navigateTo({ url: `/pages/route-detail/route-detail?id=${id}&scrollToRecords=1` })
   },
 
   // 点击爱心取消收藏（带确认弹窗）
   onCancelFavorite(e) {
-    const id = e.currentTarget.dataset.id
-    const route = this.data.favoriteRoutes.find(r => r._id === id)
-    const name = route ? route.name : '该路线'
+    const route = e.detail ? e.detail.route : null
+    const id = route ? route._id : e.currentTarget.dataset.id
+    const routeObj = route || this.data.favoriteRoutes.find(r => r._id === id)
+    const name = routeObj ? routeObj.name : '该路线'
 
     wx.showModal({
       title: '取消收藏',
@@ -567,8 +565,11 @@ Page({
       confirmColor: '#FF4D4F',
       success: (res) => {
         if (res.confirm) {
-          try {
-            const cloudSync = require('../../utils/cloud-sync.js')
+          this._doCancelFavorite(id)
+        }
+      }
+    })
+  },/cloud-sync.js')
             cloudSync.removeFavorite(id)
             // 即时UI更新：同时更新 favoriteRoutes、displayedFavorites、favoriteCount
             const favoriteRoutes = this.data.favoriteRoutes.filter(r => r._id !== id)

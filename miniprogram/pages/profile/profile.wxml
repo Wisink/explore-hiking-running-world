@@ -75,39 +75,8 @@
     </view>
 
     <view class="route-list" wx:else>
-      <view
-        class="route-card"
-        wx:for="{{displayedFavorites}}"
-        wx:key="_id"
-        bindtap="onRouteTap"
-        data-id="{{item._id}}"
-        hover-class="route-card--hover"
-        hover-stay-time="80"
-      >
-        <view class="route-card__cover">
-          <image class="route-card__img" src="{{item.coverImage || '/images/scenery/scenery-trail.jpg'}}" mode="aspectFill" lazy-load></image>
-          <view class="route-card__overlay"></view>
-          <view class="route-card__badge" style="background: {{getDifficultyColor(item.difficultyLevel)}}">
-            <text>{{getDifficultyText(item)}}</text>
-          </view>
-        </view>
-        <view class="route-card__body">
-          <text class="route-card__name">{{item.name}}</text>
-          <text class="route-card__desc">{{item.description || item.location}}</text>
-          <view class="route-card__tags">
-            <text class="route-card__tag" wx:if="{{item.distance}}">📏 {{item.distance}}</text>
-            <text class="route-card__tag" wx:if="{{item.duration}}">⏱ {{item.duration}}</text>
-            <text class="route-card__tag" wx:if="{{item.location}}">📍 {{item.location}}</text>
-          </view>
-        </view>
-        <view
-          class="route-card__fav"
-          data-id="{{item._id}}"
-          data-index="{{index}}"
-          catchtap="onCancelFavorite"
-        >
-          <text>❤️</text>
-        </view>
+      <view class="route-card-wrapper" wx:for="{{displayedFavorites}}" wx:key="_id">
+        <route-card route="{{item}}" isFavorited="{{true}}" bind:tap="onRouteTap" bind:fav="onCancelFavorite" />
       </view>
       <view class="show-more-routes" wx:if="{{favoriteRoutes.length > 3}}" bindtap="toggleShowAllFavorites">
         <text>{{showAllFavorites ? '收起' : '查看更多 ›'}}</text>
@@ -130,45 +99,12 @@
     </view>
 
     <view class="route-list" wx:else>
-      <view
-        class="route-card route-card--completed"
-        wx:for="{{displayedCompleted}}"
-        wx:key="routeId"
-        bindtap="onCompletedRouteTap"
-        data-id="{{item._id}}"
-        hover-class="route-card--hover"
-        hover-stay-time="80"
-      >
-        <view class="route-card__cover">
-          <image class="route-card__img" src="{{item.coverImage || '/images/scenery/scenery-trail.jpg'}}" mode="aspectFill" lazy-load></image>
-          <view class="route-card__overlay"></view>
-          <view class="route-card__done">
-            <text>✅ 已走过{{item.completedCount > 1 ? item.completedCount + '次' : ''}}</text>
-          </view>
-        </view>
-        <view class="route-card__body">
-          <text class="route-card__name">{{item.name}}</text>
-          <text class="route-card__desc">{{item.description || item.location}}</text>
-          <view class="route-card__tags">
-            <text class="route-card__tag" wx:if="{{item.distance}}">📏 {{item.distance}}</text>
-            <text class="route-card__tag" wx:if="{{item.duration}}">⏱ {{item.duration}}</text>
-          </view>
-          <view class="completed-info">
-            <view class="completed-info__date">
-              <text>📅 {{item.completedDate}}</text>
-              <text wx:if="{{item.weather}}"> {{item.weatherEmoji}} {{item.weather}}</text>
-            </view>
-            <view class="completed-info__difficulty" wx:if="{{item.difficultyFeeling}}">
-              <text>💪 难度感受：{{item.difficultyFeeling === 'easy' ? '轻松' : item.difficultyFeeling === 'normal' ? '适中' : item.difficultyFeeling === 'hard' ? '困难' : item.difficultyFeeling}}</text>
-            </view>
-            <view class="completed-info__companion" wx:if="{{item.companion}}">
-              <text>👥 {{item.companion}}</text>
-            </view>
-            <view class="completed-info__note" wx:if="{{item.completedNote}}">
-              <text>💭 {{item.completedNote}}</text>
-            </view>
-          </view>
-        </view>
+      <view class="route-card-wrapper" wx:for="{{displayedCompleted}}" wx:key="_id">
+        <route-card
+          route="{{item}}"
+          completedDate="{{item.completedDate}}"
+          bind:tap="onCompletedRouteTap"
+        />
       </view>
       <view class="show-more-routes" wx:if="{{completedRoutes.length > 3}}" bindtap="toggleShowAllCompleted">
         <text>{{showAllCompleted ? '收起' : '查看更多 ›'}}</text>
