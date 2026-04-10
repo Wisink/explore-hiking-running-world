@@ -68,8 +68,9 @@
   right: 20rpx;
   width: 64rpx;
   height: 64rpx;
-  display: grid;
-  place-items: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: rgba(255, 255, 255, 0.3);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
@@ -86,13 +87,7 @@
   background: rgba(255, 235, 238, 0.95);
 }
 
-.route-card__fav-icon {
-  font-size: 32rpx;
-  line-height: 1;
-  width: 32rpx;
-  height: 32rpx;
-  display: block;
-}
+.route-card__fav-icon { font-size: 32rpx; }
 
 /* 底部叠加信息 */
 .route-card__hero {
