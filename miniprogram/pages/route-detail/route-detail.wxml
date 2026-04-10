@@ -34,16 +34,6 @@
       <text class="hero-section__back-icon">←</text>
     </view>
     
-    <!-- 右上角收藏分享 -->
-    <view class="hero-section__actions">
-      <view class="hero-section__action {{isFavorited ? 'hero-section__action--on' : ''}}" bindtap="onFavorite">
-        <text class="hero-section__action-icon">{{isFavorited ? '❤️' : '🤍'}}</text>
-      </view>
-      <view class="hero-section__action" bindtap="onShareTap">
-        <text class="hero-section__action-icon">📤</text>
-      </view>
-    </view>
-    
     <!-- 底部叠加信息 -->
     <view class="hero-section__info">
       <!-- 难度徽章 -->
@@ -299,6 +289,10 @@
     <view class="action-bar__btn action-bar__btn--fav {{isFavorited ? 'action-bar__btn--on' : ''}}" bindtap="onFavorite">
       <text class="action-bar__btn-icon">{{isFavorited ? '❤️' : '🤍'}}</text>
       <text class="action-bar__btn-text">{{isFavorited ? '已收藏' : '收藏'}}</text>
+    </view>
+    <view class="action-bar__btn" bindtap="onShareTap">
+      <text class="action-bar__btn-icon">📤</text>
+      <text class="action-bar__btn-text">分享</text>
     </view>
   </view>
 

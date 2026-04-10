@@ -38,6 +38,10 @@ Component({
     isFavorited: {
       type: Boolean,
       value: false
+    },
+    hideFav: {
+      type: Boolean,
+      value: false
     }
   },
 

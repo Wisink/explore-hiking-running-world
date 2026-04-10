@@ -103,6 +103,7 @@
         <route-card
           route="{{item}}"
           completedDate="{{item.completedDate}}"
+          hideFav="{{true}}"
           bind:tap="onCompletedRouteTap"
         />
       </view>

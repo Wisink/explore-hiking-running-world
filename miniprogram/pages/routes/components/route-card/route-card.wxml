@@ -25,8 +25,9 @@
       {{route.diffText || difficultyText}}
     </view>
 
-    <!-- 收藏按钮 -->
+    <!-- 收藏按钮 - 右下角（封面区域内绝对定位） -->
     <view
+      wx:if="{{!hideFav}}"
       class="route-card__fav {{isFavorited ? 'route-card__fav--active' : ''}}"
       catchtap="onFavTap"
     >

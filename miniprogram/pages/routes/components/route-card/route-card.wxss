@@ -61,10 +61,10 @@
   box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.2);
 }
 
-/* 收藏按钮 — 毛玻璃 */
+/* 收藏按钮 — 右下角（封面图内绝对定位） */
 .route-card__fav {
   position: absolute;
-  bottom: 100rpx;
+  bottom: 20rpx;
   right: 20rpx;
   width: 64rpx;
   height: 64rpx;
