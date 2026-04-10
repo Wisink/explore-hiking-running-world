@@ -71,10 +71,10 @@ function _processListItem(item) {
     terrainTypes: item.terrainTypes || [],
     routeDNA: item.routeDNA || [],
     bestSeasons: item.bestSeasons || [],
-    location: { district, latitude: item.latitude, longitude: item.longitude },
+    location: { district, latitude: item.latitude || (item.location && item.location.lat) || 0, longitude: item.longitude || (item.location && item.location.lng) || 0 },
     district: district,
-    latitude: item.latitude,
-    longitude: item.longitude,
+    latitude: item.latitude || (item.location && item.location.lat) || 0,
+    longitude: item.longitude || (item.location && item.location.lng) || 0,
     status: item.status,
     familyFriendly: item.familyFriendly,
     safetyLevel: item.safetyLevel
