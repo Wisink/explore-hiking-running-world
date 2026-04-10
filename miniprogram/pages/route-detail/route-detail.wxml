@@ -296,133 +296,163 @@
   </view>
 
 
-  <!-- ===== 已走过记录面板 ===== -->
-  <view class="complete-panel {{showCompletePanel ? 'complete-panel--show' : ''}}" wx:if="{{showCompletePanel}}">
-    <view class="complete-panel__mask" bindtap="onCloseCompletePanel"></view>
-    <view class="complete-panel__body">
-      <!-- 标题栏 -->
-      <view class="complete-panel__header">
-        <text class="complete-panel__title">{{isEditMode ? '编辑徒步记录' : '标记为已走过'}}</text>
-        <view class="complete-panel__close" bindtap="onCloseCompletePanel">✕</view>
-      </view>
+  <!-- ===== 已走过面板（升级5） ===== -->
+  <view class="complete-overlay" wx:if="{{showCompletePanel}}" bindtap="onCloseCompletePanel"></view>
+  <view class="complete-panel {{showCompletePanel ? 'complete-panel--show' : ''}}">
+    <view class="complete-panel__head">
+      <text class="complete-panel__title">{{isEditMode ? '✏️ 编辑记录' : '🎉 恭喜走完！'}}</text>
+      <text class="complete-panel__close" bindtap="onCloseCompletePanel">✕</text>
+    </view>
 
-      <!-- 日期 -->
-      <view class="complete-panel__field">
-        <text class="complete-panel__label">📅 徒步日期</text>
-        <view class="complete-panel__picker-btn" bindtap="onOpenDatePicker">
-          <text class="complete-panel__picker-val">{{completeDate || '请选择日期'}}</text>
-          <text class="complete-panel__picker-arrow">▼</text>
+    <!-- 徒步距离 -->
+    <view class="complete-panel__section">
+      <view class="complete-panel__distance-row">
+        <text class="complete-panel__distance-label">徒步距离：</text>
+        <view class="complete-panel__distance-display" bindtap="onOpenDistancePicker">
+          <text class="complete-panel__distance-value">{{completeDistance || '0'}}</text>
+          <text class="complete-panel__distance-arrow">▼</text>
         </view>
-        <!-- 日期选择器 -->
-        <view class="complete-panel__picker-sheet" wx:if="{{showDatePicker}}">
-          <view class="complete-panel__picker-toolbar">
-            <text class="complete-panel__picker-cancel" bindtap="onCancelDate">取消</text>
-            <text class="complete-panel__picker-confirm" bindtap="onConfirmDate">确定</text>
-          </view>
-          <picker-view indicator-style="height: 44px; font-size: 28rpx;" value="{{datePickerValue}}" bindchange="onDatePickerChange">
-            <picker-view-column>
-              <view class="picker-col-item" wx:for="{{dateYears}}" wx:key="*this">{{item}}年</view>
-            </picker-view-column>
-            <picker-view-column>
-              <view class="picker-col-item" wx:for="{{dateMonths}}" wx:key="*this">{{item}}月</view>
-            </picker-view-column>
-            <picker-view-column>
-              <view class="picker-col-item" wx:for="{{dateDays}}" wx:key="*this">{{item}}日</view>
-            </picker-view-column>
-          </picker-view>
-        </view>
-      </view>
-
-      <!-- 天气 -->
-      <view class="complete-panel__field">
-        <text class="complete-panel__label">🌤️ 当天天气</text>
-        <view class="complete-panel__picker-btn" bindtap="onOpenWeatherPicker">
-          <text class="complete-panel__picker-val">{{completeWeather || '请选择天气'}}</text>
-          <text class="complete-panel__picker-arrow">▼</text>
-        </view>
-        <!-- 天气选择器 -->
-        <view class="complete-panel__picker-sheet" wx:if="{{showWeatherPicker}}">
-          <view class="complete-panel__picker-toolbar">
-            <text class="complete-panel__picker-cancel" bindtap="onCancelWeather">取消</text>
-            <text class="complete-panel__picker-confirm" bindtap="onConfirmWeather">确定</text>
-          </view>
-          <picker-view indicator-style="height: 44px; font-size: 28rpx;" value="{{weatherPickerValue}}" bindchange="onWeatherPickerChange">
-            <picker-view-column>
-              <view class="picker-col-item" wx:for="{{weatherOptions}}" wx:key="*this">{{item}}</view>
-            </picker-view-column>
-          </picker-view>
-        </view>
-      </view>
-
-      <!-- 难度感受 -->
-      <view class="complete-panel__field">
-        <text class="complete-panel__label">💪 难度感受</text>
-        <view class="complete-panel__difficulty">
-          <view class="diff-chip {{completeDifficulty === 'easy' ? 'diff-chip--active' : ''}}" data-value="easy" bindtap="onCompleteDifficulty">
-            <text>😊 简单</text>
-          </view>
-          <view class="diff-chip {{completeDifficulty === 'normal' ? 'diff-chip--active' : ''}}" data-value="normal" bindtap="onCompleteDifficulty">
-            <text>💪 适中</text>
-          </view>
-          <view class="diff-chip {{completeDifficulty === 'hard' ? 'diff-chip--active' : ''}}" data-value="hard" bindtap="onCompleteDifficulty">
-            <text>😓 较累</text>
-          </view>
-          <view class="diff-chip {{completeDifficulty === 'extreme' ? 'diff-chip--active' : ''}}" data-value="extreme" bindtap="onCompleteDifficulty">
-            <text>🔥 很累</text>
-          </view>
-        </view>
-      </view>
-
-      <!-- 同行人 -->
-      <view class="complete-panel__field">
-        <text class="complete-panel__label">👥 同行人</text>
-        <input class="complete-panel__input" placeholder="如：朋友/家人/独自一人" value="{{completeCompanions}}" bindinput="onInputCompanions" />
-      </view>
-
-      <!-- 实际距离 -->
-      <view class="complete-panel__field">
-        <text class="complete-panel__label">📏 实际距离（km）</text>
-        <view class="complete-panel__picker-btn" bindtap="onOpenDistancePicker">
-          <text class="complete-panel__picker-val">{{completeDistance || '请选择距离'}}</text>
-          <text class="complete-panel__picker-arrow">▼</text>
-        </view>
-        <!-- 距离选择器 -->
-        <view class="complete-panel__picker-sheet" wx:if="{{showDistancePicker}}">
-          <view class="complete-panel__picker-toolbar">
-            <text class="complete-panel__picker-cancel" bindtap="onCancelDistance">取消</text>
-            <text class="complete-panel__picker-confirm" bindtap="onConfirmDistance">确定</text>
-          </view>
-          <picker-view indicator-style="height: 44px; font-size: 28rpx;" value="{{distancePickerValue}}" bindchange="onDistancePickerChange">
-            <picker-view-column>
-              <view class="picker-col-item" wx:for="{{['0','1','2','3','4','5','6','7','8','9']}}" wx:key="*this">{{item}}0</view>
-            </picker-view-column>
-            <picker-view-column>
-              <view class="picker-col-item" wx:for="{{['0','1','2','3','4','5','6','7','8','9']}}" wx:key="*this">{{item}}</view>
-            </picker-view-column>
-            <picker-view-column>
-              <view class="picker-col-item" wx:for="{{['0','.1','.2','.3','.4','.5','.6','.7','.8','.9']}}" wx:key="*this">{{item}}</view>
-            </picker-view-column>
-          </picker-view>
-        </view>
-      </view>
-
-      <!-- 感受 -->
-      <view class="complete-panel__field">
-        <text class="complete-panel__label">✨ 这次徒步的感受</text>
-        <textarea class="complete-panel__textarea" placeholder="分享你的徒步体验吧~" value="{{completeFeeling}}" bindinput="onInputFeeling" maxlength="200"></textarea>
-      </view>
-
-      <!-- 操作按钮 -->
-      <view class="complete-panel__actions">
-        <view class="complete-panel__btn complete-panel__btn--cancel" bindtap="onCloseCompletePanel">取消</view>
-        <view class="complete-panel__btn complete-panel__btn--save" bindtap="onSaveComplete">{{isEditMode ? '更新记录' : '保存记录'}}</view>
-      </view>
-
-      <!-- 编辑模式下显示删除按钮 -->
-      <view class="complete-panel__delete" wx:if="{{isEditMode}}" bindtap="onDeleteCompletedRecord">
-        <text>🗑️ 删除此条记录</text>
+        <text class="complete-panel__distance-unit">公里</text>
       </view>
     </view>
+
+    <!-- 难度感受 -->
+    <view class="complete-panel__section">
+      <text class="complete-panel__label">难度感受：</text>
+      <view class="complete-panel__options">
+        <view
+          class="complete-panel__option {{completeDifficulty === 'easy' ? 'complete-panel__option--on' : ''}}"
+          data-value="easy"
+          bindtap="onCompleteDifficulty"
+        >
+          <text>{{completeDifficulty === 'easy' ? '●' : '○'}}简单</text>
+        </view>
+        <view
+          class="complete-panel__option {{completeDifficulty === 'normal' ? 'complete-panel__option--on' : ''}}"
+          data-value="normal"
+          bindtap="onCompleteDifficulty"
+        >
+          <text>{{completeDifficulty === 'normal' ? '●' : '○'}}还行</text>
+        </view>
+        <view
+          class="complete-panel__option {{completeDifficulty === 'hard' ? 'complete-panel__option--on' : ''}}"
+          data-value="hard"
+          bindtap="onCompleteDifficulty"
+        >
+          <text>{{completeDifficulty === 'hard' ? '●' : '○'}}有点累</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 一句话感受 -->
+    <view class="complete-panel__section">
+      <text class="complete-panel__label">一句话感受：</text>
+      <textarea
+        class="complete-panel__textarea"
+        placeholder="如：风景超美，下次还来！"
+        value="{{completeFeeling}}"
+        bindinput="onInputFeeling"
+        maxlength="100"
+        auto-height
+        fixed
+      />
+    </view>
+
+    <!-- 同行人 -->
+    <view class="complete-panel__section">
+      <text class="complete-panel__label">一起走的人（选填）</text>
+      <input
+        class="complete-panel__input"
+        value="{{completeCompanions}}"
+        placeholder="如：小红、小明"
+        bindinput="onInputCompanions"
+        maxlength="50"
+      />
+    </view>
+
+    <!-- 天气和日期 -->
+    <view class="complete-panel__row">
+      <view class="complete-panel__info-item">
+        <text class="complete-panel__info-label">日期</text>
+        <view class="complete-panel__picker" bindtap="onOpenDatePicker">
+          <text class="complete-panel__picker-val">{{completeDate}}</text>
+          <text class="complete-panel__picker-arrow">📅</text>
+        </view>
+      </view>
+      <view class="complete-panel__info-item">
+        <text class="complete-panel__info-label">天气</text>
+        <view class="complete-panel__picker" bindtap="onOpenWeatherPicker">
+          <text class="complete-panel__picker-val">{{completeWeather || '请选择'}}</text>
+          <text class="complete-panel__picker-arrow">🌤️</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 保存按钮 -->
+    <view class="complete-panel__save" bindtap="onSaveComplete">
+      <text>{{isEditMode ? '✏️ 更新记录' : '✅ 保存记录'}}</text>
+    </view>
+    <!-- 删除按钮（仅编辑模式） -->
+    <view class="complete-panel__delete" wx:if="{{isEditMode}}" bindtap="onDeleteCompletedRecord">
+      <text>🗑️ 删除记录</text>
+    </view>
+  </view>
+
+  <!-- 距离选择器弹窗 -->
+  <view class="distance-picker-overlay" wx:if="{{showDistancePicker}}" bindtap="onCancelDistance"></view>
+  <view class="distance-picker-modal {{showDistancePicker ? 'distance-picker-modal--show' : ''}}">
+    <view class="distance-picker-header">
+      <text class="distance-picker-cancel" bindtap="onCancelDistance">取消</text>
+      <text class="distance-picker-title">选择徒步距离</text>
+      <text class="distance-picker-confirm" bindtap="onConfirmDistance">确定</text>
+    </view>
+    <picker-view indicator-class="distance-picker-indicator" mask-class="distance-picker-mask" value="{{distancePickerValue}}" bindchange="onDistancePickerChange" class="distance-picker-view">
+      <picker-view-column>
+        <view class="distance-picker-item" wx:for="{{[0,1,2,3,4,5,6,7,8,9]}}" wx:key="*this">{{item}}</view>
+      </picker-view-column>
+      <picker-view-column>
+        <view class="distance-picker-item" wx:for="{{[0,1,2,3,4,5,6,7,8,9]}}" wx:key="*this">{{item}}</view>
+      </picker-view-column>
+      <picker-view-column>
+        <view class="distance-picker-item" wx:for="{{['.0','.1','.2','.3','.4','.5','.6','.7','.8','.9']}}" wx:key="*this">{{item}}</view>
+      </picker-view-column>
+    </picker-view>
+  </view>
+
+  <!-- 天气选择器弹窗 -->
+  <view class="weather-picker-overlay" wx:if="{{showWeatherPicker}}" bindtap="onCancelWeather"></view>
+  <view class="weather-picker-modal {{showWeatherPicker ? 'weather-picker-modal--show' : ''}}">
+    <view class="weather-picker-header">
+      <text class="weather-picker-cancel" bindtap="onCancelWeather">取消</text>
+      <text class="weather-picker-title">选择天气</text>
+      <text class="weather-picker-confirm" bindtap="onConfirmWeather">确定</text>
+    </view>
+    <picker-view indicator-class="weather-picker-indicator" mask-class="weather-picker-mask" value="{{weatherPickerValue}}" bindchange="onWeatherPickerChange" class="weather-picker-view">
+      <picker-view-column>
+        <view class="weather-picker-item" wx:for="{{weatherOptions}}" wx:key="*this">{{item}}</view>
+      </picker-view-column>
+    </picker-view>
+  </view>
+
+  <!-- 日期选择器弹窗 -->
+  <view class="date-picker-overlay" wx:if="{{showDatePicker}}" bindtap="onCancelDate"></view>
+  <view class="date-picker-modal {{showDatePicker ? 'date-picker-modal--show' : ''}}">
+    <view class="date-picker-header">
+      <text class="date-picker-cancel" bindtap="onCancelDate">取消</text>
+      <text class="date-picker-title">选择日期</text>
+      <text class="date-picker-confirm" bindtap="onConfirmDate">确定</text>
+    </view>
+    <picker-view indicator-class="date-picker-indicator" mask-class="date-picker-mask" value="{{datePickerValue}}" bindchange="onDatePickerChange" class="date-picker-view">
+      <picker-view-column>
+        <view class="date-picker-item" wx:for="{{dateYears}}" wx:key="*this">{{item}}年</view>
+      </picker-view-column>
+      <picker-view-column>
+        <view class="date-picker-item" wx:for="{{dateMonths}}" wx:key="*this">{{item}}月</view>
+      </picker-view-column>
+      <picker-view-column>
+        <view class="date-picker-item" wx:for="{{dateDays}}" wx:key="*this">{{item}}日</view>
+      </picker-view-column>
+    </picker-view>
   </view>
 
   <view class="nice-toast nice-toast--{{toastType}} {{showToast ? 'nice-toast--show' : ''}}">{{toastMessage}}</view>
