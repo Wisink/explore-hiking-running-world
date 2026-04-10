@@ -404,6 +404,16 @@ Page({
         duration: durationText,
         durationMin: data.durationMin,
         durationMax: data.durationMax,
+        durationVal: (() => {
+          const d = durationText || ''
+          if (!d) return 0
+          // Try to extract range like "4-6" and take average
+          const rangeMatch = d.match(/([\d.]+)\s*[-–]\s*([\d.]+)/)
+          if (rangeMatch) return Math.round((parseFloat(rangeMatch[1]) + parseFloat(rangeMatch[2])) / 2 * 10) / 10
+          // Try to extract single number
+          const numMatch = d.match(/([\d.]+)/)
+          return numMatch ? parseFloat(numMatch[1]) : 0
+        })(),
         elevation: elevationText,
         elevationGain: data.elevationGain || 0,
         elevationMax: data.elevationMax || 0,
@@ -621,7 +631,15 @@ Page({
       distance: distanceText,
       distanceKm: distanceKm,
       duration: durationText,
-      elevation: data.elevation_gain_m || '',
+      durationVal: (() => {
+        const d = durationText || ''
+        if (!d) return 0
+        const rangeMatch = d.match(/([\d.]+)\s*[-–]\s*([\d.]+)/)
+        if (rangeMatch) return Math.round((parseFloat(rangeMatch[1]) + parseFloat(rangeMatch[2])) / 2 * 10) / 10
+        const numMatch = d.match(/([\d.]+)/)
+        return numMatch ? parseFloat(numMatch[1]) : 0
+      })(),
+      elevation: data.elevation_gain_m || ''],
       cost: costStr,
       location: locationStr,
       navAddress: navAddress || `导航搜索：${data.name}`,
@@ -1726,6 +1744,7 @@ Page({
       diffIcon: '🟢',
       distance: '约8公里',
       duration: '约4小时',
+      durationVal: 4,
       elevation: '约400米',
       cost: '免费（停车约10元）',
       location: '西安市蓝田县蓝关镇',
