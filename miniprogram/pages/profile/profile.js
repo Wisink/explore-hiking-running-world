@@ -553,6 +553,7 @@ Page({
 
   // 点击爱心取消收藏（带确认弹窗）
   onCancelFavorite(e) {
+    // route-card 组件通过 e.detail.route 传递；直接调用时用 dataset.id
     const route = e.detail ? e.detail.route : null
     const id = route ? route._id : e.currentTarget.dataset.id
     const routeObj = route || this.data.favoriteRoutes.find(r => r._id === id)
@@ -565,11 +566,8 @@ Page({
       confirmColor: '#FF4D4F',
       success: (res) => {
         if (res.confirm) {
-          this._doCancelFavorite(id)
-        }
-      }
-    })
-  },/cloud-sync.js')
+          try {
+            const cloudSync = require('../../utils/cloud-sync.js')
             cloudSync.removeFavorite(id)
             // 即时UI更新：同时更新 favoriteRoutes、displayedFavorites、favoriteCount
             const favoriteRoutes = this.data.favoriteRoutes.filter(r => r._id !== id)
@@ -589,9 +587,7 @@ Page({
     })
   },
 
-  /**
-   * 长按收藏卡片 -> 取消收藏
-   */
+
   onRemoveFavorite(e) {
     const id = e.currentTarget.dataset.id
     const name = e.currentTarget.dataset.name || '该路线'
