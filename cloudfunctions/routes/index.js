@@ -39,9 +39,13 @@ function parseRange(rangeStr) {
  * 3. 统一 location.district 字段
  * 4. 过滤掉数据库内部字段
  */
+
 function _processListItem(item) {
   const district = (item.location && item.location.district) ? item.location.district : ''
   const difficultyText = DIFFICULTY_ZH[String(item.difficulty)] || '适中'
+  // scenery（中文）→ terrainTypes（英文）映射
+  const sceneryTerrs = (item.scenery || []).map(s => SCENERY_TO_TERRAIN[s] || null).filter(Boolean)
+  const terrainTypes = (item.terrainTypes && item.terrainTypes.length > 0) ? item.terrainTypes : [...new Set(sceneryTerrs)]
 
   let durationText = ''
   if (item.durationMin !== undefined || item.durationMax !== undefined) {
@@ -68,7 +72,7 @@ function _processListItem(item) {
     durationMax: item.durationMax,
     durationText: durationText,
     elevationGain: item.elevationGain,
-    terrainTypes: item.terrainTypes || [],
+    terrainTypes: terrainTypes,
     routeDNA: item.routeDNA || [],
     bestSeasons: item.bestSeasons || [],
     location: { district, latitude: item.latitude || (item.location && item.location.lat) || 0, longitude: item.longitude || (item.location && item.location.lng) || 0 },
