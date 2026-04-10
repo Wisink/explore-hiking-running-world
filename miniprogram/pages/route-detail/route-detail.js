@@ -639,7 +639,7 @@ Page({
         const numMatch = d.match(/([\d.]+)/)
         return numMatch ? parseFloat(numMatch[1]) : 0
       })(),
-      elevation: data.elevation_gain_m || ''],
+      elevation: data.elevation_gain_m || '',
       cost: costStr,
       location: locationStr,
       navAddress: navAddress || `导航搜索：${data.name}`,
