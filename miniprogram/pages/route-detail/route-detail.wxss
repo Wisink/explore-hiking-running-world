@@ -1226,3 +1226,86 @@ page {
   background: #FEE2E2;
 }
 
+/* ===== 我的徒步记录 ===== */
+.completed-records {
+  background: rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 28rpx;
+  margin: 24rpx;
+  padding: 28rpx;
+  box-shadow: var(--glass-shadow);
+}
+
+.completed-records__head {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  margin-bottom: 20rpx;
+}
+
+.completed-records__icon {
+  font-size: 32rpx;
+}
+
+.completed-records__title {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.completed-records__item {
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #F0F0EB;
+}
+
+.completed-records__item:last-child {
+  border-bottom: none;
+}
+
+.completed-records__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12rpx;
+}
+
+.completed-records__date {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.completed-records__edit {
+  font-size: 24rpx;
+  color: var(--primary);
+  padding: 8rpx 16rpx;
+}
+
+.completed-records__details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+}
+
+.completed-records__detail {
+  display: flex;
+  align-items: center;
+  gap: 6rpx;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  padding: 6rpx 16rpx;
+  border-radius: 12rpx;
+}
+
+.completed-records__detail-label {
+  font-size: 22rpx;
+  color: var(--text2);
+}
+
+.completed-records__detail-val {
+  font-size: 24rpx;
+  color: var(--text);
+}

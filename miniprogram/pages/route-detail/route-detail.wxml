@@ -246,6 +246,42 @@
     </view>
   </view>
 
+  <!-- 已走过记录列表 -->
+  <view class="completed-records" id="records-section" wx:if="{{isCompleted && completedRecords.length > 0}}">
+    <view class="completed-records__head">
+      <text class="completed-records__icon">👣</text>
+      <text class="completed-records__title">我的徒步记录</text>
+    </view>
+    <view class="completed-records__item" wx:for="{{completedRecords}}" wx:key="completedAt">
+      <view class="completed-records__row">
+        <text class="completed-records__date">{{item.date}}</text>
+        <view class="completed-records__edit" data-index="{{index}}" data-item="{{item}}" bindtap="onEditCompletedRecord">✏️ 编辑</view>
+      </view>
+      <view class="completed-records__details">
+        <view class="completed-records__detail" wx:if="{{item.distance}}">
+          <text class="completed-records__detail-label">距离</text>
+          <text class="completed-records__detail-val">{{item.distance}}公里</text>
+        </view>
+        <view class="completed-records__detail" wx:if="{{item.weather}}">
+          <text class="completed-records__detail-label">天气</text>
+          <text class="completed-records__detail-val">{{item.weather}}</text>
+        </view>
+        <view class="completed-records__detail" wx:if="{{item.difficultyFeeling}}">
+          <text class="completed-records__detail-label">难度感受</text>
+          <text class="completed-records__detail-val">{{item.difficultyFeeling === 'easy' ? '轻松' : item.difficultyFeeling === 'normal' ? '适中' : item.difficultyFeeling === 'hard' ? '困难' : item.difficultyFeeling}}</text>
+        </view>
+        <view class="completed-records__detail" wx:if="{{item.companions}}">
+          <text class="completed-records__detail-label">同行人</text>
+          <text class="completed-records__detail-val">{{item.companions}}</text>
+        </view>
+        <view class="completed-records__detail" wx:if="{{item.feeling}}">
+          <text class="completed-records__detail-label">感受</text>
+          <text class="completed-records__detail-val">{{item.feeling}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
   <!-- 9. 操作按钮区 -->
   <view class="action-bar">
     <view class="action-bar__btn" bindtap="onNavTap">
