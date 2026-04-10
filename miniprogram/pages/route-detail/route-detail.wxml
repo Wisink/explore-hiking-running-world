@@ -280,11 +280,11 @@
     </view>
     <view class="action-bar__btn" bindtap="onCacheTap">
       <text class="action-bar__btn-icon">📵</text>
-      <text class="action-bar__btn-text">缓存路线详情</text>
+      <text class="action-bar__btn-text">缓存路线</text>
     </view>
     <view class="action-bar__btn" bindtap="onGoChecklist">
       <text class="action-bar__btn-icon">📋</text>
-      <text class="action-bar__btn-text">整理装备清单</text>
+      <text class="action-bar__btn-text">装备清单</text>
     </view>
     <view class="action-bar__btn action-bar__btn--fav {{isFavorited ? 'action-bar__btn--on' : ''}}" bindtap="onFavorite">
       <text class="action-bar__btn-icon">{{isFavorited ? '❤️' : '🤍'}}</text>
