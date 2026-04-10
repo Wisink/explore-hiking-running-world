@@ -40,23 +40,71 @@ function parseRange(rangeStr) {
  * 4. 过滤掉数据库内部字段
  */
 
+
+// scenery（中文）→ terrainTypes（英文）映射常量
+const SCENERY_TO_TERRAIN = {
+  '草甸': 'grassland', '高山草甸': 'grassland', '草原': 'grassland', '牧场': 'grassland',
+  '森林': 'forest', '山林': 'forest', '竹林': 'forest', '原始森林': 'forest', '林木': 'forest', '植被丰茂': 'forest',
+  '溪流': 'stream', '溪水': 'stream', '潭水': 'stream', '瀑布': 'stream', '瀑布壮观': 'stream', '水雾弥漫': 'stream', '湖泊': 'stream', '水库': 'stream', '湿地': 'stream',
+  '山间小道': 'mountain_path', '山径': 'mountain_path', '徒步道': 'mountain_path',
+  '山脊': 'ridge', '山脊行走': 'ridge', '山脊全景': 'ridge',
+  '岩石': 'rock_scramble', '攀爬': 'rock_scramble', '奇石': 'rock_scramble',
+  '景区步道': 'paved', '景区': 'paved', '盘山公路': 'paved', '栈道': 'paved', '古镇': 'paved', '古村': 'paved',
+  '古道': 'historic', '古寺': 'historic', '古迹': 'historic', '遗址': 'historic', '烽火台': 'historic', '博物馆': 'historic',
+}
+
 function _processListItem(item) {
+  // ===== 旧格式字段兼容（routes.json 导入数据） =====
+  // difficulty: 旧为 {level:1} 对象，新为数字
+  const difficultyLevel = (item.difficulty && typeof item.difficulty === 'object') ? item.difficulty.level : Number(item.difficulty)
+  // distance: 旧为 distance_km，新为 distance
+  const distance = (item.distance !== undefined) ? item.distance : (item.distance_km ? Number(item.distance_km) : undefined)
+  // elevationGain: 旧为 elevation_gain_m
+  const elevationGain = (item.elevationGain !== undefined) ? item.elevationGain : (item.elevation_gain_m ? Number(item.elevation_gain_m) : undefined)
+  // duration: 旧为 duration_hours (小时数)
+  const durationHours = item.duration_hours
+  // bestSeasons: 旧为 best_season: "春"，新为 ["spring"]
+  const BEST_SEASON_ZH = { '春': 'spring', '夏': 'summer', '秋': 'autumn', '冬': 'winter' }
+  let bestSeasons = item.bestSeasons || []
+  if ((!bestSeasons || bestSeasons.length === 0) && item.best_season) {
+    const zh = item.best_season.split(/[,，、]/).map(s => s.trim()).filter(Boolean)
+    bestSeasons = zh.map(s => BEST_SEASON_ZH[s] || s)
+  }
+
   const district = (item.location && item.location.district) ? item.location.district : ''
-  const difficultyText = DIFFICULTY_ZH[String(item.difficulty)] || '适中'
-  // scenery（中文）→ terrainTypes（英文）映射
+  const difficultyText = DIFFICULTY_ZH[String(difficultyLevel)] || '适中'
+
+  // ===== scenery（中文）→ terrainTypes（英文）映射 =====
   const sceneryTerrs = (item.scenery || []).map(s => SCENERY_TO_TERRAIN[s] || null).filter(Boolean)
   const terrainTypes = (item.terrainTypes && item.terrainTypes.length > 0) ? item.terrainTypes : [...new Set(sceneryTerrs)]
 
+  // ===== routeDNA：从 scenery 提取高价值场景 =====
+  const SCENERY_TO_DNA = {
+    '红叶': 'red_leaves', '红叶漫山': 'red_leaves',
+    '云海': 'sea_of_clouds',
+    '高山草甸': 'alpine_meadow', '草甸': 'alpine_meadow',
+    '日出': 'sunrise', '日落': 'sunset', '日落晚霞': 'sunset',
+    '星空': 'stargazing',
+    '瀑布': 'waterfall', '瀑布壮观': 'waterfall',
+    '古镇': 'ancient_town', '古村': 'ancient_village',
+    '古寺': 'ancient_temple', '古建筑': 'ancient_architecture',
+    '博物馆': 'museum',
+    '温泉': 'hot_spring',
+    '花卉': 'flower', '花海': 'flower', '山花': 'flower', '桃花': 'flower', '牡丹': 'flower',
+    '湖泊': 'lake', '水库': 'lake',
+  }
+  const dnaTerrs = (item.scenery || []).map(s => SCENERY_TO_DNA[s] || null).filter(Boolean)
+  const routeDNA = (item.routeDNA && item.routeDNA.length > 0) ? item.routeDNA : [...new Set(dnaTerrs)]
+
+  // ===== durationText 构建 =====
   let durationText = ''
-  if (item.durationMin !== undefined || item.durationMax !== undefined) {
-    const min = item.durationMin !== undefined ? item.durationMin : ''
+  if (item.durationMin !== undefined || item.durationMax !== undefined || durationHours !== undefined) {
+    const min = item.durationMin !== undefined ? item.durationMin : (durationHours ? Number(durationHours) : '')
     const max = item.durationMax !== undefined ? item.durationMax : ''
     if (min !== '' && max !== '' && String(min) !== String(max)) {
       durationText = `${min}-${max}小时`
     } else if (min !== '') {
       durationText = `${min}小时`
-    } else if (max !== '') {
-      durationText = `${max}小时`
     }
   }
 
@@ -65,16 +113,16 @@ function _processListItem(item) {
     name: item.name,
     shortDesc: item.shortDesc || '',
     coverImage: item.coverImage || '',
-    difficulty: item.difficulty,
+    difficulty: difficultyLevel,
     difficultyText: difficultyText,
-    distance: item.distance,
-    durationMin: item.durationMin,
-    durationMax: item.durationMax,
+    distance: distance,
+    durationMin: (durationHours !== undefined) ? Number(durationHours) : (item.durationMin !== undefined ? item.durationMin : undefined),
+    durationMax: item.durationMax !== undefined ? item.durationMax : undefined,
     durationText: durationText,
-    elevationGain: item.elevationGain,
+    elevationGain: elevationGain,
     terrainTypes: terrainTypes,
-    routeDNA: item.routeDNA || [],
-    bestSeasons: item.bestSeasons || [],
+    routeDNA: routeDNA,
+    bestSeasons: bestSeasons,
     location: { district, latitude: item.latitude || (item.location && item.location.lat) || 0, longitude: item.longitude || (item.location && item.location.lng) || 0 },
     district: district,
     latitude: item.latitude || (item.location && item.location.lat) || 0,
