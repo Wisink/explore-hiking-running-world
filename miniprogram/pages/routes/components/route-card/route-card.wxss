@@ -87,7 +87,11 @@
   background: rgba(255, 235, 238, 0.95);
 }
 
-.route-card__fav-icon { font-size: 32rpx; }
+.route-card__fav-icon {
+  font-size: 32rpx;
+  line-height: 1;
+  text-align: center;
+}
 
 /* 底部叠加信息 */
 .route-card__hero {
