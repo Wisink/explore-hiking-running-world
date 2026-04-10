@@ -234,11 +234,56 @@ async function list(event) {
         }
       }
     }
+    // 构建 terrain 筛选条件（terrainTypes OR scenery 中含关键词）
+    let terrainConds = []
     if (filter.terrain) {
-      where.terrainTypes = _.elemMatch(_.eq(filter.terrain))
+      const TERRN_SCNERY_KW = {
+        grassland:     ['草甸', '高山草甸', '草原', '牧场'],
+        forest:        ['森林', '山林', '竹林', '原始森林', '林木', '植被丰茂', '林木茂密'],
+        stream:        ['溪流', '潭水', '瀑布', '水雾弥漫', '湖泊', '水库', '湿地', '溪谷'],
+        mountain_path: ['山间小道', '山径', '徒步道'],
+        ridge:         ['山脊', '山脊行走', '山脊全景'],
+        rock_scramble: ['岩石', '攀爬', '奇石'],
+        paved:         ['景区步道', '景区', '盘山公路', '栈道'],
+        historic:      ['古道', '古寺', '古迹', '遗址', '烽火台', '博物馆'],
+      }
+      const kws = TERRN_SCNERY_KW[filter.terrain] || []
+      terrainConds = [
+        { terrainTypes: db.command.elemMatch(db.command.eq(filter.terrain)) },
+        ...(kws.length > 0 ? [{ scenery: db.command.elemMatch(db.command.in(kws)) }] : [])
+      ]
     }
+
+    // 构建 season 筛选条件（bestSeasons OR best_season 中含关键词）
+    let seasonConds = []
     if (filter.season) {
-      where.bestSeasons = _.elemMatch(_.eq(filter.season))
+      const SEASON_KW = {
+        spring: ['春', '春季', '春天'],
+        summer: ['夏', '夏季', '夏天'],
+        autumn: ['秋', '秋季', '秋天'],
+        winter: ['冬', '冬季', '冬天'],
+      }
+      const kws = SEASON_KW[filter.season] || []
+      seasonConds = [
+        { bestSeasons: db.command.elemMatch(db.command.eq(filter.season)) },
+        ...(kws.length > 0 ? [{ best_season: db.command.elemMatch(db.command.in(kws)) }] : [])
+      ]
+    }
+
+    // 合并：AND( terrain组OR, season组OR )
+    if (terrainConds.length > 0 || seasonConds.length > 0) {
+      const andParts = []
+      if (terrainConds.length > 0) {
+        andParts.push(terrainConds.length === 1 ? terrainConds[0] : { _or: terrainConds })
+      }
+      if (seasonConds.length > 0) {
+        andParts.push(seasonConds.length === 1 ? seasonConds[0] : { _or: seasonConds })
+      }
+      if (andParts.length === 1) {
+        Object.assign(where, andParts[0])
+      } else {
+        where._and = andParts
+      }
     }
     if (filter.district && filter.district !== 'all') {
       where['location.district'] = filter.district
