@@ -154,7 +154,7 @@ Page({
         const sceneryRule = SCENERY_OPTIONS[step2Choice]
         if (sceneryRule && sceneryRule.length > 0) {
           matched = matched.filter(r => {
-            const all = [...(r.terrainTypes || []), ...sceneryArr, r.name || ''].join('')
+            const all = [...(r.terrainTypes || []), ...(r.scenery || []), r.name || ''].join('')
             return sceneryRule.some(kw => all.includes(kw))
           })
         }
