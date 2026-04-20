@@ -1,14 +1,5 @@
 /* pages/checklist/checklist.wxss - v3.0 自然清新风 + 毛玻璃 */
-
-/* 状态栏占位 — 毛玻璃 */
-.page-statusbar {
-  background: linear-gradient(135deg,
-    rgba(129, 199, 132, 0.5) 0%,
-    rgba(76, 175, 80, 0.4) 100%
-  );
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-}
+@import '/styles/common.wxss';
 
 .checklist-page {
   min-height: 100vh;
@@ -20,69 +11,6 @@
     radial-gradient(ellipse at 60% 80%, rgba(76,175,80,.2) 0%, transparent 50%),
     linear-gradient(160deg, #e8f5e9 0%, #c8e6c9 25%, #a5d6a7 50%, #81c784 75%, #66bb6a 100%);
 }
-
-/* 顶部标题栏 — 毛玻璃 */
-.header {
-  position: relative;
-  overflow: hidden;
-}
-
-.header__bg {
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: linear-gradient(135deg, rgba(129,199,132,.5) 0%, rgba(76,175,80,.4) 100%);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(255,255,255,.25);
-}
-
-.header__content {
-  position: relative;
-  display: flex;
-  align-items: center;
-  padding: 20rpx 24rpx;
-}
-
-.header__back {
-  width: 68rpx;
-  height: 68rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255,255,255,.25);
-}
-
-.header__back-icon { font-size: 34rpx; color: #FFFFFF; }
-
-.header__center {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.header__title {
-  font-size: 32rpx;
-  font-weight: 700;
-  color: #FFFFFF;
-  text-shadow: 0 1rpx 6rpx rgba(255,255,255,.4);
-}
-
-.header__sub {
-  font-size: 22rpx;
-  color: rgba(255, 255, 255, 0.75);
-  margin-top: 4rpx;
-  max-width: 400rpx;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.header__spacer { width: 68rpx; }
 
 /* 进度卡片 — 毛玻璃 */
 .progress-card {

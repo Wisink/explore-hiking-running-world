@@ -1,0 +1,89 @@
+/* styles/common.wxss — 统一页面头部
+ *
+ * 设计原则：
+ * - position: fixed，顶部固定不随页面滚动
+ * - 绿色渐变毛玻璃背景，和app整体风格一致
+ * - 返回按钮用'<'字符，无背景色
+ * - 标题居中，字号30rpx，省略号截断
+ * - 状态栏+导航栏总高度 = statusBarHeight + 88rpx
+ */
+
+/* 头部容器 */
+.page-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 999;
+  background: linear-gradient(135deg,
+    rgba(129,199,132,0.5) 0%,
+    rgba(76,175,80,0.4) 100%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+/* 状态栏占位（高度由 JS 动态设置） */
+.page-header__statusbar {
+  /* inline style: height: {{statusBarHeight}}px */
+}
+
+/* 导航栏行 */
+.page-header__nav {
+  display: flex;
+  align-items: center;
+  height: 88rpx;
+  padding: 0 24rpx;
+}
+
+/* 返回按钮 — 无背景色 */
+.page-header__back {
+  width: 60rpx;
+  height: 88rpx;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+/* 返回图标 — '<' 字符 */
+.page-header__back-icon {
+  font-size: 36rpx;
+  color: var(--color-text, #1a2e1a);
+  font-weight: 300;
+  line-height: 1;
+}
+
+/* 居中标题 */
+.page-header__title {
+  flex: 1;
+  text-align: center;
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--color-text, #1a2e1a);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 0 16rpx;
+}
+
+/* 右侧平衡占位 */
+.page-header__spacer {
+  width: 60rpx;
+}
+
+/* 透明头部变体 — 用于浮层在图片上的场景 */
+.page-header--transparent {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 999;
+  background: transparent;
+}
+
+.page-header--transparent .page-header__back-icon {
+  color: #fff;
+}
+
+.page-header--transparent .page-header__title {
+  color: #fff;
+}

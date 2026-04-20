@@ -1,57 +1,5 @@
 /* pages/admin/admin.wxss - v3.0 自然清新风 + 毛玻璃 */
-
-/* 状态栏占位 — 毛玻璃 */
-.page-statusbar {
-  background: linear-gradient(135deg,
-    rgba(129, 199, 132, 0.5) 0%,
-    rgba(76, 175, 80, 0.4) 100%
-  );
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-}
-
-/* 导航栏 — 毛玻璃 */
-.detail-nav {
-  position: relative;
-  display: flex;
-  align-items: center;
-  height: 88rpx;
-  padding: 0 24rpx;
-  background: linear-gradient(135deg,
-    rgba(129, 199, 132, 0.5) 0%,
-    rgba(76, 175, 80, 0.4) 100%
-  );
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.25);
-}
-
-.detail-nav__back {
-  width: 60rpx;
-  display: flex;
-  align-items: center;
-}
-
-.detail-nav__back-icon {
-  font-size: 48rpx;
-  color: #1a2e1a;
-  font-weight: 300;
-}
-
-.detail-nav__title {
-  flex: 1;
-  text-align: center;
-  font-size: 32rpx;
-  font-weight: 600;
-  color: #1a2e1a;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.detail-nav__spacer {
-  width: 60rpx;
-}
+@import '/styles/common.wxss';
 
 .admin-page {
   min-height: 100vh;

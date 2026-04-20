@@ -1,23 +1,18 @@
 <!--pages/nearby/nearby.wxml-->
 <view class="nearby-page">
 
-  <!-- 状态栏 -->
-  <view class="page-statusbar" style="height: {{statusBarHeight}}px;"></view>
-
-  <!-- 顶部栏 -->
-  <view class="header">
-    <view class="header__bg"></view>
-    <view class="header__content">
-      <view class="header__back" bindtap="onGoBack">
-        <text class="header__back-icon">‹</text>
+  <!-- 统一头部 -->
+  <view class="page-header">
+    <view class="page-header__statusbar" style="height: {{statusBarHeight}}px;"></view>
+    <view class="page-header__nav">
+      <view class="page-header__back" bindtap="onGoBack">
+        <text class="page-header__back-icon"><</text>
       </view>
-      <view class="header__text">
-        <text class="header__title">📍 附近路线</text>
-        <text class="header__sub" wx:if="{{hasLocation}}">{{userLocationName}} · 按距离排序</text>
-        <text class="header__sub" wx:else>发现你身边的徒步路线</text>
-      </view>
+      <text class="page-header__title">📍 附近路线</text>
+      <view class="page-header__spacer"></view>
     </view>
   </view>
+  <view style="height: {{statusBarHeight + 88}}px;"></view>
 
   <!-- 未定位时：引导区域 -->
   <view class="locate-area" wx:if="{{!hasLocation && !loading}}">
