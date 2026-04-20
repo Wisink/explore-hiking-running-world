@@ -366,8 +366,8 @@
                 <text class="admin-item__tag" style="color: {{item.difficultyColor}}">
                   {{item.difficultyLabel}}
                 </text>
-                <text class="admin-item__tag" wx:if="{{item.distance_km || item.distance}}">{{item.distance_km || item.distance}}km</text>
-                <text class="admin-item__tag" wx:if="{{(item.location && item.location.address) || item.location}}">📍 {{(item.location && item.location.address) || item.location}}</text>
+                <text class="admin-item__tag" wx:if="{{item._displayDistance}}">{{item._displayDistance}}km</text>
+                <text class="admin-item__tag" wx:if="{{item._displayLocation}}">📍 {{item._displayLocation}}</text>
                 <text class="admin-item__tag {{item.isActive !== false ? 'admin-item__tag--active' : 'admin-item__tag--inactive'}}">{{item.isActive !== false ? '✅ 有效' : '❌ 无效'}}</text>
               </view>
             </view>
@@ -601,9 +601,9 @@
                     <text class="detail-card__name">{{item.name || '未知路线'}}</text>
                   </view>
                   <view class="detail-card__meta">
-                    <text wx:if="{{item.distance_km || item.distance}}">📏 {{item.distance_km || item.distance}}km</text>
-                    <text wx:if="{{item.difficultyLevel || (item.difficulty && item.difficulty.level)}}"> · {{item.difficultyLevel || (item.difficulty && item.difficulty.level)}}级难度</text>
-                    <text wx:if="{{(item.location && item.location.address) || item.location}}"> · 📍 {{(item.location && item.location.address) || item.location}}</text>
+                    <text wx:if="{{item.distance || item.distance_km}}">📏 {{item.distance || item.distance_km}}km</text>
+                    <text wx:if="{{item.difficulty || item.difficultyLevel}}"> · {{typeof item.difficulty === 'number' ? item.difficulty : (item.difficultyLevel || (item.difficulty && item.difficulty.level))}}级难度</text>
+                    <text wx:if="{{item.location}}"> · 📍 {{item.location.district || (item.location && item.location.address) || ''}}</text>
                   </view>
                 </view>
               </view>

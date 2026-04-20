@@ -487,3 +487,51 @@
   color: #2d6a4f;
   font-weight: 500;
 }
+
+/* ========== 三列布局 ========== */
+.form-item--third { flex: 1; }
+
+/* ========== 多选组 — 毛玻璃 ========== */
+.checkbox-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+}
+
+.checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  padding: 12rpx 24rpx;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12rpx;
+  transition: all 200ms ease;
+}
+
+.checkbox-item--active {
+  background: rgba(129, 199, 132, 0.25);
+  border-color: rgba(46, 125, 50, 0.4);
+}
+
+.checkbox-icon {
+  font-size: 28rpx;
+  color: #2d6a4f;
+}
+
+.checkbox-label {
+  font-size: 26rpx;
+  color: #1a2e1a;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* ========== 开关行 ========== */
+.toggle-row {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  padding: 12rpx 0;
+}

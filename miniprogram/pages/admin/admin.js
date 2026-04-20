@@ -733,9 +733,16 @@ Page({
 
   // 预处理路线数据（WXML 不能调用函数）
   processRouteItem(item) {
-    const level = item.difficultyLevel || (item.difficulty && item.difficulty.level) || 0
+    // difficulty 可能是数字(新)或对象(旧)，统一处理
+    const level = typeof item.difficulty === 'number' ? item.difficulty
+      : (item.difficultyLevel || (item.difficulty && item.difficulty.level) || 0)
     item.difficultyLabel = this.getDifficultyLabel(level)
     item.difficultyColor = this.getDifficultyColor(level)
+    // 兼容：distance 字段（新旧共用）
+    item._displayDistance = item.distance || item.distance_km || 0
+    // 兼容：location 显示（新有 district，旧有 address）
+    const loc = item.location || {}
+    item._displayLocation = loc.district || loc.address || (typeof loc === 'string' ? loc : '')
     return item
   },
 

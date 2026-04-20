@@ -18,121 +18,50 @@
 
   <!-- ========== 路线编辑 ========== -->
   <block wx:elif="{{type === 'route'}}">
+
+    <!-- 基本信息 -->
     <view class="form-section">
       <text class="form-section__title">基本信息</text>
 
       <view class="form-item">
         <text class="form-label">路线名称 *</text>
-        <input class="form-input" placeholder="请输入路线名称" value="{{form.name}}" data-field="name" bindinput="onFieldInput" />
+        <input class="form-input" placeholder="如：嘉午台原返" value="{{form.name}}" data-field="name" bindinput="onFieldInput" />
       </view>
 
       <view class="form-item">
-        <text class="form-label">路线描述</text>
-        <textarea class="form-textarea" placeholder="请输入路线描述" value="{{form.description}}" data-field="description" bindinput="onFieldInput" maxlength="500" />
+        <text class="form-label">一句话简介</text>
+        <input class="form-input" placeholder="如：秦岭北麓经典登山路线" value="{{form.shortDesc}}" data-field="shortDesc" bindinput="onFieldInput" />
+      </view>
+
+      <view class="form-item">
+        <text class="form-label">详细描述</text>
+        <textarea class="form-textarea form-textarea--tall" placeholder="路线的完整介绍" value="{{form.fullDesc}}" data-field="fullDesc" bindinput="onFieldInput" maxlength="2000" />
       </view>
 
       <view class="form-item">
         <text class="form-label">封面图片</text>
-        <input class="form-input" placeholder="输入封面图片链接或上传" value="{{form.coverImage}}" data-field="coverImage" bindinput="onFieldInput" />
-        <view class="cover-upload-btn" bindtap="onChooseRouteCover">
-          <text>{{routeCoverUploading ? '上传中...' : '📷 本地上传封面图'}}</text>
-        </view>
+        <input class="form-input" placeholder="图片URL" value="{{form.coverImage}}" data-field="coverImage" bindinput="onFieldInput" />
         <image wx:if="{{form.coverImage}}" class="form-preview" src="{{form.coverImage}}" mode="aspectFill" />
       </view>
 
-      <view class="form-item">
-        <text class="form-label">区域方向</text>
-        <input class="form-input" placeholder="如：秦岭东线" value="{{form.location_direction}}" data-field="location_direction" bindinput="onFieldInput" />
-      </view>
-      <view class="form-item">
-        <text class="form-label">详细地址</text>
-        <input class="form-input" placeholder="请输入详细地址" value="{{form.location_address}}" data-field="location_address" bindinput="onFieldInput" />
-      </view>
-      <view class="form-item">
-        <text class="form-label">导航地址</text>
-        <input class="form-input" placeholder="导航搜索关键词" value="{{form.location_navAddress}}" data-field="location_navAddress" bindinput="onFieldInput" />
-      </view>
       <view class="form-row">
         <view class="form-item form-item--half">
-          <text class="form-label">自驾导航纬度</text>
-          <input class="form-input" type="digit" placeholder="如：34.2653" value="{{form.location_driveLat}}" data-field="location_driveLat" bindinput="onFieldInput" />
-        </view>
-        <view class="form-item form-item--half">
-          <text class="form-label">自驾导航经度</text>
-          <input class="form-input" type="digit" placeholder="如：108.9426" value="{{form.location_driveLng}}" data-field="location_driveLng" bindinput="onFieldInput" />
-        </view>
-      </view>
-      <view class="form-item">
-        <text class="form-label">公共交通</text>
-        <textarea class="form-textarea" placeholder="公共交通信息" value="{{form.location_publicTransport}}" data-field="location_publicTransport" bindinput="onFieldInput" />
-      </view>
-    </view>
-
-    <view class="form-section">
-      <text class="form-section__title">路线参数</text>
-
-      <view class="form-row">
-        <view class="form-item form-item--half">
-          <text class="form-label">距离 (km)</text>
-          <input class="form-input" type="digit" placeholder="0" value="{{form.distance_km}}" data-field="distance_km" bindinput="onFieldInput" />
-        </view>
-        <view class="form-item form-item--half">
-          <text class="form-label">时长 (h)</text>
-          <input class="form-input" type="digit" placeholder="0" value="{{form.duration_hours}}" data-field="duration_hours" bindinput="onFieldInput" />
-        </view>
-      </view>
-
-      <view class="form-row">
-        <view class="form-item form-item--half">
-          <text class="form-label">累计爬升 (m)</text>
-          <input class="form-input" type="digit" placeholder="0" value="{{form.elevation_gain_m}}" data-field="elevation_gain_m" bindinput="onFieldInput" />
-        </view>
-        <view class="form-item form-item--half">
-          <text class="form-label">排序序号</text>
-          <input class="form-input" type="number" placeholder="0" value="{{form.order}}" data-field="order" bindinput="onFieldInput" />
-        </view>
-      </view>
-
-      <view class="form-row">
-        <view class="form-item form-item--half">
-          <text class="form-label">难度等级</text>
-          <picker mode="selector" range="{{difficultyOptions}}" value="{{form.difficulty_level - 1}}" bindchange="onDifficultyChange">
+          <text class="form-label">状态</text>
+          <picker range="{{['开放', '关闭']}}" value="{{form.status === 'open' ? 0 : 1}}" bindchange="onStatusChange">
             <view class="form-picker">
-              <text>{{difficultyOptions[form.difficulty_level - 1] || '请选择'}}</text>
+              <text>{{form.status === 'open' ? '开放' : '关闭'}}</text>
               <text class="form-picker__arrow">▾</text>
             </view>
           </picker>
         </view>
         <view class="form-item form-item--half">
-          <text class="form-label">最佳季节</text>
-          <input class="form-input" placeholder="春/夏/秋/冬/全年" value="{{form.best_season}}" data-field="best_season" bindinput="onFieldInput" />
+          <text class="form-label">数据来源</text>
+          <input class="form-input" placeholder="如：用户贡献" value="{{form.dataSource}}" data-field="dataSource" bindinput="onFieldInput" />
         </view>
-      </view>
-
-      <view class="form-item">
-        <text class="form-label">难度标签</text>
-        <input class="form-input" placeholder="如：稍微有点挑战" value="{{form.difficulty_label}}" data-field="difficulty_label" bindinput="onFieldInput" />
       </view>
     </view>
 
-    <view class="form-section">
-      <text class="form-section__title">费用信息</text>
-      <view class="form-row">
-        <view class="form-item form-item--half">
-          <text class="form-label">费用类型</text>
-          <input class="form-input" placeholder="免费/收费" value="{{form.cost_type}}" data-field="cost_type" bindinput="onFieldInput" />
-        </view>
-        <view class="form-item form-item--half">
-          <text class="form-label">费用金额 (元)</text>
-          <input class="form-input" type="digit" placeholder="0" value="{{form.cost_amount}}" data-field="cost_amount" bindinput="onFieldInput" />
-        </view>
-      </view>
-      <view class="form-item">
-        <text class="form-label">费用备注</text>
-        <input class="form-input" placeholder="费用说明" value="{{form.cost_note}}" data-field="cost_note" bindinput="onFieldInput" />
-      </view>
-    </view>
-
+    <!-- 图片列表 -->
     <view class="form-section">
       <text class="form-section__title">图片列表</text>
       <view class="tag-list">
@@ -149,225 +78,277 @@
           <text>+ 添加</text>
         </view>
       </view>
-      <view class="cover-upload-btn" style="margin-top:12rpx;" bindtap="onChooseImages">
-        <text>📷 本地上传图片（支持多选）</text>
-      </view>
     </view>
 
+    <!-- 位置信息 -->
     <view class="form-section">
-      <text class="form-section__title">适合人群</text>
-      <view class="tag-list">
-        <view class="tag-item" wx:for="{{form.difficulty_suitableFor}}" wx:key="*this">
-          <text>{{item}}</text>
-          <view class="tag-item__remove" bindtap="removeDifficultySuitableFor" data-index="{{index}}">
-            <text>✕</text>
-          </view>
-        </view>
-      </view>
-      <view class="tag-add">
-        <input class="form-input form-input--small" placeholder="如：新手/亲子8岁+" value="{{difficultySuitableForInput}}" bindinput="onDifficultySuitableForInput" confirm-type="done" bindconfirm="addDifficultySuitableFor" />
-        <view class="tag-add__btn" bindtap="addDifficultySuitableFor">
-          <text>+ 添加</text>
-        </view>
-      </view>
-    </view>
+      <text class="form-section__title">位置信息</text>
 
-    <view class="form-section">
-      <text class="form-section__title">风景标签</text>
-      <view class="tag-list">
-        <view class="tag-item" wx:for="{{form.scenery}}" wx:key="*this">
-          <text>{{item}}</text>
-          <view class="tag-item__remove" bindtap="removeScenery" data-index="{{index}}">
-            <text>✕</text>
-          </view>
-        </view>
+      <view class="form-item">
+        <text class="form-label">区县</text>
+        <input class="form-input" placeholder="如：长安区" value="{{form.location_district}}" data-field="location_district" bindinput="onFieldInput" />
       </view>
-      <view class="tag-add">
-        <input class="form-input form-input--small" placeholder="输入标签名称" value="{{sceneryInput}}" bindinput="onSceneryInput" confirm-type="done" bindconfirm="addScenery" />
-        <view class="tag-add__btn" bindtap="addScenery">
-          <text>+ 添加</text>
+
+      <view class="form-row">
+        <view class="form-item form-item--half">
+          <text class="form-label">纬度</text>
+          <input class="form-input" type="digit" placeholder="如：34.0125" value="{{form.location_lat}}" data-field="location_lat" bindinput="onFieldInput" />
+        </view>
+        <view class="form-item form-item--half">
+          <text class="form-label">经度</text>
+          <input class="form-input" type="digit" placeholder="如：108.9645" value="{{form.location_lng}}" data-field="location_lng" bindinput="onFieldInput" />
         </view>
       </view>
     </view>
 
+    <!-- 路线参数 -->
     <view class="form-section">
-      <text class="form-section__title">分段信息</text>
-      <view class="section-list">
-        <view class="section-item" wx:for="{{form.sections}}" wx:key="index">
-          <view class="section-item__header">
-            <text class="section-item__num">第 {{index + 1}} 段</text>
-            <view class="section-item__remove" bindtap="removeSection" data-index="{{index}}">
-              <text>删除</text>
+      <text class="form-section__title">路线参数</text>
+
+      <view class="form-item">
+        <text class="form-label">距离 (km)</text>
+        <input class="form-input" type="digit" placeholder="如：10" value="{{form.distance}}" data-field="distance" bindinput="onFieldInput" />
+      </view>
+
+      <view class="form-row">
+        <view class="form-item form-item--half">
+          <text class="form-label">最短用时 (h)</text>
+          <input class="form-input" type="digit" placeholder="如：3" value="{{form.durationMin}}" data-field="durationMin" bindinput="onFieldInput" />
+        </view>
+        <view class="form-item form-item--half">
+          <text class="form-label">最长用时 (h)</text>
+          <input class="form-input" type="digit" placeholder="如：5" value="{{form.durationMax}}" data-field="durationMax" bindinput="onFieldInput" />
+        </view>
+      </view>
+
+      <view class="form-row">
+        <view class="form-item form-item--third">
+          <text class="form-label">累计爬升 (m)</text>
+          <input class="form-input" type="number" placeholder="950" value="{{form.elevationGain}}" data-field="elevationGain" bindinput="onFieldInput" />
+        </view>
+        <view class="form-item form-item--third">
+          <text class="form-label">最高海拔 (m)</text>
+          <input class="form-input" type="number" placeholder="1810" value="{{form.elevationMax}}" data-field="elevationMax" bindinput="onFieldInput" />
+        </view>
+        <view class="form-item form-item--third">
+          <text class="form-label">最低海拔 (m)</text>
+          <input class="form-input" type="number" placeholder="860" value="{{form.elevationMin}}" data-field="elevationMin" bindinput="onFieldInput" />
+        </view>
+      </view>
+
+      <view class="form-row">
+        <view class="form-item form-item--half">
+          <text class="form-label">难度等级</text>
+          <picker range="{{difficultyOptions}}" rangeKey="label" value="{{difficultyIndex}}" bindchange="onDifficultyChange">
+            <view class="form-picker">
+              <text>{{difficultyOptions[difficultyIndex].label || '请选择'}}</text>
+              <text class="form-picker__arrow">▾</text>
             </view>
-          </view>
-          <input class="form-input" placeholder="段落名称" value="{{item.name}}" data-index="{{index}}" data-field="name" bindinput="onSectionInput" />
-          <view class="form-row">
-            <input class="form-input form-input--half" placeholder="路面类型" value="{{item.road}}" data-index="{{index}}" data-field="road" bindinput="onSectionInput" />
-            <input class="form-input form-input--half" placeholder="距离(km)" value="{{item.distance}}" data-index="{{index}}" data-field="distance" bindinput="onSectionInput" type="digit" />
-          </view>
-          <input class="form-input" placeholder="段落描述" value="{{item.desc}}" data-index="{{index}}" data-field="desc" bindinput="onSectionInput" />
+          </picker>
+        </view>
+        <view class="form-item form-item--half">
+          <text class="form-label">技术等级</text>
+          <picker range="{{technicalGradeOptions}}" rangeKey="label" value="{{technicalGradeIndex}}" bindchange="onTechnicalGradeChange">
+            <view class="form-picker">
+              <text>{{technicalGradeOptions[technicalGradeIndex].label || '请选择'}}</text>
+              <text class="form-picker__arrow">▾</text>
+            </view>
+          </picker>
         </view>
       </view>
-      <view class="add-section-btn" bindtap="addSection">
-        <text>+ 添加分段</text>
+
+      <view class="form-row">
+        <view class="form-item form-item--half">
+          <text class="form-label">排序序号</text>
+          <input class="form-input" type="number" placeholder="0" value="{{form.order}}" data-field="order" bindinput="onFieldInput" />
+        </view>
+        <view class="form-item form-item--half">
+          <text class="form-label">预估卡路里</text>
+          <input class="form-input" type="number" placeholder="如：1065" value="{{form.estimatedCalories}}" data-field="estimatedCalories" bindinput="onFieldInput" />
+        </view>
       </view>
     </view>
 
+    <!-- 路况特征 -->
     <view class="form-section">
-      <text class="form-section__title">装备清单</text>
+      <text class="form-section__title">路况特征</text>
 
-      <text class="form-label">必带装备</text>
-      <view class="tag-list">
-        <view class="tag-item" wx:for="{{form.equipment_must}}" wx:key="index">
-          <text>{{item.name}}{{item.reason ? ' — ' + item.reason : ''}}</text>
-          <view class="tag-item__remove" bindtap="removeEquipmentMust" data-index="{{index}}">
-            <text>✕</text>
+      <view class="form-item">
+        <text class="form-label">地形类型（可多选）</text>
+        <view class="checkbox-group">
+          <view class="checkbox-item {{form.terrainTypes.indexOf(item.value) >= 0 ? 'checkbox-item--active' : ''}}" wx:for="{{terrainTypeOptions}}" wx:key="value" bindtap="onTerrainToggle" data-value="{{item.value}}">
+            <text class="checkbox-icon">{{form.terrainTypes.indexOf(item.value) >= 0 ? '☑' : '☐'}}</text>
+            <text class="checkbox-label">{{item.label}}</text>
           </view>
         </view>
       </view>
-      <view class="tag-add">
-        <input class="form-input form-input--small" placeholder="装备名称" value="{{equipmentMustNameInput}}" bindinput="onEquipmentMustNameInput" />
-        <input class="form-input form-input--small" placeholder="原因（选填）" value="{{equipmentMustReasonInput}}" bindinput="onEquipmentMustReasonInput" confirm-type="done" bindconfirm="addEquipmentMust" />
-        <view class="tag-add__btn" bindtap="addEquipmentMust">
-          <text>+ 添加</text>
-        </view>
-      </view>
 
-      <text class="form-label" style="margin-top:20rpx;">建议携带</text>
-      <view class="tag-list">
-        <view class="tag-item" wx:for="{{form.equipment_suggest}}" wx:key="index">
-          <text>{{item.name}}{{item.reason ? ' — ' + item.reason : ''}}</text>
-          <view class="tag-item__remove" bindtap="removeEquipmentSuggest" data-index="{{index}}">
-            <text>✕</text>
+      <view class="form-item">
+        <text class="form-label">路线DNA（可多选）</text>
+        <view class="checkbox-group">
+          <view class="checkbox-item {{form.routeDNA.indexOf(item.value) >= 0 ? 'checkbox-item--active' : ''}}" wx:for="{{routeDNAOptions}}" wx:key="value" bindtap="onDNAToggle" data-value="{{item.value}}">
+            <text class="checkbox-icon">{{form.routeDNA.indexOf(item.value) >= 0 ? '☑' : '☐'}}</text>
+            <text class="checkbox-label">{{item.label}}</text>
           </view>
-        </view>
-      </view>
-      <view class="tag-add">
-        <input class="form-input form-input--small" placeholder="装备名称" value="{{equipmentSuggestNameInput}}" bindinput="onEquipmentSuggestNameInput" />
-        <input class="form-input form-input--small" placeholder="原因（选填）" value="{{equipmentSuggestReasonInput}}" bindinput="onEquipmentSuggestReasonInput" confirm-type="done" bindconfirm="addEquipmentSuggest" />
-        <view class="tag-add__btn" bindtap="addEquipmentSuggest">
-          <text>+ 添加</text>
-        </view>
-      </view>
-
-      <text class="form-label" style="margin-top:20rpx;">无需携带</text>
-      <view class="tag-list">
-        <view class="tag-item" wx:for="{{form.equipment_noNeed}}" wx:key="index">
-          <text>{{item.name}}{{item.reason ? ' — ' + item.reason : ''}}</text>
-          <view class="tag-item__remove" bindtap="removeEquipmentNoNeed" data-index="{{index}}">
-            <text>✕</text>
-          </view>
-        </view>
-      </view>
-      <view class="tag-add">
-        <input class="form-input form-input--small" placeholder="装备名称" value="{{equipmentNoNeedNameInput}}" bindinput="onEquipmentNoNeedNameInput" />
-        <input class="form-input form-input--small" placeholder="原因（选填）" value="{{equipmentNoNeedReasonInput}}" bindinput="onEquipmentNoNeedReasonInput" confirm-type="done" bindconfirm="addEquipmentNoNeed" />
-        <view class="tag-add__btn" bindtap="addEquipmentNoNeed">
-          <text>+ 添加</text>
         </view>
       </view>
     </view>
 
+    <!-- 适配评估 -->
     <view class="form-section">
-      <text class="form-section__title">安全信息</text>
+      <text class="form-section__title">适配评估</text>
 
-      <text class="form-label">安全警告</text>
-      <view class="tag-list">
-        <view class="tag-item" wx:for="{{form.safety_warnings}}" wx:key="*this">
-          <text>{{item}}</text>
-          <view class="tag-item__remove" bindtap="removeSafetyWarning" data-index="{{index}}">
-            <text>✕</text>
+      <view class="form-row">
+        <view class="form-item form-item--half">
+          <text class="form-label">水源补给</text>
+          <picker range="{{waterSupplyOptions}}" rangeKey="label" value="{{waterSupplyIndex}}" bindchange="onWaterSupplyChange">
+            <view class="form-picker">
+              <text>{{waterSupplyOptions[waterSupplyIndex].label}}</text>
+              <text class="form-picker__arrow">▾</text>
+            </view>
+          </picker>
+        </view>
+        <view class="form-item form-item--half">
+          <text class="form-label">安全等级</text>
+          <picker range="{{safetyLevelOptions}}" rangeKey="label" value="{{safetyLevelIndex}}" bindchange="onSafetyLevelChange">
+            <view class="form-picker">
+              <text>{{safetyLevelOptions[safetyLevelIndex].label}}</text>
+              <text class="form-picker__arrow">▾</text>
+            </view>
+          </picker>
+        </view>
+      </view>
+
+      <view class="form-row">
+        <view class="form-item form-item--half">
+          <text class="form-label">信号覆盖</text>
+          <picker range="{{cellCoverageOptions}}" rangeKey="label" value="{{cellCoverageIndex}}" bindchange="onCellCoverageChange">
+            <view class="form-picker">
+              <text>{{cellCoverageOptions[cellCoverageIndex].label}}</text>
+              <text class="form-picker__arrow">▾</text>
+            </view>
+          </picker>
+        </view>
+        <view class="form-item form-item--half">
+          <text class="form-label">路标清晰度</text>
+          <picker range="{{trailMarkingOptions}}" rangeKey="label" value="{{trailMarkingIndex}}" bindchange="onTrailMarkingChange">
+            <view class="form-picker">
+              <text>{{trailMarkingOptions[trailMarkingIndex].label}}</text>
+              <text class="form-picker__arrow">▾</text>
+            </view>
+          </picker>
+        </view>
+      </view>
+
+      <view class="form-row">
+        <view class="form-item form-item--half">
+          <text class="form-label">亲子友好度</text>
+          <picker range="{{familyFriendlyOptions}}" rangeKey="label" value="{{familyFriendlyIndex}}" bindchange="onFamilyFriendlyChange">
+            <view class="form-picker">
+              <text>{{familyFriendlyOptions[familyFriendlyIndex].label}}</text>
+              <text class="form-picker__arrow">▾</text>
+            </view>
+          </picker>
+        </view>
+        <view class="form-item form-item--half">
+          <text class="form-label">休息点数量</text>
+          <input class="form-input" type="number" placeholder="0" value="{{form.restPoints}}" data-field="restPoints" bindinput="onFieldInput" />
+        </view>
+      </view>
+    </view>
+
+    <!-- 补给信息 -->
+    <view class="form-section">
+      <text class="form-section__title">起点 / 终点</text>
+
+      <view class="form-item">
+        <text class="form-label">起点名称</text>
+        <input class="form-input" placeholder="如：莲花山庄" value="{{form.trailhead_startName}}" data-field="trailhead_startName" bindinput="onFieldInput" />
+      </view>
+
+      <view class="form-item">
+        <text class="form-label">起点设施（可多选）</text>
+        <view class="checkbox-group">
+          <view class="checkbox-item {{form.trailhead_startFacilities.indexOf(item) >= 0 ? 'checkbox-item--active' : ''}}" wx:for="{{facilityOptions}}" wx:key="*this" bindtap="onStartFacilityToggle" data-value="{{item}}">
+            <text class="checkbox-icon">{{form.trailhead_startFacilities.indexOf(item) >= 0 ? '☑' : '☐'}}</text>
+            <text class="checkbox-label">{{item}}</text>
           </view>
         </view>
       </view>
-      <view class="tag-add">
-        <input class="form-input form-input--small" placeholder="安全警告内容" value="{{safetyWarningInput}}" bindinput="onSafetyWarningInput" confirm-type="done" bindconfirm="addSafetyWarning" />
-        <view class="tag-add__btn" bindtap="addSafetyWarning">
-          <text>+ 添加</text>
-        </view>
-      </view>
-
-      <view class="form-item" style="margin-top:20rpx;">
-        <text class="form-label">紧急电话</text>
-        <input class="form-input" placeholder="如：当地县救援：119 / 110" value="{{form.safety_emergencyPhone}}" data-field="safety_emergencyPhone" bindinput="onFieldInput" />
-      </view>
-    </view>
-
-    <view class="form-section">
-      <text class="form-section__title">实用信息</text>
 
       <view class="form-item">
-        <text class="form-label">门票信息</text>
-        <textarea class="form-textarea" placeholder="门票价格、优惠政策等" value="{{form.ticket_info}}" data-field="ticket_info" bindinput="onFieldInput" />
+        <text class="form-label">终点名称</text>
+        <input class="form-input" placeholder="如：莲花山庄" value="{{form.trailhead_endName}}" data-field="trailhead_endName" bindinput="onFieldInput" />
       </view>
 
       <view class="form-item">
-        <text class="form-label">餐饮</text>
-        <textarea class="form-textarea" placeholder="沿途餐饮、自带建议等" value="{{form.food}}" data-field="food" bindinput="onFieldInput" />
-      </view>
-
-      <view class="form-item">
-        <text class="form-label">避坑</text>
-        <textarea class="form-textarea" placeholder="常见坑点、注意事项" value="{{form.pitfall}}" data-field="pitfall" bindinput="onFieldInput" />
-      </view>
-
-      <view class="form-item">
-        <text class="form-label">贴士</text>
-        <textarea class="form-textarea" placeholder="实用小贴士" value="{{form.tips}}" data-field="tips" bindinput="onFieldInput" />
-      </view>
-
-      <view class="form-item">
-        <text class="form-label">法规</text>
-        <textarea class="form-textarea" placeholder="相关法规要求" value="{{form.law_tips}}" data-field="law_tips" bindinput="onFieldInput" />
-      </view>
-
-      <view class="form-item">
-        <text class="form-label">环保</text>
-        <textarea class="form-textarea" placeholder="环保提醒" value="{{form.eco_tips}}" data-field="eco_tips" bindinput="onFieldInput" />
-      </view>
-    </view>
-
-    <view class="form-section">
-      <text class="form-section__title">风景亮点</text>
-      <view class="form-item">
-        <text class="form-label">亮点描述</text>
-        <textarea class="form-textarea" placeholder="这条路线的风景亮点" value="{{form.highlights}}" data-field="highlights" bindinput="onFieldInput" maxlength="500" />
-      </view>
-    </view>
-
-    <view class="form-section">
-      <text class="form-section__title">打卡点</text>
-      <view class="tag-list">
-        <view class="tag-item" wx:for="{{form.photoSpots}}" wx:key="*this">
-          <text>{{item}}</text>
-          <view class="tag-item__remove" bindtap="removePhotoSpot" data-index="{{index}}">
-            <text>✕</text>
+        <text class="form-label">终点设施（可多选）</text>
+        <view class="checkbox-group">
+          <view class="checkbox-item {{form.trailhead_endFacilities.indexOf(item) >= 0 ? 'checkbox-item--active' : ''}}" wx:for="{{facilityOptions}}" wx:key="*this" bindtap="onEndFacilityToggle" data-value="{{item}}">
+            <text class="checkbox-icon">{{form.trailhead_endFacilities.indexOf(item) >= 0 ? '☑' : '☐'}}</text>
+            <text class="checkbox-label">{{item}}</text>
           </view>
         </view>
       </view>
-      <view class="tag-add">
-        <input class="form-input form-input--small" placeholder="输入打卡点名称" value="{{photoSpotInput}}" bindinput="onPhotoSpotInput" confirm-type="done" bindconfirm="addPhotoSpot" />
-        <view class="tag-add__btn" bindtap="addPhotoSpot">
-          <text>+ 添加</text>
+    </view>
+
+    <!-- 交通信息 -->
+    <view class="form-section">
+      <text class="form-section__title">交通信息</text>
+
+      <view class="form-item">
+        <view class="toggle-row" bindtap="onParkingToggle">
+          <text class="checkbox-icon">{{form.transport_hasParking ? '☑' : '☐'}}</text>
+          <text class="checkbox-label">有停车场</text>
+        </view>
+      </view>
+
+      <view class="form-item">
+        <text class="form-label">停车备注</text>
+        <input class="form-input" placeholder="如：可停约30辆" value="{{form.transport_parkingNote}}" data-field="transport_parkingNote" bindinput="onFieldInput" />
+      </view>
+
+      <view class="form-item">
+        <text class="form-label">公共交通</text>
+        <textarea class="form-textarea" placeholder="公交/地铁信息" value="{{form.transport_publicTransport}}" data-field="transport_publicTransport" bindinput="onFieldInput" />
+      </view>
+
+      <view class="form-item">
+        <text class="form-label">驾车指引</text>
+        <textarea class="form-textarea" placeholder="自驾路线指引" value="{{form.transport_drivingGuide}}" data-field="transport_drivingGuide" bindinput="onFieldInput" />
+      </view>
+    </view>
+
+    <!-- 附加属性 -->
+    <view class="form-section">
+      <text class="form-section__title">附加属性</text>
+
+      <view class="form-item">
+        <text class="form-label">最佳季节（可多选）</text>
+        <view class="checkbox-group">
+          <view class="checkbox-item {{form.bestSeasons.indexOf(item.value) >= 0 ? 'checkbox-item--active' : ''}}" wx:for="{{seasonOptions}}" wx:key="value" bindtap="onSeasonToggle" data-value="{{item.value}}">
+            <text class="checkbox-icon">{{form.bestSeasons.indexOf(item.value) >= 0 ? '☑' : '☐'}}</text>
+            <text class="checkbox-label">{{item.label}}</text>
+          </view>
         </view>
       </view>
     </view>
+
   </block>
 
   <!-- ========== 文章编辑 ========== -->
   <block wx:elif="{{type === 'article'}}">
-    <!-- 基本信息 -->
     <view class="form-section">
       <text class="form-section__title">基本信息</text>
 
       <view class="form-item">
-        <text class="form-label">标题 <text class="form-required">*</text></text>
+        <text class="form-label">标题 *</text>
         <input class="form-input" placeholder="请输入文章标题" value="{{articleForm.title}}" data-field="title" bindinput="onArticleFieldInput" />
       </view>
 
       <view class="form-item">
         <text class="form-label">摘要</text>
-        <textarea class="form-textarea" placeholder="请输入文章摘要（列表页展示）" value="{{articleForm.summary}}" data-field="summary" bindinput="onArticleFieldInput" maxlength="300" />
+        <textarea class="form-textarea" placeholder="请输入文章摘要" value="{{articleForm.summary}}" data-field="summary" bindinput="onArticleFieldInput" maxlength="300" />
       </view>
 
       <view class="form-item">
@@ -382,9 +363,9 @@
         </view>
         <view class="form-item form-item--half">
           <text class="form-label">难度</text>
-          <picker mode="selector" range="{{difficultyArticleOptions}}" rangeKey="label" value="{{difficultyArticleIndex}}" bindchange="onArticleDifficultyChange">
+          <picker range="{{difficultyArticleOptions}}" rangeKey="label" value="{{difficultyArticleIndex}}" bindchange="onArticleDifficultyChange">
             <view class="form-picker">
-              <text>{{difficultyArticleOptions[difficultyArticleIndex].label || '请选择难度'}}</text>
+              <text>{{difficultyArticleOptions[difficultyArticleIndex].label || '请选择'}}</text>
               <text class="form-picker__arrow">▾</text>
             </view>
           </picker>
@@ -393,27 +374,24 @@
 
       <view class="form-item">
         <text class="form-label">亮点推荐语</text>
-        <textarea class="form-textarea" placeholder="请输入亮点推荐语" value="{{articleForm.highlights}}" data-field="highlights" bindinput="onArticleFieldInput" maxlength="500" />
+        <textarea class="form-textarea" placeholder="亮点推荐语" value="{{articleForm.highlights}}" data-field="highlights" bindinput="onArticleFieldInput" maxlength="500" />
       </view>
     </view>
 
-    <!-- 内容信息 -->
     <view class="form-section">
-      <text class="form-section__title">内容信息</text>
-
+      <text class="form-section__title">内容</text>
       <view class="form-item">
-        <text class="form-label">内容 <text class="form-required">*</text></text>
+        <text class="form-label">文章内容 *</text>
         <textarea class="form-textarea form-textarea--tall" placeholder="请输入文章内容" value="{{articleForm.content}}" data-field="content" bindinput="onArticleFieldInput" maxlength="10000" />
       </view>
     </view>
 
-    <!-- 分类标签 -->
     <view class="form-section">
       <text class="form-section__title">分类标签</text>
 
       <view class="form-item">
-        <text class="form-label">分类 <text class="form-required">*</text></text>
-        <picker mode="selector" range="{{categoryOptions}}" value="{{categoryIndex}}" bindchange="onCategoryChange">
+        <text class="form-label">分类 *</text>
+        <picker range="{{categoryOptions}}" value="{{categoryIndex}}" bindchange="onCategoryChange">
           <view class="form-picker">
             <text>{{articleForm.category || '请选择分类'}}</text>
             <text class="form-picker__arrow">▾</text>
@@ -423,7 +401,7 @@
 
       <view class="form-item">
         <text class="form-label">子分类</text>
-        <picker mode="selector" range="{{currentSubcategoryOptions}}" value="{{subcategoryIndex}}" bindchange="onSubcategoryChange">
+        <picker range="{{currentSubcategoryOptions}}" value="{{subcategoryIndex}}" bindchange="onSubcategoryChange">
           <view class="form-picker">
             <text>{{articleForm.subcategory || '请选择子分类'}}</text>
             <text class="form-picker__arrow">▾</text>
@@ -431,7 +409,6 @@
         </picker>
       </view>
 
-      <!-- 标签 -->
       <view class="form-item">
         <text class="form-label">标签</text>
         <view class="tag-list">
@@ -443,18 +420,17 @@
           </view>
         </view>
         <view class="tag-add">
-          <input class="form-input form-input--small" placeholder="输入标签后按确认添加" value="{{tagInput}}" bindinput="onTagInput" confirm-type="done" bindconfirm="addArticleTag" />
+          <input class="form-input form-input--small" placeholder="输入标签" value="{{tagInput}}" bindinput="onTagInput" confirm-type="done" bindconfirm="addArticleTag" />
           <view class="tag-add__btn" bindtap="addArticleTag">
             <text>+ 添加</text>
           </view>
         </view>
       </view>
 
-      <!-- 季节 -->
       <view class="form-item">
         <text class="form-label">适合季节</text>
         <view class="season-checkbox-group">
-          <view class="season-checkbox-item {{item.checked ? 'season-checkbox-item--active' : ''}}" wx:for="{{seasonOptions}}" wx:key="value" bindtap="onSeasonToggle" data-index="{{index}}">
+          <view class="season-checkbox-item {{item.checked ? 'season-checkbox-item--active' : ''}}" wx:for="{{seasonOptions}}" wx:key="value" bindtap="onArticleSeasonToggle" data-index="{{index}}">
             <text class="season-checkbox-icon">{{item.checked ? '☑' : '☐'}}</text>
             <text class="season-checkbox-label">{{item.label}}</text>
           </view>
@@ -462,32 +438,26 @@
       </view>
     </view>
 
-    <!-- 封面图 -->
     <view class="form-section">
       <text class="form-section__title">封面图</text>
-
       <view class="form-item">
         <text class="form-label">图片URL</text>
-        <input class="form-input" placeholder="请输入封面图片链接" value="{{articleForm.coverImage}}" data-field="coverImage" bindinput="onArticleFieldInput" />
+        <input class="form-input" placeholder="封面图片链接" value="{{articleForm.coverImage}}" data-field="coverImage" bindinput="onArticleFieldInput" />
       </view>
-
       <view class="form-item">
-        <text class="form-label">或上传图片</text>
         <view class="cover-upload-btn" bindtap="onChooseCoverImage">
-          <text>{{coverUploading ? '上传中...' : '选择图片上传'}}</text>
+          <text>📷 选择图片</text>
         </view>
         <image wx:if="{{articleForm.coverImage}}" class="form-preview" src="{{articleForm.coverImage}}" mode="aspectFill" />
       </view>
     </view>
 
-    <!-- 排序设置 -->
     <view class="form-section">
-      <text class="form-section__title">排序设置</text>
-
+      <text class="form-section__title">排序</text>
       <view class="form-row">
         <view class="form-item form-item--half">
           <text class="form-label">优先级</text>
-          <input class="form-input" type="number" placeholder="0=新手精选" value="{{articleForm.priority}}" data-field="priority" bindinput="onArticleFieldInput" />
+          <input class="form-input" type="number" placeholder="0" value="{{articleForm.priority}}" data-field="priority" bindinput="onArticleFieldInput" />
         </view>
         <view class="form-item form-item--half">
           <text class="form-label">排序值</text>
@@ -512,5 +482,4 @@
     </view>
   </view>
 
-  <view class="edit-toast edit-toast--{{toastType}} {{showToast ? 'edit-toast--show' : ''}}">{{toastMessage}}</view>
 </view>
