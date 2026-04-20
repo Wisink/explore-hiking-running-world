@@ -472,24 +472,32 @@ Page({
   },
 
 
-  // 加载清单完成度
+  // 加载清单完成度（调用智能推荐获取装备数量）
   loadChecklistProgress: function () {
     if (!this.data.trailId) return
     const cacheKey = `checklist_${this.data.trailId}`
     const checkedMap = wx.getStorageSync(cacheKey) || {}
-    const trail = this.data.trail
-
-    // 计算装备总数
-    let total = 0
-    if (trail.equipment) {
-      total = (trail.equipment.must || []).length +
-              (trail.equipment.suggest || []).length
-    }
-
-    // 计算已勾选数
     const done = Object.values(checkedMap).filter(v => v).length
 
-    this.setData({ checklistDone: done, checklistTotal: total })
+    // 调用智能推荐获取装备总数
+    wx.cloud.callFunction({
+      name: 'getRecommendation',
+      data: { trailId: this.data.trailId },
+      success: (res) => {
+        if (res.result && res.result.code === 0 && res.result.data) {
+          const data = res.result.data
+          const total = (data.must || []).length + (data.suggested || []).length
+          // 缓存智能推荐结果供分享图使用
+          this._recommendEquip = data
+          this.setData({ checklistDone: done, checklistTotal: total })
+        } else {
+          this.setData({ checklistDone: done, checklistTotal: 0 })
+        }
+      },
+      fail: () => {
+        this.setData({ checklistDone: done, checklistTotal: 0 })
+      }
+    })
   },
 
   // 拨打紧急电话
@@ -713,8 +721,9 @@ Page({
       })
       y += 10
 
-      // ===== 必带装备（前3项） =====
-      const mustItems = (trail.equipment && trail.equipment.must) ? trail.equipment.must.slice(0, 3) : []
+      // ===== 必带装备（前3项，使用智能推荐结果） =====
+      const recommendData = this._recommendEquip || {}
+      const mustItems = (recommendData.must || []).slice(0, 3)
       if (mustItems.length > 0) {
         ctx.strokeStyle = '#E0E0E0'
         ctx.beginPath()
@@ -731,7 +740,8 @@ Page({
         ctx.font = '14px sans-serif'
         ctx.fillStyle = '#555'
         mustItems.forEach(item => {
-          this._drawEllipsisText(ctx, `🥾 ${item.name}`, width - padding * 2, padding, y)
+          const icon = item.icon || '🥾'
+          this._drawEllipsisText(ctx, `${icon} ${item.name}`, width - padding * 2, padding, y)
           y += 24
         })
         y += 10
