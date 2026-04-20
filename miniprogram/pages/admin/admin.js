@@ -13,7 +13,7 @@ function validatePasswordStrength(password) {
 
 Page({
   data: {
-    // 状态栏高度
+    lt: '<',
     statusBarHeight: 0,
     // 认证状态
     isLoggedIn: false,

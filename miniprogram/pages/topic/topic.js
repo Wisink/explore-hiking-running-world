@@ -1,5 +1,6 @@
 Page({
   data: {
+    lt: '<',
     category: '',
     icon: '',
     subtitle: '',

@@ -1,6 +1,7 @@
 // pages/admin/route-edit.js
 Page({
   data: {
+    lt: '<',
     statusBarHeight: 0,
     id: '',
     type: 'route', // route | article

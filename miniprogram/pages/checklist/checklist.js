@@ -7,6 +7,7 @@ const app = getApp()
 
 Page({
   data: {
+    lt: '<',
     statusBarHeight: 0,
     trailId: '',
     trailName: '路线',

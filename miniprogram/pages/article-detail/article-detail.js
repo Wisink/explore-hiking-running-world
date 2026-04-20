@@ -7,6 +7,7 @@ const app = getApp()
 
 Page({
   data: {
+    lt: '<',
     statusBarHeight: 0,
     loading: true,
     article: null,

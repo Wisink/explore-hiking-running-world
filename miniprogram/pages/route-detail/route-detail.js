@@ -10,6 +10,7 @@ const { DIFFICULTY_COLORS, isNewRouteData } = require('../../utils/route-constan
 
 Page({
   data: {
+    lt: '<',
     statusBarHeight: 0,
     trailId: '',
     trail: {},

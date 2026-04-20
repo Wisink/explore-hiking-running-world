@@ -1,6 +1,7 @@
 // pages/assistant/assistant.js
 Page({
   data: {
+    lt: '<',
     statusBarHeight: 0,
     currentStep: 1,
     step1Choice: '',

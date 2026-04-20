@@ -14,6 +14,7 @@ function calcDistance(lat1, lng1, lat2, lng2) {
 
 Page({
   data: {
+    lt: '<',
     statusBarHeight: 0,
     userLat: null,
     userLng: null,
