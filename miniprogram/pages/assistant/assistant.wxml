@@ -12,7 +12,7 @@
       <view class="page-header__spacer"></view>
     </view>
   </view>
-  <view style="height: {{statusBarHeight + 88}}px;"></view>
+  <view style="height: {{headerHeight}}px;"></view>
 
   <!-- 步骤指示器 -->
   <view class="steps-bar" wx:if="{{!showResult}}">

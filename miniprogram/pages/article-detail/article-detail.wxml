@@ -11,7 +11,7 @@
       <view class="page-header__spacer"></view>
     </view>
   </view>
-  <view style="height: {{statusBarHeight + 88}}px;"></view>
+  <view style="height: {{headerHeight}}px;"></view>
 
   <!-- 加载 -->
   <view class="loading-wrap" wx:if="{{loading}}">

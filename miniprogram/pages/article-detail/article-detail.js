@@ -9,6 +9,7 @@ Page({
   data: {
     lt: '<',
     statusBarHeight: 0,
+    headerHeight: 0,
     loading: true,
     article: null,
     relatedArticles: [],
@@ -17,7 +18,8 @@ Page({
 
   onLoad(options) {
     this.setData({
-      statusBarHeight: wx.getSystemInfoSync().statusBarHeight
+      statusBarHeight: wx.getSystemInfoSync().statusBarHeight,
+      headerHeight: wx.getSystemInfoSync().statusBarHeight + 44
     })
     const id = options.id
     if (id) {

@@ -3,6 +3,7 @@ Page({
   data: {
     lt: '<',
     statusBarHeight: 0,
+    headerHeight: 0,
     currentStep: 1,
     step1Choice: '',
     step2Choice: '',
@@ -16,7 +17,8 @@ Page({
 
   onLoad: function () {
     this.setData({
-      statusBarHeight: wx.getSystemInfoSync().statusBarHeight
+      statusBarHeight: wx.getSystemInfoSync().statusBarHeight,
+      headerHeight: wx.getSystemInfoSync().statusBarHeight + 44
     })
   },
 

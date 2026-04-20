@@ -120,14 +120,12 @@
     <text class="admin-entry__arrow">›</text>
   </view>
 
-  <!-- 同步状态提示 -->
-  <view class="sync-status-bar sync-status--{{syncFailed ? 'error' : (syncStatus === 'syncing' ? 'loading' : '')}}" wx:if="{{syncFailed || syncStatus === 'syncing'}}">
+  <!-- 同步状态提示 — 仅同步失败时显示 -->
+  <view class="sync-status-bar sync-status--error" wx:if="{{syncFailed}}">
     <view class="sync-status__content">
-      <text class="sync-status__icon">{{syncStatus === 'syncing' ? '🔄' : '⚠️'}}</text>
-      <text class="sync-status__text">
-        {{syncStatus === 'syncing' ? '同步中...' : '上次同步失败，点击重试'}}
-      </text>
-      <view class="sync-status__retry" wx:if="{{syncFailed}}" bindtap="onRetrySync">
+      <text class="sync-status__icon">⚠️</text>
+      <text class="sync-status__text">上次同步失败，点击重试</text>
+      <view class="sync-status__retry" bindtap="onRetrySync">
         <text class="sync-status__retry-text">重试</text>
       </view>
     </view>

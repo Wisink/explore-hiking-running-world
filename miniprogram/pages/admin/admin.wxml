@@ -12,7 +12,7 @@
       <view class="page-header__spacer"></view>
     </view>
   </view>
-  <view style="height: {{statusBarHeight + 88}}px;"></view>
+  <view style="height: {{headerHeight}}px;"></view>
 
   <!-- 未登录：密码验证 -->
   <view class="login-wrap" wx:if="{{!isLoggedIn}}">

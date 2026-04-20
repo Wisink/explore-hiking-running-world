@@ -12,6 +12,7 @@ Page({
   data: {
     lt: '<',
     statusBarHeight: 0,
+    headerHeight: 0,
     trailId: '',
     trail: {},
     loading: true,
@@ -76,6 +77,7 @@ Page({
     const trailId = options.id || ''
     this.setData({
       statusBarHeight: wx.getSystemInfoSync().statusBarHeight,
+      headerHeight: wx.getSystemInfoSync().statusBarHeight + 44,
       trailId,
       scrollToRecords: options.scrollToRecords === '1'
     })

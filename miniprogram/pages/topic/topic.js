@@ -49,7 +49,8 @@ Page({
       icon: config.icon,
       themeColor: config.themeColor,
       subtitle: config.subtitle,
-      statusBarHeight: sysInfo.statusBarHeight
+      statusBarHeight: sysInfo.statusBarHeight,
+      headerHeight: sysInfo.statusBarHeight + 44
     })
 
     this.loadArticles()

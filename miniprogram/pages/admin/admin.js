@@ -108,7 +108,8 @@ Page({
 
   onLoad() {
     this.setData({
-      statusBarHeight: wx.getSystemInfoSync().statusBarHeight
+      statusBarHeight: wx.getSystemInfoSync().statusBarHeight,
+      headerHeight: wx.getSystemInfoSync().statusBarHeight + 44
     })
     // 双重保护：先验证管理员身份
     wx.cloud.callFunction({

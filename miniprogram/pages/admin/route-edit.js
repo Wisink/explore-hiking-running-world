@@ -3,6 +3,7 @@ Page({
   data: {
     lt: '<',
     statusBarHeight: 0,
+    headerHeight: 0,
     id: '',
     type: 'route', // route | article
     loading: true,
@@ -199,6 +200,7 @@ Page({
     const type = options.type || 'route'
     this.setData({
       statusBarHeight: wx.getSystemInfoSync().statusBarHeight,
+      headerHeight: wx.getSystemInfoSync().statusBarHeight + 44,
       id,
       type
     })

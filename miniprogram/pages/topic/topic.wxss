@@ -10,40 +10,44 @@
     linear-gradient(160deg, #e8f5e9 0%, #c8e6c9 25%, #a5d6a7 50%, #81c784 75%, #66bb6a 100%);
 }
 
-/* 自定义头部 — 毛玻璃 */
+/* 固定顶部栏 */
+.topic-fixed-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 999;
+}
+
+.topic-fixed-bar__nav {
+  display: flex;
+  align-items: center;
+  height: 88rpx;
+  padding: 0 24rpx;
+}
+
+.topic-back {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.topic-back__icon {
+  color: #fff;
+  font-size: 36rpx;
+  font-weight: 300;
+}
+
+.topic-back__text {
+  color: #fff;
+  font-size: 28rpx;
+}
+
+/* 专题头图 */
 .header {
   padding-bottom: 40rpx;
   border-radius: 0 0 40rpx 40rpx;
   overflow: hidden;
-}
-
-.status-bar {
-  display: flex;
-  align-items: center;
-  padding: 20rpx 24rpx;
-}
-
-.back-btn {
-  display: flex;
-  align-items: center;
-  padding: 12rpx 20rpx;
-  border-radius: 40rpx;
-  background: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255,255,255,.25);
-}
-
-.back-icon {
-  color: #FFFFFF;
-  font-size: 32rpx;
-  font-weight: bold;
-  margin-right: 8rpx;
-}
-
-.back-text {
-  color: #FFFFFF;
-  font-size: 28rpx;
 }
 
 .header-content {

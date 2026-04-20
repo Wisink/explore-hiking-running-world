@@ -12,7 +12,7 @@
       <view class="page-header__spacer"></view>
     </view>
   </view>
-  <view style="height: {{statusBarHeight + 88}}px;"></view>
+  <view style="height: {{headerHeight}}px;"></view>
 
   <!-- 未定位时：引导区域 -->
   <view class="locate-area" wx:if="{{!hasLocation && !loading}}">

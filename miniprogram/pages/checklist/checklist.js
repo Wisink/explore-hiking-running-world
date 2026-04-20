@@ -9,6 +9,7 @@ Page({
   data: {
     lt: '<',
     statusBarHeight: 0,
+    headerHeight: 0,
     trailId: '',
     trailName: '路线',
     // 装备清单数据
@@ -32,7 +33,8 @@ Page({
 
   onLoad: function (options) {
     this.setData({
-      statusBarHeight: wx.getSystemInfoSync().statusBarHeight
+      statusBarHeight: wx.getSystemInfoSync().statusBarHeight,
+      headerHeight: wx.getSystemInfoSync().statusBarHeight + 44
     })
     const trailId = options.id || ''
     const trailName = options.name ? decodeURIComponent(options.name) : ''

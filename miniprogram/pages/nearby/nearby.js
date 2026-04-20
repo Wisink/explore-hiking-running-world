@@ -16,6 +16,7 @@ Page({
   data: {
     lt: '<',
     statusBarHeight: 0,
+    headerHeight: 0,
     userLat: null,
     userLng: null,
     userLocationName: '',
@@ -28,7 +29,8 @@ Page({
 
   onLoad: function (options) {
     this.setData({
-      statusBarHeight: wx.getSystemInfoSync().statusBarHeight
+      statusBarHeight: wx.getSystemInfoSync().statusBarHeight,
+      headerHeight: wx.getSystemInfoSync().statusBarHeight + 44
     })
 
     // 如果从路由页传入了位置，直接使用

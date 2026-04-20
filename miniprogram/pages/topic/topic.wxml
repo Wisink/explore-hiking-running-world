@@ -1,12 +1,17 @@
 <view class="container">
-  <!-- 自定义头部：封面头图 -->
-  <view class="header" style="background-color: {{themeColor}}; padding-top: {{statusBarHeight}}px;">
-    <view class="status-bar">
-      <view class="back-btn" bindtap="onBackTap">
-        <text class="back-icon">{{lt}}</text>
-        <text class="back-text">返回</text>
+  <!-- 固定顶部：状态栏+返回按钮 -->
+  <view class="topic-fixed-bar" style="background-color: {{themeColor}}; padding-top: {{statusBarHeight}}px;">
+    <view class="topic-fixed-bar__nav">
+      <view class="topic-back" bindtap="onBackTap">
+        <text class="topic-back__icon">{{lt}}</text>
+        <text class="topic-back__text">返回</text>
       </view>
     </view>
+  </view>
+  <view style="height: {{headerHeight}}px;"></view>
+
+  <!-- 专题头图（随页面滚动） -->
+  <view class="header" style="background-color: {{themeColor}};">
     <view class="header-content">
       <text class="header-icon">{{icon}}</text>
       <text class="header-title">{{category}}</text>
@@ -67,7 +72,7 @@
 
     <!-- 底部返回按钮 -->
     <view class="bottom-back" wx:if="{{filteredArticles.length > 0}}">
-      <button class="back-btn-bottom" style="background-color: {{themeColor}};" bindtap="onBackTap">
+      <button class="back-btn-bottom" bindtap="onBackTap">
         <text class="back-btn-icon">{{lt}}</text>
         <text class="back-btn-text">返回上一页</text>
       </button>
