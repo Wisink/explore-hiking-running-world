@@ -1,16 +1,18 @@
 <!--pages/admin/admin.wxml-->
 <view class="admin-page">
 
-  <!-- 状态栏占位 -->
-  <view class="page-statusbar" style="height: {{statusBarHeight}}px;"></view>
-  <!-- 导航栏 -->
-  <view class="detail-nav">
-    <view class="detail-nav__back" bindtap="onBack">
-      <text class="detail-nav__back-icon">‹</text>
+  <!-- 固定头部 -->
+  <view class="detail-fixed-header" style="padding-top: {{statusBarHeight}}px;">
+    <view class="detail-nav">
+      <view class="detail-nav__back" bindtap="onBack">
+        <text class="detail-nav__back-icon">‹</text>
+        <text class="detail-nav__back-text">返回</text>
+      </view>
+      <text class="detail-nav__title">后台管理</text>
+      <view class="detail-nav__spacer"></view>
     </view>
-    <text class="detail-nav__title">后台管理</text>
-    <view class="detail-nav__spacer"></view>
   </view>
+  <view class="detail-header-placeholder" style="height: {{statusBarHeight + 44}}px;"></view>
 
   <!-- 未登录：密码验证 -->
   <view class="login-wrap" wx:if="{{!isLoggedIn}}">
@@ -363,11 +365,8 @@
             <view class="admin-item__body">
               <text class="admin-item__title">{{item.name}}</text>
               <view class="admin-item__meta">
-                <text class="admin-item__tag" style="color: {{item.difficultyColor}}">
-                  {{item.difficultyLabel}}
-                </text>
+                <text class="admin-item__tag" style="color: {{item.difficultyColor}}">{{item.difficultyLabel}}</text>
                 <text class="admin-item__tag" wx:if="{{item._displayDistance}}">{{item._displayDistance}}km</text>
-                <text class="admin-item__tag" wx:if="{{item._displayLocation}}">📍 {{item._displayLocation}}</text>
                 <text class="admin-item__tag {{item.isActive !== false ? 'admin-item__tag--active' : 'admin-item__tag--inactive'}}">{{item.isActive !== false ? '✅ 有效' : '❌ 无效'}}</text>
               </view>
             </view>

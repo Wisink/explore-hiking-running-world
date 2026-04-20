@@ -220,6 +220,7 @@ Page({
   markChanged() {
     if (!this.data.formChanged) {
       this.setData({ formChanged: true })
+      wx.enableAlertBeforeUnload({ message: '内容已修改，是否保存草稿？' })
     }
   },
 
@@ -234,6 +235,7 @@ Page({
           if (res.confirm) {
             this.onSaveDraft()
           } else {
+            wx.disableAlertBeforeUnload()
             wx.navigateBack()
           }
         }
@@ -648,6 +650,7 @@ Page({
         })
         if (res.result.code === 0) {
           this.showToast(successMsg, 'success')
+          wx.disableAlertBeforeUnload()
           setTimeout(() => wx.navigateBack(), 1500)
         } else {
           this.showToast(res.result.message || '保存失败', 'error')
@@ -659,6 +662,7 @@ Page({
         })
         if (res.result.code === 0) {
           this.showToast(successMsg, 'success')
+          wx.disableAlertBeforeUnload()
           setTimeout(() => wx.navigateBack(), 1500)
         } else {
           this.showToast(res.result.message || '添加失败', 'error')

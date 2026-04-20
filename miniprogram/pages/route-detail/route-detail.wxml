@@ -7,7 +7,10 @@
     <view class="route-fixed-bar__nav">
       <view class="route-back" bindtap="onBack">
         <text class="route-back__icon">{{lt}}</text>
+        <text class="route-back__text">返回</text>
       </view>
+      <text class="route-fixed-bar__title">{{trail.name}}</text>
+      <view class="route-back" style="visibility: hidden;"></view>
     </view>
   </view>
   <view style="height: {{headerHeight}}px;"></view>

@@ -37,7 +37,9 @@
 
 /* 返回按钮 — 无背景色 */
 .page-header__back {
-  width: 60rpx;
+  flex-shrink: 0;
+  width: auto;
+  min-width: 120rpx;
   height: 88rpx;
   display: flex;
   align-items: center;
@@ -47,9 +49,16 @@
 /* 返回图标 — '<' 字符 */
 .page-header__back-icon {
   font-size: 36rpx;
-  color: var(--color-text, #1a2e1a);
+  color: #fff;
   font-weight: 300;
   line-height: 1;
+}
+
+/* 返回文字 */
+.page-header__back-text {
+  font-size: 28rpx;
+  color: #fff;
+  margin-left: 4rpx;
 }
 
 /* 居中标题 */
@@ -58,7 +67,7 @@
   text-align: center;
   font-size: 30rpx;
   font-weight: 600;
-  color: var(--color-text, #1a2e1a);
+  color: #fff;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -67,7 +76,9 @@
 
 /* 右侧平衡占位 */
 .page-header__spacer {
-  width: 60rpx;
+  flex-shrink: 0;
+  width: auto;
+  min-width: 120rpx;
 }
 
 /* 透明头部变体 — 用于浮层在图片上的场景 */
@@ -80,9 +91,7 @@
   background: transparent;
 }
 
-.page-header--transparent .page-header__back-icon {
-  color: #fff;
-}
+
 
 .page-header--transparent .page-header__title {
   color: #fff;

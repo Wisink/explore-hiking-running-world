@@ -253,7 +253,7 @@
   display: flex;
   align-items: center;
   gap: 12rpx;
-  margin: 20rpx 32rpx 0;
+  margin: 20rpx 32rpx 20rpx;
   padding: 16rpx 24rpx;
   background: rgba(255, 255, 255, 0.35);
   backdrop-filter: blur(10px);
