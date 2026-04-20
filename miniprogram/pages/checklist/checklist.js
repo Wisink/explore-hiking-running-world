@@ -23,6 +23,8 @@ Page({
     // 统计
     totalCount: 0,
     checkedCount: 0,
+    // 天气概况
+    weatherDesc: '',
     // Canvas
     canvasHidden: true
   },
@@ -40,7 +42,7 @@ Page({
     this.loadChecklist()
   },
 
-  // 加载清单数据
+  // 加载清单数据（优先使用智能推荐，降级为默认装备）
   loadChecklist: function () {
     // 先尝试从缓存恢复勾选状态
     const cacheKey = `checklist_${this.data.trailId}`
@@ -51,23 +53,41 @@ Page({
       return
     }
 
+    // 调用智能推荐云函数
     wx.cloud.callFunction({
-      name: 'routes',
-      data: {
-        action: 'detail',
-        routeId: this.data.trailId
-      },
+      name: 'getRecommendation',
+      data: { trailId: this.data.trailId },
       success: (res) => {
         if (res.result && res.result.code === 0 && res.result.data) {
           const data = res.result.data
-          const equipment = data.equipment || this.getDefaultEquipment()
-          this.setData({ trailName: data.name || this.data.trailName })
+          // 将推荐结果转为 equipment 格式（兼容 WXML）
+          // API 返回: must / suggested / notNeeded → equipment 需要: must / suggest / noNeed
+          const equipment = {
+            must: (data.must || []).map(item => ({
+              name: item.icon ? `${item.icon} ${item.name}` : item.name,
+              reason: item.reason || ''
+            })),
+            suggest: (data.suggested || []).map(item => ({
+              name: item.icon ? `${item.icon} ${item.name}` : item.name,
+              reason: item.reason || ''
+            })),
+            noNeed: (data.notNeeded || []).map(item => ({
+              name: item.icon ? `${item.icon} ${item.name}` : item.name,
+              reason: item.reason || ''
+            }))
+          }
+          this.setData({
+            trailName: data.trailName || this.data.trailName,
+            weatherDesc: data.weather || ''
+          })
           this.processEquipment(equipment, cachedChecked)
         } else {
+          // 降级：使用默认装备
           this.setDefaultEquipment(cachedChecked)
         }
       },
       fail: () => {
+        // 降级：使用默认装备
         this.setDefaultEquipment(cachedChecked)
       }
     })

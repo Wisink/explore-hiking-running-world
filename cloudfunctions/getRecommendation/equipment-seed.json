@@ -1,0 +1,539 @@
+[
+  {
+    "name": "防水徒步鞋",
+    "category": "鞋类",
+    "icon": "🥾",
+    "description": "高帮防水徒步鞋，提供脚踝支撑和抓地力",
+    "matchingRules": [
+      { "condition": { "field": "technicalGrade", "operator": ">=", "value": 3 }, "recommendation": "must", "reason": "技术路段需要极强抓地力", "priority": 9 },
+      { "condition": { "field": "technicalGrade", "operator": ">=", "value": 2 }, "recommendation": "must", "reason": "有技术路段需要抓地力强的鞋", "priority": 8 },
+      { "condition": { "field": "terrainTypes", "operator": "includes", "value": "rock_scramble" }, "recommendation": "must", "reason": "攀岩路段必须穿专业鞋", "priority": 8 },
+      { "condition": { "field": "terrainTypes", "operator": "includes", "value": "ridge" }, "recommendation": "must", "reason": "山脊路段碎石多需要保护脚踝", "priority": 7 },
+      { "condition": { "field": "weather.rain", "operator": "==", "value": true }, "recommendation": "suggested", "reason": "雨天路滑建议穿防水鞋", "priority": 6 },
+      { "condition": { "field": "terrainTypes", "operator": "includes", "value": "paved" }, "recommendation": "not_needed", "reason": "铺装路面运动鞋就够了", "priority": 5 }
+    ],
+    "complexRules": [
+      { "conditions": [
+        { "field": "terrainTypes", "operator": "includes", "value": "paved" },
+        { "field": "technicalGrade", "operator": "<=", "value": 1 },
+        { "field": "distance", "operator": "<", "value": 8 }
+      ], "logic": "AND", "recommendation": "not_needed", "reason": "铺装+无技术+短距离，运动鞋够了", "priority": 7 }
+    ]
+  },
+  {
+    "name": "防滑运动鞋",
+    "category": "鞋类",
+    "icon": "👟",
+    "description": "普通防滑运动鞋，适合轻度户外",
+    "matchingRules": [
+      { "condition": { "field": "difficulty", "operator": "<=", "value": 2 }, "recommendation": "suggested", "reason": "轻松路线运动鞋足够", "priority": 5 },
+      { "condition": { "field": "technicalGrade", "operator": ">=", "value": 3 }, "recommendation": "not_needed", "reason": "技术路线建议换徒步鞋", "priority": 7 },
+      { "condition": { "field": "terrainTypes", "operator": "includes", "value": "rock_scramble" }, "recommendation": "not_needed", "reason": "攀岩路段运动鞋不够用", "priority": 7 }
+    ],
+    "complexRules": [
+      { "conditions": [
+        { "field": "terrainTypes", "operator": "includes", "value": "paved" },
+        { "field": "difficulty", "operator": "<=", "value": 2 }
+      ], "logic": "AND", "recommendation": "must", "reason": "休闲路线防滑运动鞋是基本装备", "priority": 6 }
+    ]
+  },
+  {
+    "name": "溯溪鞋",
+    "category": "鞋类",
+    "icon": "🩴",
+    "description": "速干排水的涉水专用鞋",
+    "matchingRules": [
+      { "condition": { "field": "terrainTypes", "operator": "includes", "value": "stream" }, "recommendation": "suggested", "reason": "有涉水路段可以带上", "priority": 5 },
+      { "condition": { "field": "routeDNA", "operator": "includes", "value": "water_crossing" }, "recommendation": "must", "reason": "需要过河涉水必备", "priority": 8 }
+    ],
+    "complexRules": [
+      { "conditions": [
+        { "field": "terrainTypes", "operator": "not_includes", "value": "stream" },
+        { "field": "routeDNA", "operator": "not_includes", "value": "water_crossing" }
+      ], "logic": "AND", "recommendation": "not_needed", "reason": "没有涉水路段不需要", "priority": 6 }
+    ]
+  },
+  {
+    "name": "登山杖",
+    "category": "辅助装备",
+    "icon": "🏔️",
+    "description": "可调节登山杖，减轻膝盖负担",
+    "matchingRules": [
+      { "condition": { "field": "elevationGain", "operator": ">=", "value": 800 }, "recommendation": "must", "reason": "大爬升对膝盖冲击巨大", "priority": 8 },
+      { "condition": { "field": "elevationGain", "operator": ">=", "value": 500 }, "recommendation": "must", "reason": "上下坡对膝盖冲击大", "priority": 7 },
+      { "condition": { "field": "distance", "operator": ">=", "value": 15 }, "recommendation": "suggested", "reason": "长距离徒步减轻腿部疲劳", "priority": 5 },
+      { "condition": { "field": "elevationGain", "operator": "<", "value": 200 }, "recommendation": "not_needed", "reason": "平路不需要登山杖", "priority": 5 }
+    ],
+    "complexRules": []
+  },
+  {
+    "name": "防滑手套",
+    "category": "防护装备",
+    "icon": "🧤",
+    "description": "防滑耐磨手套，保护手掌",
+    "matchingRules": [
+      { "condition": { "field": "technicalGrade", "operator": ">=", "value": 3 }, "recommendation": "must", "reason": "大量攀爬没有手套会被划伤", "priority": 8 },
+      { "condition": { "field": "technicalGrade", "operator": ">=", "value": 2 }, "recommendation": "suggested", "reason": "手掌容易被岩石划伤", "priority": 6 },
+      { "condition": { "field": "terrainTypes", "operator": "includes", "value": "rock_scramble" }, "recommendation": "suggested", "reason": "攀爬路段保护双手", "priority": 6 }
+    ],
+    "complexRules": []
+  },
+  {
+    "name": "饮用水",
+    "category": "饮水",
+    "icon": "💧",
+    "description": "充足的饮用水（至少1.5L）",
+    "matchingRules": [
+      { "condition": { "field": "waterSupply", "operator": "<=", "value": 1 }, "recommendation": "must", "reason": "沿途无水源必须自带充足水", "priority": 10 },
+      { "condition": { "field": "distance", "operator": ">=", "value": 15 }, "recommendation": "must", "reason": "长距离需要大量饮水", "priority": 8 },
+      { "condition": { "field": "distance", "operator": ">=", "value": 8 }, "recommendation": "must", "reason": "中长距离基本饮水保障", "priority": 7 },
+      { "condition": { "field": "weather.temperature", "operator": ">=", "value": 30 }, "recommendation": "must", "reason": "高温天出汗量大必须多带水", "priority": 9 },
+      { "condition": { "field": "distance", "operator": "<", "value": 5 }, "recommendation": "suggested", "reason": "短途带1L左右即可", "priority": 4 }
+    ],
+    "complexRules": [
+      { "conditions": [
+        { "field": "waterSupply", "operator": "<=", "value": 1 },
+        { "field": "distance", "operator": ">=", "value": 15 }
+      ], "logic": "AND", "recommendation": "must", "reason": "无水源+长距离，至少带3升水", "priority": 10 },
+      { "conditions": [
+        { "field": "waterSupply", "operator": ">=", "value": 3 },
+        { "field": "distance", "operator": "<", "value": 8 }
+      ], "logic": "AND", "recommendation": "suggested", "reason": "沿途有补给点带1L备用即可", "priority": 4 }
+    ]
+  },
+  {
+    "name": "运动水壶",
+    "category": "饮水",
+    "icon": "🫗",
+    "description": "便携运动水壶，方便随时补水",
+    "matchingRules": [
+      { "condition": { "field": "distance", "operator": "<", "value": 8 }, "recommendation": "suggested", "reason": "短距离水壶够用", "priority": 4 },
+      { "condition": { "field": "distance", "operator": ">=", "value": 8 }, "recommendation": "not_needed", "reason": "长距离建议用水袋", "priority": 3 }
+    ],
+    "complexRules": []
+  },
+  {
+    "name": "高热量食物",
+    "category": "食物",
+    "icon": "🍫",
+    "description": "巧克力、能量棒等高热量食物",
+    "matchingRules": [
+      { "condition": { "field": "durationMax", "operator": ">=", "value": 3 }, "recommendation": "must", "reason": "不吃会低血糖", "priority": 7 },
+      { "condition": { "field": "estimatedCalories", "operator": ">=", "value": 1000 }, "recommendation": "must", "reason": "消耗大必须补充能量", "priority": 7 },
+      { "condition": { "field": "durationMax", "operator": "<", "value": 2 }, "recommendation": "suggested", "reason": "短途带点零食即可", "priority": 3 }
+    ],
+    "complexRules": []
+  },
+  {
+    "name": "应急食物",
+    "category": "食物",
+    "icon": "🍪",
+    "description": "额外备用的食物，以防万一",
+    "matchingRules": [
+      { "condition": { "field": "routeDNA", "operator": "includes", "value": "remote" }, "recommendation": "must", "reason": "万一迷路需要等待救援", "priority": 8 },
+      { "condition": { "field": "safetyLevel", "operator": "<=", "value": 2 }, "recommendation": "must", "reason": "偏远路线必须多备食物", "priority": 8 },
+      { "condition": { "field": "distance", "operator": ">=", "value": 20 }, "recommendation": "suggested", "reason": "超长距离建议多备一份", "priority": 5 }
+    ],
+    "complexRules": []
+  },
+  {
+    "name": "急救包",
+    "category": "安全",
+    "icon": "🩹",
+    "description": "包含创可贴、纱布、碘伏等基本急救用品",
+    "matchingRules": [
+      { "condition": { "field": "distance", "operator": ">=", "value": 8 }, "recommendation": "must", "reason": "受伤概率增加", "priority": 7 },
+      { "condition": { "field": "difficulty", "operator": ">=", "value": 4 }, "recommendation": "must", "reason": "高难度路线必备", "priority": 8 },
+      { "condition": { "field": "safetyLevel", "operator": "<=", "value": 2 }, "recommendation": "must", "reason": "受伤后需要自救", "priority": 8 }
+    ],
+    "complexRules": [
+      { "conditions": [
+        { "field": "distance", "operator": "<", "value": 5 },
+        { "field": "safetyLevel", "operator": ">=", "value": 4 }
+      ], "logic": "AND", "recommendation": "suggested", "reason": "有备无患", "priority": 4 }
+    ]
+  },
+  {
+    "name": "遮阳帽",
+    "category": "防晒",
+    "icon": "🧢",
+    "description": "宽檐遮阳帽，防晒防中暑",
+    "matchingRules": [
+      { "condition": { "field": "weather.uvIndex", "operator": ">=", "value": 6 }, "recommendation": "must", "reason": "长时间暴露会晒伤", "priority": 7 },
+      { "condition": { "field": "weather.temperature", "operator": ">=", "value": 28 }, "recommendation": "must", "reason": "高温天必须防晒", "priority": 7 },
+      { "condition": { "field": "elevationMax", "operator": ">=", "value": 2500 }, "recommendation": "must", "reason": "高海拔紫外线更强", "priority": 7 }
+    ],
+    "complexRules": [
+      { "conditions": [
+        { "field": "routeDNA", "operator": "includes", "value": "forest_shade" },
+        { "field": "weather.temperature", "operator": "<", "value": 25 }
+      ], "logic": "AND", "recommendation": "suggested", "reason": "林间空地可能有阳光", "priority": 4 }
+    ]
+  },
+  {
+    "name": "防晒霜",
+    "category": "防晒",
+    "icon": "🧴",
+    "description": "SPF50+防晒霜",
+    "matchingRules": [
+      { "condition": { "field": "weather.uvIndex", "operator": ">=", "value": 5 }, "recommendation": "must", "reason": "紫外线强必须防晒", "priority": 6 },
+      { "condition": { "field": "elevationMax", "operator": ">=", "value": 2500 }, "recommendation": "must", "reason": "高海拔紫外线更强", "priority": 7 },
+      { "condition": { "field": "weather.temperature", "operator": ">=", "value": 30 }, "recommendation": "suggested", "reason": "高温天容易晒伤", "priority": 5 }
+    ],
+    "complexRules": []
+  },
+  {
+    "name": "头灯",
+    "category": "照明",
+    "icon": "🔦",
+    "description": "LED头灯，解放双手照明",
+    "matchingRules": [
+      { "condition": { "field": "durationMax", "operator": ">=", "value": 8 }, "recommendation": "must", "reason": "14小时必经黑夜", "priority": 9 },
+      { "condition": { "field": "durationMax", "operator": ">=", "value": 6 }, "recommendation": "suggested", "reason": "走慢了可能天黑", "priority": 6 },
+      { "condition": { "field": "routeDNA", "operator": "includes", "value": "remote" }, "recommendation": "suggested", "reason": "偏远路线以防万一", "priority": 5 },
+      { "condition": { "field": "durationMax", "operator": "<", "value": 4 }, "recommendation": "not_needed", "reason": "短距离白天能返回", "priority": 5 }
+    ],
+    "complexRules": []
+  },
+  {
+    "name": "冲锋衣",
+    "category": "衣物",
+    "icon": "🧥",
+    "description": "防风防水冲锋衣",
+    "matchingRules": [
+      { "condition": { "field": "weather.windSpeed", "operator": ">=", "value": 5 }, "recommendation": "must", "reason": "山脊处体感温度骤降", "priority": 7 },
+      { "condition": { "field": "weather.rain", "operator": "==", "value": true }, "recommendation": "must", "reason": "下雨必须穿防水层", "priority": 8 },
+      { "condition": { "field": "weather.rainChance", "operator": ">=", "value": 30 }, "recommendation": "suggested", "reason": "降雨概率较高建议带上", "priority": 5 },
+      { "condition": { "field": "weather.rain", "operator": "==", "value": false }, "recommendation": "not_needed", "reason": "无雨不需要", "priority": 5 }
+    ],
+    "complexRules": [
+      { "conditions": [
+        { "field": "weather.rain", "operator": "==", "value": false },
+        { "field": "weather.windSpeed", "operator": "<", "value": 4 },
+        { "field": "weather.rainChance", "operator": "<", "value": 30 }
+      ], "logic": "AND", "recommendation": "not_needed", "reason": "无雨无风不需要冲锋衣", "priority": 6 }
+    ]
+  },
+  {
+    "name": "保暖层",
+    "category": "衣物",
+    "icon": "🧥",
+    "description": "抓绒衣或薄羽绒，保暖用",
+    "matchingRules": [
+      { "condition": { "field": "weather.temperature", "operator": "<", "value": 10 }, "recommendation": "must", "reason": "低温必须保暖", "priority": 8 },
+      { "condition": { "field": "elevationMax", "operator": ">=", "value": 3000 }, "recommendation": "must", "reason": "山顶比山脚低10度以上", "priority": 8 },
+      { "condition": { "field": "routeDNA", "operator": "includes", "value": "high_altitude" }, "recommendation": "must", "reason": "高海拔温差大", "priority": 8 }
+    ],
+    "complexRules": [
+      { "conditions": [
+        { "field": "weather.temperature", "operator": ">=", "value": 10 },
+        { "field": "weather.temperature", "operator": "<=", "value": 20 }
+      ], "logic": "AND", "recommendation": "suggested", "reason": "山顶可能冷", "priority": 5 }
+    ]
+  },
+  {
+    "name": "速干衣裤",
+    "category": "衣物",
+    "icon": "👕",
+    "description": "速干面料的上衣和裤子",
+    "matchingRules": [
+      { "condition": { "field": "distance", "operator": ">=", "value": 5 }, "recommendation": "suggested", "reason": "出汗量大", "priority": 5 },
+      { "condition": { "field": "weather.temperature", "operator": ">=", "value": 25 }, "recommendation": "suggested", "reason": "高温天出汗多穿速干更舒适", "priority": 5 },
+      { "condition": { "field": "terrainTypes", "operator": "includes", "value": "stream" }, "recommendation": "suggested", "reason": "涉水后速干衣物更舒适", "priority": 5 }
+    ],
+    "complexRules": []
+  },
+  {
+    "name": "备用袜子",
+    "category": "衣物",
+    "icon": "🧦",
+    "description": "备用的干袜子",
+    "matchingRules": [
+      { "condition": { "field": "terrainTypes", "operator": "includes", "value": "stream" }, "recommendation": "must", "reason": "涉水路段袜子必湿", "priority": 7 },
+      { "condition": { "field": "distance", "operator": ">=", "value": 15 }, "recommendation": "suggested", "reason": "长距离脚出汗多换双干袜子很舒服", "priority": 4 },
+      { "condition": { "field": "weather.rain", "operator": "==", "value": true }, "recommendation": "suggested", "reason": "雨天鞋子容易进水", "priority": 5 }
+    ],
+    "complexRules": []
+  },
+  {
+    "name": "保暖帽和手套",
+    "category": "衣物",
+    "icon": "🧣",
+    "description": "保暖毛线帽和手套",
+    "matchingRules": [
+      { "condition": { "field": "weather.temperature", "operator": "<", "value": 10 }, "recommendation": "must", "reason": "低温必须保护四肢末端", "priority": 7 },
+      { "condition": { "field": "weather.windSpeed", "operator": ">=", "value": 5 }, "recommendation": "suggested", "reason": "大风天体感温度更低", "priority": 5 },
+      { "condition": { "field": "elevationMax", "operator": ">=", "value": 3000 }, "recommendation": "suggested", "reason": "山顶温度低", "priority": 5 }
+    ],
+    "complexRules": []
+  },
+  {
+    "name": "防蚊液",
+    "category": "防护",
+    "icon": "🦟",
+    "description": "驱蚊喷雾或防蚊手环",
+    "matchingRules": [],
+    "complexRules": [
+      { "conditions": [
+        { "field": "terrainTypes", "operator": "includes", "value": "forest" },
+        { "field": "season", "operator": "in", "value": ["spring", "summer"] }
+      ], "logic": "AND", "recommendation": "must", "reason": "林间加温暖季节等于蚊虫密集区", "priority": 7 },
+      { "conditions": [
+        { "field": "terrainTypes", "operator": "includes", "value": "forest" },
+        { "field": "season", "operator": "in", "value": ["autumn", "winter"] }
+      ], "logic": "AND", "recommendation": "not_needed", "reason": "秋冬蚊虫少", "priority": 5 },
+      { "conditions": [
+        { "field": "routeDNA", "operator": "includes", "value": "wet_environment" },
+        { "field": "season", "operator": "in", "value": ["spring", "summer"] }
+      ], "logic": "AND", "recommendation": "suggested", "reason": "潮湿环境夏季蚊虫较多", "priority": 5 }
+    ]
+  },
+  {
+    "name": "雨裤",
+    "category": "防护",
+    "icon": "👖",
+    "description": "防水雨裤",
+    "matchingRules": [
+      { "condition": { "field": "weather.rain", "operator": "==", "value": true }, "recommendation": "must", "reason": "雨天裤子也会湿透", "priority": 7 },
+      { "condition": { "field": "weather.rainChance", "operator": ">=", "value": 50 }, "recommendation": "suggested", "reason": "降雨概率高建议带上", "priority": 5 },
+      { "condition": { "field": "weather.rain", "operator": "==", "value": false }, "recommendation": "not_needed", "reason": "无雨不需要", "priority": 5 }
+    ],
+    "complexRules": [
+      { "conditions": [
+        { "field": "weather.rain", "operator": "==", "value": false },
+        { "field": "weather.rainChance", "operator": "<", "value": 30 }
+      ], "logic": "AND", "recommendation": "not_needed", "reason": "无雨且降雨概率低不需要", "priority": 6 }
+    ]
+  },
+  {
+    "name": "护膝",
+    "category": "防护",
+    "icon": "🦵",
+    "description": "运动护膝，保护膝关节",
+    "matchingRules": [
+      { "condition": { "field": "elevationGain", "operator": ">=", "value": 800 }, "recommendation": "suggested", "reason": "长距离下坡膝盖压力巨大", "priority": 6 },
+      { "condition": { "field": "elevationGain", "operator": ">=", "value": 500 }, "recommendation": "suggested", "reason": "下坡膝盖压力大", "priority": 5 },
+      { "condition": { "field": "distance", "operator": ">=", "value": 20 }, "recommendation": "suggested", "reason": "超长距离保护膝关节", "priority": 5 }
+    ],
+    "complexRules": []
+  },
+  {
+    "name": "充电宝",
+    "category": "电子设备",
+    "icon": "🔋",
+    "description": "移动电源，保证手机续航",
+    "matchingRules": [
+      { "condition": { "field": "cellCoverage", "operator": "<=", "value": 1 }, "recommendation": "must", "reason": "手机是唯一导航工具", "priority": 8 },
+      { "condition": { "field": "durationMax", "operator": ">=", "value": 6 }, "recommendation": "suggested", "reason": "长时间导航+拍照耗电快", "priority": 5 },
+      { "condition": { "field": "routeDNA", "operator": "includes", "value": "remote" }, "recommendation": "must", "reason": "偏远地区手机是唯一通讯工具", "priority": 8 }
+    ],
+    "complexRules": []
+  },
+  {
+    "name": "离线地图",
+    "category": "导航",
+    "icon": "🗺️",
+    "description": "提前下载的离线地图或轨迹文件",
+    "matchingRules": [
+      { "condition": { "field": "trailMarking", "operator": "<=", "value": 1 }, "recommendation": "must", "reason": "没有导航极易迷路", "priority": 9 },
+      { "condition": { "field": "trailMarking", "operator": "<=", "value": 2 }, "recommendation": "suggested", "reason": "岔路口可能有歧义", "priority": 6 },
+      { "condition": { "field": "routeDNA", "operator": "includes", "value": "remote" }, "recommendation": "must", "reason": "偏远路线必须有离线导航", "priority": 9 },
+      { "condition": { "field": "cellCoverage", "operator": "<=", "value": 1 }, "recommendation": "must", "reason": "无信号区域只能靠离线地图", "priority": 9 }
+    ],
+    "complexRules": []
+  },
+  {
+    "name": "应急哨子",
+    "category": "安全",
+    "icon": "📣",
+    "description": "高分贝求救哨子",
+    "matchingRules": [
+      { "condition": { "field": "cellCoverage", "operator": "<=", "value": 1 }, "recommendation": "must", "reason": "唯一的远距离求救工具", "priority": 9 },
+      { "condition": { "field": "safetyLevel", "operator": "<=", "value": 2 }, "recommendation": "must", "reason": "偏远路线紧急呼救必备", "priority": 8 },
+      { "condition": { "field": "routeDNA", "operator": "includes", "value": "remote" }, "recommendation": "must", "reason": "荒野求救必备", "priority": 8 }
+    ],
+    "complexRules": []
+  },
+  {
+    "name": "救生毯",
+    "category": "安全",
+    "icon": "🆘",
+    "description": "铝箔急救毯，50g可能救命",
+    "matchingRules": [
+      { "condition": { "field": "safetyLevel", "operator": "<=", "value": 2 }, "recommendation": "must", "reason": "50g可能救命", "priority": 8 },
+      { "condition": { "field": "routeDNA", "operator": "includes", "value": "remote" }, "recommendation": "must", "reason": "万一失温可以救命", "priority": 8 },
+      { "condition": { "field": "difficulty", "operator": ">=", "value": 5 }, "recommendation": "must", "reason": "专业级路线安全冗余必备", "priority": 8 }
+    ],
+    "complexRules": []
+  },
+  {
+    "name": "应急药品",
+    "category": "安全",
+    "icon": "💊",
+    "description": "止痛药、抗过敏药、肠胃药等",
+    "matchingRules": [
+      { "condition": { "field": "distance", "operator": ">=", "value": 15 }, "recommendation": "suggested", "reason": "长距离以防万一", "priority": 5 },
+      { "condition": { "field": "routeDNA", "operator": "includes", "value": "remote" }, "recommendation": "suggested", "reason": "偏远地区买不到药", "priority": 6 },
+      { "condition": { "field": "elevationMax", "operator": ">=", "value": 3000 }, "recommendation": "suggested", "reason": "高海拔可能有高原反应", "priority": 6 }
+    ],
+    "complexRules": []
+  },
+  {
+    "name": "大背包",
+    "category": "装备",
+    "icon": "🎒",
+    "description": "40L以上的大容量背包",
+    "matchingRules": [
+      { "condition": { "field": "distance", "operator": ">=", "value": 20 }, "recommendation": "suggested", "reason": "超长距离需要更多补给", "priority": 5 },
+      { "condition": { "field": "durationMax", "operator": ">=", "value": 10 }, "recommendation": "suggested", "reason": "全天徒步需要更多装备", "priority": 5 },
+      { "condition": { "field": "routeDNA", "operator": "includes", "value": "remote" }, "recommendation": "suggested", "reason": "偏远路线需自带更多物资", "priority": 5 }
+    ],
+    "complexRules": []
+  },
+  {
+    "name": "创可贴",
+    "category": "安全",
+    "icon": "🩹",
+    "description": "防水创可贴，处理小伤口",
+    "matchingRules": [
+      { "condition": { "field": "terrainTypes", "operator": "includes", "value": "rock_scramble" }, "recommendation": "suggested", "reason": "碎石路段容易擦伤", "priority": 5 },
+      { "condition": { "field": "distance", "operator": ">=", "value": 10 }, "recommendation": "suggested", "reason": "长距离容易磨脚", "priority": 4 }
+    ],
+    "complexRules": []
+  },
+  {
+    "name": "防晒袖套",
+    "category": "防晒",
+    "icon": "💪",
+    "description": "冰丝防晒袖套",
+    "matchingRules": [
+      { "condition": { "field": "weather.temperature", "operator": ">=", "value": 30 }, "recommendation": "suggested", "reason": "高温天保护手臂", "priority": 4 },
+      { "condition": { "field": "routeDNA", "operator": "not_includes", "value": "forest_shade" }, "recommendation": "suggested", "reason": "无遮挡路段手臂容易晒伤", "priority": 4 }
+    ],
+    "complexRules": []
+  },
+  {
+    "name": "墨镜",
+    "category": "防晒",
+    "icon": "🕶️",
+    "description": "偏光太阳镜",
+    "matchingRules": [
+      { "condition": { "field": "elevationMax", "operator": ">=", "value": 3000 }, "recommendation": "suggested", "reason": "高海拔雪地强光刺眼", "priority": 5 },
+      { "condition": { "field": "routeDNA", "operator": "includes", "value": "exposed_ridge" }, "recommendation": "suggested", "reason": "山脊无遮挡阳光强烈", "priority": 4 }
+    ],
+    "complexRules": []
+  },
+  {
+    "name": "纸巾/湿巾",
+    "category": "日用",
+    "icon": "🧻",
+    "description": "纸巾和湿纸巾",
+    "matchingRules": [
+      { "condition": { "field": "distance", "operator": ">=", "value": 5 }, "recommendation": "suggested", "reason": "擦汗清洁", "priority": 3 },
+      { "condition": { "field": "weather.temperature", "operator": ">=", "value": 25 }, "recommendation": "suggested", "reason": "高温天出汗多", "priority": 3 }
+    ],
+    "complexRules": []
+  },
+  {
+    "name": "垃圾袋",
+    "category": "日用",
+    "icon": "♻️",
+    "description": "带走自己的垃圾，无痕山林",
+    "matchingRules": [
+      { "condition": { "field": "distance", "operator": ">=", "value": 3 }, "recommendation": "suggested", "reason": "无痕山林", "priority": 2 }
+    ],
+    "complexRules": []
+  },
+  {
+    "name": "少量现金",
+    "category": "其他",
+    "icon": "💴",
+    "description": "部分区域无网络无法手机支付",
+    "matchingRules": [
+      { "condition": { "field": "cellCoverage", "operator": "<=", "value": 1 }, "recommendation": "suggested", "reason": "无信号无法手机支付", "priority": 4 },
+      { "condition": { "field": "routeDNA", "operator": "includes", "value": "remote" }, "recommendation": "suggested", "reason": "偏远地区可能需要现金", "priority": 4 }
+    ],
+    "complexRules": []
+  },
+  {
+    "name": "身份证",
+    "category": "其他",
+    "icon": "🪪",
+    "description": "景区可能查验",
+    "matchingRules": [
+      { "condition": { "field": "terrainTypes", "operator": "includes", "value": "paved" }, "recommendation": "suggested", "reason": "景区可能查验身份证", "priority": 3 }
+    ],
+    "complexRules": []
+  },
+  {
+    "name": "帐篷",
+    "category": "露营",
+    "icon": "⛺",
+    "description": "户外露营帐篷",
+    "matchingRules": [
+      { "condition": { "field": "durationMax", "operator": ">", "value": 12 }, "recommendation": "suggested", "reason": "超长线路可能需要中途露营", "priority": 5 },
+      { "condition": { "field": "durationMax", "operator": "<=", "value": 12 }, "recommendation": "not_needed", "reason": "一日往返不需要露营", "priority": 6 }
+    ],
+    "complexRules": []
+  },
+  {
+    "name": "睡袋",
+    "category": "露营",
+    "icon": "🛏️",
+    "description": "户外睡袋",
+    "matchingRules": [
+      { "condition": { "field": "durationMax", "operator": ">", "value": 12 }, "recommendation": "suggested", "reason": "可能需要露营过夜", "priority": 5 },
+      { "condition": { "field": "durationMax", "operator": "<=", "value": 12 }, "recommendation": "not_needed", "reason": "不住宿不需要", "priority": 6 }
+    ],
+    "complexRules": []
+  },
+  {
+    "name": "炊具",
+    "category": "露营",
+    "icon": "🍳",
+    "description": "户外炉头和锅具",
+    "matchingRules": [
+      { "condition": { "field": "durationMax", "operator": "<=", "value": 12 }, "recommendation": "not_needed", "reason": "带干粮即可", "priority": 5 }
+    ],
+    "complexRules": []
+  },
+  {
+    "name": "绳索",
+    "category": "技术装备",
+    "icon": "🪢",
+    "description": "攀岩或下降用绳索",
+    "matchingRules": [
+      { "condition": { "field": "technicalGrade", "operator": ">=", "value": 4 }, "recommendation": "suggested", "reason": "高技术等级可能需要绳索保护", "priority": 6 },
+      { "condition": { "field": "technicalGrade", "operator": "<=", "value": 3 }, "recommendation": "not_needed", "reason": "非攀岩路线不需要", "priority": 5 }
+    ],
+    "complexRules": []
+  },
+  {
+    "name": "雪套",
+    "category": "防护",
+    "icon": "🦿",
+    "description": "防雪防水鞋套",
+    "matchingRules": [
+      { "condition": { "field": "weather.snow", "operator": "==", "value": true }, "recommendation": "must", "reason": "积雪路段防止雪灌入鞋内", "priority": 7 },
+      { "condition": { "field": "terrainTypes", "operator": "includes", "value": "grassland" }, "recommendation": "suggested", "reason": "草甸晨露可能打湿裤脚", "priority": 4 }
+    ],
+    "complexRules": [
+      { "conditions": [
+        { "field": "season", "operator": "in", "value": ["spring", "summer"] },
+        { "field": "weather.snow", "operator": "==", "value": false },
+        { "field": "elevationMax", "operator": "<", "value": 2500 }
+      ], "logic": "AND", "recommendation": "not_needed", "reason": "非雪季低海拔不需要", "priority": 5 }
+    ]
+  },
+  {
+    "name": "护踝",
+    "category": "防护",
+    "icon": "🦶",
+    "description": "脚踝保护护具",
+    "matchingRules": [
+      { "condition": { "field": "terrainTypes", "operator": "includes", "value": "rock_scramble" }, "recommendation": "suggested", "reason": "碎石攀爬路段保护脚踝", "priority": 5 },
+      { "condition": { "field": "terrainTypes", "operator": "includes", "value": "ridge" }, "recommendation": "suggested", "reason": "山脊碎石路容易崴脚", "priority": 5 }
+    ],
+    "complexRules": []
+  }
+]

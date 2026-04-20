@@ -319,3 +319,34 @@
   width: 600px;
   height: 2000px;
 }
+
+/* 天气概况条 */
+.weather-bar {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin: 20rpx 32rpx 0;
+  padding: 16rpx 24rpx;
+  background: rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 16rpx;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.weather-bar__icon {
+  font-size: 28rpx;
+}
+
+.weather-bar__text {
+  font-size: 24rpx;
+  color: #2E7D32;
+  font-weight: 500;
+}
+
+.weather-bar__tip {
+  font-size: 20rpx;
+  color: #66BB6A;
+  margin-left: auto;
+  white-space: nowrap;
+}

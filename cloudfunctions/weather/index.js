@@ -122,7 +122,44 @@ async function getWeatherWithFallback(city) {
   return null
 }
 
+/** 按经纬度获取天气（供 getRecommendation 云函数调用） */
+async function fetchWeatherByLocation(lat, lng) {
+  try {
+    // wttr.in 支持经纬度查询
+    const u = `https://wttr.in/${lat},${lng}?format=j1`
+    const w = await fetchWeather(u)
+    const c = w.current_condition && w.current_condition[0]
+    if (!c) throw new Error('wttr.in empty')
+    const d = c.weatherDesc && c.weatherDesc[0] && c.weatherDesc[0].value || 'Clear'
+    const a = getAdvice(c.temp_C, d, c.windspeedKmph)
+    const wl = Math.max(1, Math.round(parseFloat(c.windspeedKmph || 0) / 8))
+    return {
+      temp: c.temp_C,
+      desc: WEATHER_DESC_CN[d] || d,
+      descEn: d,
+      icon: WEATHER_ICONS[d] || '\u2600\ufe0f',
+      humidity: c.humidity + '%',
+      wind: wl + '\u7ea7',
+      safeTip: a.safeTip, suitable: a.suitable, source: 'wttr.in(latlng)'
+    }
+  } catch (e) {
+    console.error('[weather] latlng query failed:', e.message)
+    return null
+  }
+}
+
 exports.main = async (event) => {
+  // 按经纬度查询天气（供 getRecommendation 调用）
+  if (event.type === 'byLocation' && event.lat && event.lng) {
+    const r = await fetchWeatherByLocation(event.lat, event.lng)
+    if (!r) return getDefaultWeather()
+    return { code: 0, message: 'success', data: {
+      temp: r.temp, desc: r.desc, descEn: r.descEn, icon: r.icon,
+      humidity: r.humidity, wind: r.wind,
+      safeTip: r.safeTip, suitable: r.suitable
+    }}
+  }
+
   const city = event.city || '西安'
 
   if (event.type === 'timer') {
