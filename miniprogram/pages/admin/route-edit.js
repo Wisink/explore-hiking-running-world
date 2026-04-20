@@ -217,8 +217,6 @@ Page({
   markChanged() {
     if (!this.data.formChanged) {
       this.setData({ formChanged: true })
-      // 拦截系统返回手势
-      wx.enableAlertBeforeUnload && wx.enableAlertBeforeUnload({ message: '内容已修改，确定离开吗？' })
     }
   },
 
