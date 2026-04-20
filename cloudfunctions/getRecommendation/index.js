@@ -155,12 +155,18 @@ function evaluateEquipment(equip, context) {
  * @returns {Object} { must, suggested, notNeeded, weather, trailName }
  */
 async function recommend(trailId) {
-  // 第一步：查询路线数据
-  const trailRes = await db.collection('routes').doc(trailId).get()
-  if (!trailRes.data) {
-    throw new Error('路线不存在: ' + trailId)
+  // 第一步：查询路线数据（加try-catch防止网络波动导致整个函数崩溃）
+  let trail
+  try {
+    const trailRes = await db.collection('routes').doc(trailId).get()
+    if (!trailRes.data) {
+      throw new Error('路线不存在: ' + trailId)
+    }
+    trail = trailRes.data
+  } catch (e) {
+    console.error('[getRecommendation] 路线查询失败:', e.message, 'trailId:', trailId)
+    throw new Error('路线查询失败: ' + e.message)
   }
-  const trail = trailRes.data
 
   // 第二步：获取天气数据
   let weather = {

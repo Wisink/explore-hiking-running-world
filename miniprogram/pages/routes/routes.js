@@ -100,13 +100,23 @@ Page({
     // 骨架屏
     showSkeleton: true,
     // 状态栏高度
-    statusBarHeight: 0
+    statusBarHeight: 0,
+    // 固定头部总高度
+    fixedHeaderHeight: 0
   },
 
   onLoad: function () {
-    this.setData({
-      statusBarHeight: wx.getSystemInfoSync().statusBarHeight
-    })
+    const statusBarHeight = wx.getSystemInfoSync().statusBarHeight
+    this.setData({ statusBarHeight })
+    // 计算固定头部总高度（状态栏 + 标题搜索栏）
+    this.setData({ fixedHeaderHeight: statusBarHeight + 120 }) // 先用估算值
+    setTimeout(() => {
+      wx.createSelectorQuery().select('.header').boundingClientRect(rect => {
+        if (rect) {
+          this.setData({ fixedHeaderHeight: statusBarHeight + rect.height })
+        }
+      }).exec()
+    }, 100)
     // 防抖搜索函数（创建一次）
     this._debouncedSearch = debounce((keyword) => {
       if (keyword.trim().length < 2 && keyword.trim().length > 0) {

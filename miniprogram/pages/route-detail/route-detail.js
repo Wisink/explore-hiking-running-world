@@ -482,7 +482,11 @@ Page({
     const checkedMap = wx.getStorageSync(cacheKey) || {}
     const done = Object.values(checkedMap).filter(v => v).length
 
-    // 调用智能推荐获取装备总数
+    // 调用智能推荐获取装备总数（带重试）
+    this._loadRecommend(done, 2)
+  },
+
+  _loadRecommend: function (done, retriesLeft) {
     wx.cloud.callFunction({
       name: 'getRecommendation',
       data: { trailId: this.data.trailId },
@@ -490,15 +494,20 @@ Page({
         if (res.result && res.result.code === 0 && res.result.data) {
           const data = res.result.data
           const total = (data.must || []).length + (data.suggested || []).length
-          // 缓存智能推荐结果供分享图使用
           this._recommendEquip = data
           this.setData({ checklistDone: done, checklistTotal: total })
+        } else if (retriesLeft > 0) {
+          setTimeout(() => this._loadRecommend(done, retriesLeft - 1), 500)
         } else {
           this.setData({ checklistDone: done, checklistTotal: 0 })
         }
       },
       fail: () => {
-        this.setData({ checklistDone: done, checklistTotal: 0 })
+        if (retriesLeft > 0) {
+          setTimeout(() => this._loadRecommend(done, retriesLeft - 1), 500)
+        } else {
+          this.setData({ checklistDone: done, checklistTotal: 0 })
+        }
       }
     })
   },

@@ -220,10 +220,24 @@ Page({
   markChanged() {
     if (!this.data.formChanged) {
       this.setData({ formChanged: true })
+      // 启用手势返回确认（防误触丢失修改）
+      if (wx.enableAlertBeforeUnload) {
+        wx.enableAlertBeforeUnload({
+          message: '内容已修改，离开将丢失修改，是否继续？'
+        }).catch(() => {})
+      }
+    }
+  },
+
+  // 取消手势返回确认
+  _disableAlert() {
+    if (wx.disableAlertBeforeUnload) {
+      wx.disableAlertBeforeUnload().catch(() => {})
     }
   },
 
   onBack() {
+    this._disableAlert()
     if (this.data.formChanged) {
       wx.showModal({
         title: '提示',
@@ -648,6 +662,7 @@ Page({
         })
         if (res.result.code === 0) {
           this.showToast(successMsg, 'success')
+          this._disableAlert()
           setTimeout(() => wx.navigateBack(), 1500)
         } else {
           this.showToast(res.result.message || '保存失败', 'error')
@@ -659,6 +674,7 @@ Page({
         })
         if (res.result.code === 0) {
           this.showToast(successMsg, 'success')
+          this._disableAlert()
           setTimeout(() => wx.navigateBack(), 1500)
         } else {
           this.showToast(res.result.message || '添加失败', 'error')
@@ -691,6 +707,7 @@ Page({
           })
           if (result.result.code === 0) {
             this.showToast('删除成功', 'success')
+            this._disableAlert()
             setTimeout(() => wx.navigateBack(), 1500)
           } else {
             this.showToast(result.result.message || '删除失败', 'error')

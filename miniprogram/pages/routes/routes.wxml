@@ -1,44 +1,47 @@
 <!--pages/routes/routes.wxml-->
 <view class="routes-page">
 
-  <!-- 状态栏占位 -->
-  <view class="page-statusbar" style="height: {{statusBarHeight}}px;"></view>
-
-  <!-- 顶部标题栏 + 搜索栏 -->
-  <view class="header">
-    <view class="header__bg"></view>
-    <view class="header__content">
-      <view class="header__left">
-        <text class="header__emoji">🏔️</text>
-        <view class="header__text">
-          <text class="header__title">秦人徒步</text>
-          <text class="header__sub">去户外徒步，让身心与自然相融</text>
-        </view>
-      </view>
-      <view class="header__search-inline">
-        <view class="search-row">
-          <view class="search-inline">
-            <text class="search-inline__icon">🔍</text>
-            <input
-              class="search-inline__field"
-              placeholder="输入路线名称或地点..."
-              value="{{searchKeyword}}"
-              bindinput="onSearchInput"
-              bindconfirm="onSearchConfirm"
-              confirm-type="search"
-            />
-            <text class="search-inline__clear" wx:if="{{searchKeyword}}" bindtap="onSearchClear">✕</text>
-            <view class="search-inline__search-btn" bindtap="onSearchConfirm">
-              <text>搜索</text>
-            </view>
+  <!-- 固定头部（状态栏+标题+搜索） -->
+  <view class="fixed-header">
+    <view class="page-statusbar" style="height: {{statusBarHeight}}px;"></view>
+    <view class="header">
+      <view class="header__bg"></view>
+      <view class="header__content">
+        <view class="header__left">
+          <text class="header__emoji">🏔️</text>
+          <view class="header__text">
+            <text class="header__title">秦人徒步</text>
+            <text class="header__sub">去户外徒步，让身心与自然相融</text>
           </view>
-          <view class="search-advanced-filter-btn {{showAdvancedFilter ? 'active' : ''}}" bindtap="onToggleAdvancedFilter">
-            <text>🔬 高级筛选</text>
+        </view>
+        <view class="header__search-inline">
+          <view class="search-row">
+            <view class="search-inline">
+              <text class="search-inline__icon">🔍</text>
+              <input
+                class="search-inline__field"
+                placeholder="输入路线名称或地点..."
+                value="{{searchKeyword}}"
+                bindinput="onSearchInput"
+                bindconfirm="onSearchConfirm"
+                confirm-type="search"
+              />
+              <text class="search-inline__clear" wx:if="{{searchKeyword}}" bindtap="onSearchClear">✕</text>
+              <view class="search-inline__search-btn" bindtap="onSearchConfirm">
+                <text>搜索</text>
+              </view>
+            </view>
+            <view class="search-advanced-filter-btn {{showAdvancedFilter ? 'active' : ''}}" bindtap="onToggleAdvancedFilter">
+              <text>🔬 高级筛选</text>
+            </view>
           </view>
         </view>
       </view>
     </view>
   </view>
+
+  <!-- 固定头部占位 -->
+  <view class="fixed-header-spacer" style="height: {{fixedHeaderHeight}}px;"></view>
 
   <!-- 高级筛选 -->
   <view class="advanced-filter" wx:if="{{showAdvancedFilter}}">

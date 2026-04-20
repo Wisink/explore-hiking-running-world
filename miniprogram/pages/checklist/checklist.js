@@ -56,15 +56,18 @@ Page({
       return
     }
 
-    // 调用智能推荐云函数
+    // 调用智能推荐云函数（带重试）
+    this._callRecommendation(cachedChecked, 2) // 最多重试2次
+  },
+
+  // 带重试的装备推荐请求
+  _callRecommendation: function (cachedChecked, retriesLeft) {
     wx.cloud.callFunction({
       name: 'getRecommendation',
       data: { trailId: this.data.trailId },
       success: (res) => {
         if (res.result && res.result.code === 0 && res.result.data) {
           const data = res.result.data
-          // 将推荐结果转为 equipment 格式（兼容 WXML）
-          // API 返回: must / suggested / notNeeded → equipment 需要: must / suggest / noNeed
           const equipment = {
             must: (data.must || []).map(item => ({
               name: item.icon ? `${item.icon} ${item.name}` : item.name,
@@ -84,14 +87,18 @@ Page({
             weatherDesc: data.weather || ''
           })
           this.processEquipment(equipment, cachedChecked)
+        } else if (retriesLeft > 0) {
+          setTimeout(() => this._callRecommendation(cachedChecked, retriesLeft - 1), 500)
         } else {
-          // 降级：使用默认装备
           this.setDefaultEquipment(cachedChecked)
         }
       },
       fail: () => {
-        // 降级：使用默认装备
-        this.setDefaultEquipment(cachedChecked)
+        if (retriesLeft > 0) {
+          setTimeout(() => this._callRecommendation(cachedChecked, retriesLeft - 1), 500)
+        } else {
+          this.setDefaultEquipment(cachedChecked)
+        }
       }
     })
   },
