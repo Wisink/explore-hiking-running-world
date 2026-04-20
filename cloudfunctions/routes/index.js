@@ -209,102 +209,43 @@ async function list(event) {
     }
   }
 
-  // ─── 高级筛选（全部改用新版字段） ───
+  // ─── 高级筛选（纯新版字段，数据库已无旧格式数据） ───
   if (filterType === 'advanced' && typeof filter === 'object' && filter) {
-    // 收集所有 AND 条件，每个条件内部用 OR（兼容新旧字段名）
-    const andConds = []
-
-    // difficulty：新格式（数字）OR 旧格式（difficulty.level 对象）
+    // difficulty：数字数组 [1] 或 [2] 或 [3] 等
     if (filter.difficulty && filter.difficulty.length > 0) {
-      const diffOrs = []
-      filter.difficulty.forEach(d => {
-        diffOrs.push({ difficulty: _.eq(d) })
-        diffOrs.push({ 'difficulty.level': _.eq(d) })
-      })
-      andConds.push(_.or(diffOrs))
+      where.difficulty = filter.difficulty.length === 1 ? filter.difficulty[0] : _.in(filter.difficulty)
     }
 
-    // distance：新格式 OR distance_km（旧格式）
+    // distance：范围字符串 '0-5'/'5-10'/'10-15'/'15-20'/'20+'
     if (filter.distance) {
       const range = parseRange(filter.distance)
       if (range) {
-        const distOrs = []
-        if (range[1] === Infinity) {
-          distOrs.push({ distance: _.gte(range[0]) })
-          distOrs.push({ distance_km: _.gte(range[0]) })
-        } else {
-          distOrs.push({ distance: _.gte(range[0]).and(_.lte(range[1])) })
-          distOrs.push({ distance_km: _.gte(range[0]).and(_.lte(range[1])) })
-        }
-        andConds.push(_.or(distOrs))
+        where.distance = range[1] === Infinity ? _.gte(range[0]) : _.gte(range[0]).and(_.lte(range[1]))
       }
     }
 
-    // elevationGain：新格式 OR elevation_gain_m（旧格式）
+    // elevationGain：范围字符串 '0-300'/'300-600'/'600-1000'/'1000+'
     if (filter.elevation) {
       const range = parseRange(filter.elevation)
       if (range) {
-        const eleOrs = []
-        if (range[1] === Infinity) {
-          eleOrs.push({ elevationGain: _.gte(range[0]) })
-          eleOrs.push({ elevation_gain_m: _.gte(range[0]) })
-        } else {
-          eleOrs.push({ elevationGain: _.gte(range[0]).and(_.lte(range[1])) })
-          eleOrs.push({ elevation_gain_m: _.gte(range[0]).and(_.lte(range[1])) })
-        }
-        andConds.push(_.or(eleOrs))
+        where.elevationGain = range[1] === Infinity ? _.gte(range[0]) : _.gte(range[0]).and(_.lte(range[1]))
       }
     }
 
-    // terrain：terrainTypes OR scenery（中文字符串关键词）
+    // terrainTypes：数组包含匹配
     if (filter.terrain) {
-      const TERRN_SCNERY_KW = {
-        grassland:     ['草甸', '高山草甸', '草原', '牧场'],
-        forest:        ['森林', '山林', '竹林', '原始森林', '林木', '植被丰茂', '林木茂密'],
-        stream:        ['溪流', '潭水', '瀑布', '水雾弥漫', '湖泊', '水库', '湿地', '溪谷'],
-        mountain_path: ['山间小道', '山径', '徒步道'],
-        ridge:         ['山脊', '山脊行走', '山脊全景'],
-        rock_scramble: ['岩石', '攀爬', '奇石'],
-        paved:         ['景区步道', '景区', '盘山公路', '栈道'],
-        historic:      ['古道', '古寺', '古迹', '遗址', '烽火台', '博物馆'],
-      }
-      const kws = TERRN_SCNERY_KW[filter.terrain] || []
-      const terrOrs = [{ terrainTypes: _.elemMatch(_.eq(filter.terrain)) }]
-      kws.forEach(kw => terrOrs.push({ scenery: _.elemMatch(_.eq(kw)) }))
-      andConds.push(_.or(terrOrs))
+      where.terrainTypes = _.elemMatch(_.eq(filter.terrain))
     }
 
-    // season：bestSeasons OR best_season（中文字符串）
+    // bestSeasons：数组包含匹配
     if (filter.season) {
-      const SEASON_KW = {
-        spring: ['春', '春季', '春天'],
-        summer: ['夏', '夏季', '夏天'],
-        autumn: ['秋', '秋季', '秋天'],
-        winter: ['冬', '冬季', '冬天'],
-      }
-      const kws = SEASON_KW[filter.season] || []
-      const seasonOrs = [{ bestSeasons: _.elemMatch(_.eq(filter.season)) }]
-      kws.forEach(kw => seasonOrs.push({ best_season: _.elemMatch(_.eq(kw)) }))
-      andConds.push(_.or(seasonOrs))
+      where.bestSeasons = _.elemMatch(_.eq(filter.season))
     }
 
-    // district（直接精确匹配，不受旧格式影响）
+    // district：精确匹配
     if (filter.district && filter.district !== 'all') {
       where['location.district'] = filter.district
     }
-
-    // 最终：所有条件 AND 合并
-    if (andConds.length === 1) {
-      where._and = [andConds[0]]
-    } else if (andConds.length > 1) {
-      where._and = andConds
-    }
-    // 以下旧字段不再支持，跳过
-    // filter.cost -> 全部免费，无需筛选
-    // filter.direction -> 已改为 district
-    // filter.surface -> 已改为 terrainTypes
-    // filter.scenery -> 已改为 routeDNA/terrainTypes
-    // filter.suitableFor -> 已改为 familyFriendly
   }
 
   // 搜索关键词（通过云端 search action 走专门的搜索函数）
@@ -313,8 +254,26 @@ async function list(event) {
   }
 
   try {
+    // 调试日志：输出查询条件
+    console.log('[routes list] filterType:', filterType, 'filter:', JSON.stringify(filter), 'where keys:', Object.keys(where))
+
     const countRes = await db.collection('routes').where(where).count()
     const total = countRes.total
+    console.log('[routes list] count result:', total)
+
+    // 调试：如果高级筛选返回0条，尝试不加高级筛选条件看总数据量
+    if (total === 0 && filterType === 'advanced') {
+      const basicWhere = { status: 'open' }
+      const basicCount = await db.collection('routes').where(basicWhere).count()
+      console.log('[routes list] 高级筛选0条！不加筛选总条数:', basicCount.total)
+      // 输出 where 的详细信息用于调试
+      console.log('[routes list] where 详情:', JSON.stringify(where, (k, v) => {
+        if (v && typeof v === 'object' && v.constructor && v.constructor.name !== 'Object') {
+          return `[${v.constructor.name}]`
+        }
+        return v
+      }))
+    }
 
     const listRes = await db.collection('routes')
       .where(where)

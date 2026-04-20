@@ -230,7 +230,7 @@ Page({
       const d = parseInt(this.data.activeDifficulty)
       if (d >= 1 && d <= 5) f.difficulty = [d]
     }
-    // 距离：'0-5'/'5-8'/'8-12'/'12-15'/'15-20'/'20+'
+    // 距离：'0-5'/'5-10'/'10-15'/'15-20'/'20+'
     if (this.data.activeDistance) f.distance = this.data.activeDistance
     // 爬升：'0-300'/'300-600'/'600-1000'/'1000+'
     if (this.data.activeElevation) f.elevation = this.data.activeElevation
@@ -243,26 +243,24 @@ Page({
     return f
   },
 
-  // 处理服务端分页数据
+  // 处理服务端分页数据（服务端已做过筛选，客户端不再二次筛选）
   _processServerPage: function (serverList, page, reset) {
     const processedData = serverList.map(item => this.processRouteItem(item))
 
     // accumulate or replace
     let allData = reset ? processedData : (this._allProcessedData || []).concat(processedData)
-    // 客户端二次筛选兜底
-    let filteredData = this.applyFilter(allData)
 
     // 用服务端 total 判断是否还有更多页
-    const hasMore = filteredData.length < (this._serverTotal || Infinity)
+    const hasMore = allData.length < (this._serverTotal || Infinity)
 
     this.setData({
-      routes: filteredData,
+      routes: allData,
       page: page + 1,
       hasMore: hasMore,
       loading: false,
       showSkeleton: false
     })
-    this._allProcessedData = filteredData
+    this._allProcessedData = allData
   },
 
   // 降级方案：尝试使用缓存
@@ -600,17 +598,12 @@ Page({
       })
     }
 
-    // 高级筛选：难度（基于实际数据：level 1=第一次也能走, level 2=稍微有点挑战）
+    // 高级筛选：难度（WXML发来数字字符串 '1'~'5'）
     if (this.data.activeDifficulty) {
-      result = result.filter(item => {
-        const level = item.difficulty || 0
-        switch (this.data.activeDifficulty) {
-          case 'easy': return level === 1        // 第一次也能走
-          case 'medium': return level === 2      // 稍微有点挑战
-          case 'hard': return level >= 3         // 未来扩展
-          default: return true
-        }
-      })
+      const d = parseInt(this.data.activeDifficulty)
+      if (d >= 1 && d <= 5) {
+        result = result.filter(item => (item.difficulty || 0) === d)
+      }
     }
 
     // 高级筛选：距离
