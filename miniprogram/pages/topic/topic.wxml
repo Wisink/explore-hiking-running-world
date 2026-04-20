@@ -3,7 +3,7 @@
   <view class="header" style="background-color: {{themeColor}}; padding-top: {{statusBarHeight}}px;">
     <view class="status-bar">
       <view class="back-btn" bindtap="onBackTap">
-        <text class="back-icon"><</text>
+        <text class="back-icon">&lt;</text>
         <text class="back-text">返回</text>
       </view>
     </view>
@@ -68,7 +68,7 @@
     <!-- 底部返回按钮 -->
     <view class="bottom-back" wx:if="{{filteredArticles.length > 0}}">
       <button class="back-btn-bottom" style="background-color: {{themeColor}};" bindtap="onBackTap">
-        <text class="back-btn-icon"><</text>
+        <text class="back-btn-icon">&lt;</text>
         <text class="back-btn-text">返回上一页</text>
       </button>
     </view>

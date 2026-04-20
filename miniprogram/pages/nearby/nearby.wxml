@@ -6,7 +6,7 @@
     <view class="page-header__statusbar" style="height: {{statusBarHeight}}px;"></view>
     <view class="page-header__nav">
       <view class="page-header__back" bindtap="onGoBack">
-        <text class="page-header__back-icon"><</text>
+        <text class="page-header__back-icon">&lt;</text>
       </view>
       <text class="page-header__title">📍 附近路线</text>
       <view class="page-header__spacer"></view>
