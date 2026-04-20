@@ -225,19 +225,20 @@ Page({
   // 构建高级筛选对象
   _buildAdvancedFilter: function () {
     const f = {}
+    // 难度：WXML 发来的是数字字符串 '1'~'5'
     if (this.data.activeDifficulty) {
-      if (this.data.activeDifficulty === 'easy') f.difficulty = [1]
-      else if (this.data.activeDifficulty === 'medium') f.difficulty = [2]
-      else if (this.data.activeDifficulty === 'hard') f.difficulty = [3, 4, 5]
+      const d = parseInt(this.data.activeDifficulty)
+      if (d >= 1 && d <= 5) f.difficulty = [d]
     }
+    // 距离：'0-5'/'5-8'/'8-12'/'12-15'/'15-20'/'20+'
     if (this.data.activeDistance) f.distance = this.data.activeDistance
+    // 爬升：'0-300'/'300-600'/'600-1000'/'1000+'
     if (this.data.activeElevation) f.elevation = this.data.activeElevation
-    if (this.data.activeSurface) f.surface = this.data.activeSurface
-    if (this.data.activeScenery) f.scenery = this.data.activeScenery
-    if (this.data.activeDirection) f.direction = this.data.activeDirection
-    if (this.data.activeCost) f.cost = this.data.activeCost
-    if (this.data.activeSeason) f.season = this.data.activeSeason
+    // 地形：'mountain_path'/'forest'/...
     if (this.data.activeTerrain) f.terrain = this.data.activeTerrain
+    // 季节：'spring'/'summer'/'autumn'/'winter'
+    if (this.data.activeSeason) f.season = this.data.activeSeason
+    // 区县
     if (this.data.activeDistrict) f.district = this.data.activeDistrict
     return f
   },

@@ -1,6 +1,19 @@
 // app.js - 秦人徒步路线分享
 const cloudSync = require('./utils/cloud-sync')
 
+// 全局拦截 wx.navigateBack，处理安卓物理返回键等非按钮触发的返回
+const _origNavBack = wx.navigateBack
+wx.navigateBack = function (opts = {}) {
+  if (opts._bypass) return _origNavBack.call(wx, opts)
+  const pages = getCurrentPages()
+  const cur = pages[pages.length - 1]
+  if (cur && cur.data && cur.data.formChanged && cur.onBack) {
+    cur.onBack()
+    return
+  }
+  _origNavBack.call(wx, opts)
+}
+
 App({
   onLaunch: function () {
     // 初始化云开发 - 使用动态环境，避免硬编码
