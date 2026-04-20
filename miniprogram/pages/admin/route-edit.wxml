@@ -22,6 +22,21 @@
   <!-- ========== 路线编辑 ========== -->
   <block wx:elif="{{type === 'route'}}">
 
+    <!-- 智能搜索（仅新增时显示） -->
+    <view class="form-section search-section" wx:if="{{!id}}">
+      <text class="form-section__title">🔍 智能搜索填充</text>
+      <text class="search-hint">输入路线名称，自动从百度搜索提取路线信息</text>
+      <view class="search-bar">
+        <input class="search-input" placeholder="输入路线名称，如：子午峪凤凰岭小环线" value="{{searchQuery}}" bindinput="onSearchInput" bindconfirm="onSearchRoute" confirm-type="search" />
+        <view class="search-btn {{searching ? 'search-btn--loading' : ''}}" bindtap="onSearchRoute">
+          <text>{{searching ? '搜索中...' : '搜索'}}</text>
+        </view>
+      </view>
+      <view class="search-status" wx:if="{{searchStatus}}">
+        <text class="search-status__text {{searchStatusType}}">{{searchStatus}}</text>
+      </view>
+    </view>
+
     <!-- 基本信息 -->
     <view class="form-section">
       <text class="form-section__title">基本信息</text>

@@ -483,3 +483,72 @@
   gap: 12rpx;
   padding: 12rpx 0;
 }
+
+/* ========== 智能搜索 ========== */
+.search-section {
+  background: linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(232,245,233,0.92) 100%);
+  border: 2rpx solid rgba(76,175,80,0.3);
+}
+
+.search-hint {
+  display: block;
+  font-size: 24rpx;
+  color: #888;
+  margin-bottom: 16rpx;
+}
+
+.search-bar {
+  display: flex;
+  gap: 12rpx;
+  align-items: center;
+}
+
+.search-input {
+  flex: 1;
+  height: 80rpx;
+  padding: 0 24rpx;
+  background: rgba(255,255,255,0.9);
+  border: 2rpx solid #ddd;
+  border-radius: 12rpx;
+  font-size: 28rpx;
+}
+
+.search-btn {
+  height: 80rpx;
+  padding: 0 32rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #43A047, #66BB6A);
+  border-radius: 12rpx;
+  color: #fff;
+  font-size: 28rpx;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.search-btn--loading {
+  background: #aaa;
+  opacity: 0.7;
+}
+
+.search-status {
+  margin-top: 16rpx;
+}
+
+.search-status__text {
+  font-size: 24rpx;
+  line-height: 1.6;
+}
+
+.search-status--info {
+  color: #1976D2;
+}
+
+.search-status--success {
+  color: #2E7D32;
+}
+
+.search-status--error {
+  color: #D32F2F;
+}

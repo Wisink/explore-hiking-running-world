@@ -189,6 +189,12 @@ Page({
     // 脏标记
     formChanged: false,
 
+    // 智能搜索
+    searchQuery: '',
+    searching: false,
+    searchStatus: '',
+    searchStatusType: '',
+
     // Toast
     showToast: false,
     toastMessage: '',
@@ -428,6 +434,127 @@ Page({
   showToast(msg, type = 'info') {
     this.setData({ showToast: true, toastMessage: msg, toastType: type })
     setTimeout(() => this.setData({ showToast: false }), 2000)
+  },
+
+  // ========== 智能搜索 ==========
+  onSearchInput(e) {
+    this.setData({ searchQuery: e.detail.value })
+  },
+
+  async onSearchRoute() {
+    const name = (this.data.searchQuery || '').trim()
+    if (!name) {
+      this.showToast('请输入路线名称', 'error')
+      return
+    }
+    if (this.data.searching) return
+
+    this.setData({
+      searching: true,
+      searchStatus: '正在搜索百度...',
+      searchStatusType: 'search-status--info'
+    })
+
+    try {
+      const res = await wx.cloud.callFunction({
+        name: 'routeSearch',
+        data: {
+          action: 'searchAndParse',
+          params: { name }
+        }
+      })
+
+      const result = res.result
+      if (result.code !== 0) {
+        this.setData({
+          searching: false,
+          searchStatus: result.message || '搜索失败',
+          searchStatusType: 'search-status--error'
+        })
+        return
+      }
+
+      const data = result.data
+      // 将解析结果填充到表单
+      this._fillFormFromSearch(data)
+
+      const filledCount = this._countFilledFields(data)
+      this.setData({
+        searching: false,
+        searchStatus: `✅ 搜索成功，已自动填充 ${filledCount} 个字段，请检查并补充缺失信息`,
+        searchStatusType: 'search-status--success'
+      })
+      this.markChanged()
+    } catch (e) {
+      console.error('[智能搜索] 失败:', e)
+      this.setData({
+        searching: false,
+        searchStatus: '搜索失败: ' + (e.message || '网络错误'),
+        searchStatusType: 'search-status--error'
+      })
+    }
+  },
+
+  // 用搜索结果填充表单
+  _fillFormFromSearch(data) {
+    if (!data) return
+
+    // Difficulty: 找到对应索引
+    const findIdx = (options, val) => {
+      const i = options.findIndex(o => o.value === val)
+      return i >= 0 ? i : 0
+    }
+
+    this.setData({
+      form: {
+        ...this.data.form,
+        name: data.name || this.data.form.name,
+        shortDesc: data.shortDesc || this.data.form.shortDesc,
+        fullDesc: data.fullDesc || this.data.form.fullDesc,
+        coverImage: data.coverImage || this.data.form.coverImage,
+        images: data.images && data.images.length > 0 ? data.images : this.data.form.images,
+        location_district: data.location_district || this.data.form.location_district,
+        location_lat: data.location_lat || this.data.form.location_lat,
+        location_lng: data.location_lng || this.data.form.location_lng,
+        distance: data.distance || this.data.form.distance,
+        durationMin: data.durationMin || this.data.form.durationMin,
+        durationMax: data.durationMax || this.data.form.durationMax,
+        elevationGain: data.elevationGain || this.data.form.elevationGain,
+        elevationMax: data.elevationMax || this.data.form.elevationMax,
+        difficulty: data.difficulty || this.data.form.difficulty,
+        technicalGrade: data.technicalGrade || this.data.form.technicalGrade,
+        terrainTypes: data.terrainTypes && data.terrainTypes.length > 0 ? data.terrainTypes : this.data.form.terrainTypes,
+        routeDNA: data.routeDNA && data.routeDNA.length > 0 ? data.routeDNA : this.data.form.routeDNA,
+        trailhead_startName: data.trailhead_startName || this.data.form.trailhead_startName,
+        transport_hasParking: data.transport_hasParking !== undefined ? data.transport_hasParking : this.data.form.transport_hasParking,
+        transport_parkingNote: data.transport_parkingNote || this.data.form.transport_parkingNote,
+        transport_publicTransport: data.transport_publicTransport || this.data.form.transport_publicTransport,
+        transport_drivingGuide: data.transport_drivingGuide || this.data.form.transport_drivingGuide,
+        bestSeasons: data.bestSeasons && data.bestSeasons.length > 0 ? data.bestSeasons : this.data.form.bestSeasons,
+        cellCoverage: data.cellCoverage || this.data.form.cellCoverage,
+        dataSource: data.dataSource || this.data.form.dataSource
+      },
+      difficultyIndex: findIdx(this.data.difficultyOptions, data.difficulty || this.data.form.difficulty),
+      technicalGradeIndex: findIdx(this.data.technicalGradeOptions, data.technicalGrade || this.data.form.technicalGrade),
+      cellCoverageIndex: findIdx(this.data.cellCoverageOptions, data.cellCoverage || this.data.form.cellCoverage)
+    })
+    this._refreshChecked()
+  },
+
+  // 统计已填充字段数
+  _countFilledFields(data) {
+    if (!data) return 0
+    let count = 0
+    const fields = ['name', 'shortDesc', 'distance', 'durationMin', 'elevationGain',
+      'location_district', 'difficulty', 'transport_publicTransport', 'bestSeasons',
+      'terrainTypes', 'trailhead_startName']
+    for (const f of fields) {
+      const v = data[f]
+      if (v !== undefined && v !== null && v !== '' && !(Array.isArray(v) && v.length === 0)) {
+        count++
+      }
+    }
+    return count
   },
 
   // ========== 加载详情 ==========
