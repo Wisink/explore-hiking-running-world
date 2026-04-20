@@ -602,8 +602,8 @@
                   </view>
                   <view class="detail-card__meta">
                     <text wx:if="{{item.distance || item.distance_km}}">📏 {{item.distance || item.distance_km}}km</text>
-                    <text wx:if="{{item.difficulty || item.difficultyLevel}}"> · {{typeof item.difficulty === 'number' ? item.difficulty : (item.difficultyLevel || (item.difficulty && item.difficulty.level))}}级难度</text>
-                    <text wx:if="{{item.location}}"> · 📍 {{item.location.district || (item.location && item.location.address) || ''}}</text>
+                    <text wx:if="{{item.difficultyLevel || item.difficulty}}"> · {{item.difficultyLevel || item.difficulty}}级难度</text>
+                    <text wx:if="{{item.location}}"> · 📍 {{item.location.district || item.location.address || ''}}</text>
                   </view>
                 </view>
               </view>

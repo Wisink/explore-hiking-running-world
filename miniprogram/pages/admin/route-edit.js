@@ -177,6 +177,16 @@ Page({
     difficultyArticleIndex: 0,
     tagInput: '',
 
+    // 多选预计算状态（WXML 不能调 indexOf，需 JS 预计算）
+    terrainChecked: [],
+    dnaChecked: [],
+    seasonChecked: [],
+    startFacilityChecked: [],
+    endFacilityChecked: [],
+
+    // 脏标记
+    formChanged: false,
+
     // Toast
     showToast: false,
     toastMessage: '',
@@ -203,8 +213,45 @@ Page({
     }
   },
 
+  // ========== 脏标记 ==========
+  markChanged() {
+    if (!this.data.formChanged) {
+      this.setData({ formChanged: true })
+      // 拦截系统返回手势
+      wx.enableAlertBeforeUnload && wx.enableAlertBeforeUnload({ message: '内容已修改，确定离开吗？' })
+    }
+  },
+
   onBack() {
-    wx.navigateBack()
+    if (this.data.formChanged) {
+      wx.showModal({
+        title: '提示',
+        content: '内容已修改，是否保存草稿？',
+        cancelText: '不保存',
+        confirmText: '保存草稿',
+        success: (res) => {
+          if (res.confirm) {
+            this.onSaveDraft()
+          } else {
+            wx.navigateBack()
+          }
+        }
+      })
+    } else {
+      wx.navigateBack()
+    }
+  },
+
+  // ========== 预计算多选状态 ==========
+  _refreshChecked() {
+    const f = this.data.form
+    this.setData({
+      terrainChecked: this.data.terrainTypeOptions.map(o => f.terrainTypes.indexOf(o.value) >= 0),
+      dnaChecked: this.data.routeDNAOptions.map(o => f.routeDNA.indexOf(o.value) >= 0),
+      seasonChecked: this.data.seasonOptions.map(o => f.bestSeasons.indexOf(o.value) >= 0),
+      startFacilityChecked: this.data.facilityOptions.map(o => f.trailhead_startFacilities.indexOf(o) >= 0),
+      endFacilityChecked: this.data.facilityOptions.map(o => f.trailhead_endFacilities.indexOf(o) >= 0)
+    })
   },
 
   // ========== 通用字段输入 ==========
@@ -212,45 +259,49 @@ Page({
     const field = e.currentTarget.dataset.field
     const value = e.detail.value
     this.setData({ [`form.${field}`]: value })
-  },
-
-  onTextareaInput(e) {
-    const field = e.currentTarget.dataset.field
-    this.setData({ [`form.${field}`]: e.detail.value })
+    this.markChanged()
   },
 
   // ========== Picker 选择 ==========
   onDifficultyChange(e) {
     const idx = e.detail.value
     this.setData({ difficultyIndex: idx, 'form.difficulty': this.data.difficultyOptions[idx].value })
+    this.markChanged()
   },
   onTechnicalGradeChange(e) {
     const idx = e.detail.value
     this.setData({ technicalGradeIndex: idx, 'form.technicalGrade': this.data.technicalGradeOptions[idx].value })
+    this.markChanged()
   },
   onWaterSupplyChange(e) {
     const idx = e.detail.value
     this.setData({ waterSupplyIndex: idx, 'form.waterSupply': this.data.waterSupplyOptions[idx].value })
+    this.markChanged()
   },
   onSafetyLevelChange(e) {
     const idx = e.detail.value
     this.setData({ safetyLevelIndex: idx, 'form.safetyLevel': this.data.safetyLevelOptions[idx].value })
+    this.markChanged()
   },
   onCellCoverageChange(e) {
     const idx = e.detail.value
     this.setData({ cellCoverageIndex: idx, 'form.cellCoverage': this.data.cellCoverageOptions[idx].value })
+    this.markChanged()
   },
   onTrailMarkingChange(e) {
     const idx = e.detail.value
     this.setData({ trailMarkingIndex: idx, 'form.trailMarking': this.data.trailMarkingOptions[idx].value })
+    this.markChanged()
   },
   onFamilyFriendlyChange(e) {
     const idx = e.detail.value
     this.setData({ familyFriendlyIndex: idx, 'form.familyFriendly': this.data.familyFriendlyOptions[idx].value })
+    this.markChanged()
   },
   onStatusChange(e) {
     const idx = e.detail.value
     this.setData({ 'form.status': idx == 0 ? 'open' : 'closed' })
+    this.markChanged()
   },
 
   // ========== 地形类型选择 ==========
@@ -264,6 +315,8 @@ Page({
       list.push(val)
     }
     this.setData({ 'form.terrainTypes': list })
+    this._refreshChecked()
+    this.markChanged()
   },
 
   // ========== 路线DNA选择 ==========
@@ -277,19 +330,23 @@ Page({
       list.push(val)
     }
     this.setData({ 'form.routeDNA': list })
+    this._refreshChecked()
+    this.markChanged()
   },
 
   // ========== 最佳季节选择 ==========
   onSeasonToggle(e) {
-    const idx = e.currentTarget.dataset.value
+    const val = e.currentTarget.dataset.value
     const list = [...this.data.form.bestSeasons]
-    const i = list.indexOf(idx)
-    if (i >= 0) {
-      list.splice(i, 1)
+    const idx = list.indexOf(val)
+    if (idx >= 0) {
+      list.splice(idx, 1)
     } else {
-      list.push(idx)
+      list.push(val)
     }
     this.setData({ 'form.bestSeasons': list })
+    this._refreshChecked()
+    this.markChanged()
   },
 
   // ========== 起点设施选择 ==========
@@ -303,6 +360,8 @@ Page({
       list.push(val)
     }
     this.setData({ 'form.trailhead_startFacilities': list })
+    this._refreshChecked()
+    this.markChanged()
   },
   onEndFacilityToggle(e) {
     const val = e.currentTarget.dataset.value
@@ -314,6 +373,8 @@ Page({
       list.push(val)
     }
     this.setData({ 'form.trailhead_endFacilities': list })
+    this._refreshChecked()
+    this.markChanged()
   },
 
   // ========== 图片管理 ==========
@@ -323,11 +384,13 @@ Page({
     if (!val) return
     const list = this.data.form.images.concat([val])
     this.setData({ 'form.images': list, imagesInput: '' })
+    this.markChanged()
   },
   removeImage(e) {
     const idx = e.currentTarget.dataset.index
     const list = this.data.form.images.filter((_, i) => i !== idx)
     this.setData({ 'form.images': list })
+    this.markChanged()
   },
   onChooseImages() {
     wx.chooseImage({
@@ -343,6 +406,7 @@ Page({
   // ========== 停车开关 ==========
   onParkingToggle() {
     this.setData({ 'form.transport_hasParking': !this.data.form.transport_hasParking })
+    this.markChanged()
   },
 
   // ========== Toast ==========
@@ -432,8 +496,10 @@ Page({
       safetyLevelIndex: findIdx(this.data.safetyLevelOptions, data.safetyLevel || 3),
       cellCoverageIndex: findIdx(this.data.cellCoverageOptions, data.cellCoverage || 2),
       trailMarkingIndex: findIdx(this.data.trailMarkingOptions, data.trailMarking || 2),
-      familyFriendlyIndex: findIdx(this.data.familyFriendlyOptions, data.familyFriendly || 3)
+      familyFriendlyIndex: findIdx(this.data.familyFriendlyOptions, data.familyFriendly || 3),
+      formChanged: false
     })
+    this._refreshChecked()
   },
 
   _loadArticleDetail(data) {
@@ -640,6 +706,7 @@ Page({
   onArticleFieldInput(e) {
     const field = e.currentTarget.dataset.field
     this.setData({ [`articleForm.${field}`]: e.detail.value })
+    this.markChanged()
   },
 
   onCategoryChange(e) {
@@ -653,12 +720,14 @@ Page({
       subcategoryIndex: -1,
       'articleForm.subcategory': ''
     })
+    this.markChanged()
   },
 
   onSubcategoryChange(e) {
     const idx = e.detail.value
     const sub = this.data.currentSubcategoryOptions[idx]
     this.setData({ 'articleForm.subcategory': sub, subcategoryIndex: idx })
+    this.markChanged()
   },
 
   onArticleDifficultyChange(e) {
@@ -667,6 +736,7 @@ Page({
       difficultyArticleIndex: idx,
       'articleForm.difficulty': this.data.difficultyArticleOptions[idx].value
     })
+    this.markChanged()
   },
 
   // 文章季节选择
@@ -676,6 +746,7 @@ Page({
     opts[idx].checked = !opts[idx].checked
     const selected = opts.filter(s => s.checked).map(s => s.value)
     this.setData({ seasonOptions: opts, 'articleForm.season': selected })
+    this.markChanged()
   },
 
   // 文章标签
@@ -685,11 +756,13 @@ Page({
     if (!val) return
     const list = this.data.articleForm.tags.concat([val])
     this.setData({ 'articleForm.tags': list, tagInput: '' })
+    this.markChanged()
   },
   removeArticleTag(e) {
     const idx = e.currentTarget.dataset.index
     const list = this.data.articleForm.tags.filter((_, i) => i !== idx)
     this.setData({ 'articleForm.tags': list })
+    this.markChanged()
   },
 
   // 文章封面图上传

@@ -176,8 +176,8 @@
       <view class="form-item">
         <text class="form-label">地形类型（可多选）</text>
         <view class="checkbox-group">
-          <view class="checkbox-item {{form.terrainTypes.indexOf(item.value) >= 0 ? 'checkbox-item--active' : ''}}" wx:for="{{terrainTypeOptions}}" wx:key="value" bindtap="onTerrainToggle" data-value="{{item.value}}">
-            <text class="checkbox-icon">{{form.terrainTypes.indexOf(item.value) >= 0 ? '☑' : '☐'}}</text>
+          <view class="checkbox-item {{terrainChecked[index] ? 'checkbox-item--active' : ''}}" wx:for="{{terrainTypeOptions}}" wx:key="value" wx:for-index="index" bindtap="onTerrainToggle" data-value="{{item.value}}">
+            <text class="checkbox-icon">{{terrainChecked[index] ? '☑' : '☐'}}</text>
             <text class="checkbox-label">{{item.label}}</text>
           </view>
         </view>
@@ -186,8 +186,8 @@
       <view class="form-item">
         <text class="form-label">路线DNA（可多选）</text>
         <view class="checkbox-group">
-          <view class="checkbox-item {{form.routeDNA.indexOf(item.value) >= 0 ? 'checkbox-item--active' : ''}}" wx:for="{{routeDNAOptions}}" wx:key="value" bindtap="onDNAToggle" data-value="{{item.value}}">
-            <text class="checkbox-icon">{{form.routeDNA.indexOf(item.value) >= 0 ? '☑' : '☐'}}</text>
+          <view class="checkbox-item {{dnaChecked[index] ? 'checkbox-item--active' : ''}}" wx:for="{{routeDNAOptions}}" wx:key="value" wx:for-index="index" bindtap="onDNAToggle" data-value="{{item.value}}">
+            <text class="checkbox-icon">{{dnaChecked[index] ? '☑' : '☐'}}</text>
             <text class="checkbox-label">{{item.label}}</text>
           </view>
         </view>
@@ -269,8 +269,8 @@
       <view class="form-item">
         <text class="form-label">起点设施（可多选）</text>
         <view class="checkbox-group">
-          <view class="checkbox-item {{form.trailhead_startFacilities.indexOf(item) >= 0 ? 'checkbox-item--active' : ''}}" wx:for="{{facilityOptions}}" wx:key="*this" bindtap="onStartFacilityToggle" data-value="{{item}}">
-            <text class="checkbox-icon">{{form.trailhead_startFacilities.indexOf(item) >= 0 ? '☑' : '☐'}}</text>
+          <view class="checkbox-item {{startFacilityChecked[index] ? 'checkbox-item--active' : ''}}" wx:for="{{facilityOptions}}" wx:key="*this" wx:for-index="index" bindtap="onStartFacilityToggle" data-value="{{item}}">
+            <text class="checkbox-icon">{{startFacilityChecked[index] ? '☑' : '☐'}}</text>
             <text class="checkbox-label">{{item}}</text>
           </view>
         </view>
@@ -284,8 +284,8 @@
       <view class="form-item">
         <text class="form-label">终点设施（可多选）</text>
         <view class="checkbox-group">
-          <view class="checkbox-item {{form.trailhead_endFacilities.indexOf(item) >= 0 ? 'checkbox-item--active' : ''}}" wx:for="{{facilityOptions}}" wx:key="*this" bindtap="onEndFacilityToggle" data-value="{{item}}">
-            <text class="checkbox-icon">{{form.trailhead_endFacilities.indexOf(item) >= 0 ? '☑' : '☐'}}</text>
+          <view class="checkbox-item {{endFacilityChecked[index] ? 'checkbox-item--active' : ''}}" wx:for="{{facilityOptions}}" wx:key="*this" wx:for-index="index" bindtap="onEndFacilityToggle" data-value="{{item}}">
+            <text class="checkbox-icon">{{endFacilityChecked[index] ? '☑' : '☐'}}</text>
             <text class="checkbox-label">{{item}}</text>
           </view>
         </view>
@@ -326,8 +326,8 @@
       <view class="form-item">
         <text class="form-label">最佳季节（可多选）</text>
         <view class="checkbox-group">
-          <view class="checkbox-item {{form.bestSeasons.indexOf(item.value) >= 0 ? 'checkbox-item--active' : ''}}" wx:for="{{seasonOptions}}" wx:key="value" bindtap="onSeasonToggle" data-value="{{item.value}}">
-            <text class="checkbox-icon">{{form.bestSeasons.indexOf(item.value) >= 0 ? '☑' : '☐'}}</text>
+          <view class="checkbox-item {{seasonChecked[index] ? 'checkbox-item--active' : ''}}" wx:for="{{seasonOptions}}" wx:key="value" wx:for-index="index" bindtap="onSeasonToggle" data-value="{{item.value}}">
+            <text class="checkbox-icon">{{seasonChecked[index] ? '☑' : '☐'}}</text>
             <text class="checkbox-label">{{item.label}}</text>
           </view>
         </view>
