@@ -211,67 +211,32 @@ async function list(event) {
 
   // ─── 高级筛选（全部改用新版字段） ───
   if (filterType === 'advanced' && typeof filter === 'object' && filter) {
-    if (filter.difficulty && filter.difficulty.length > 0) {
-      // difficulty：新格式（数字）OR 旧格式（difficulty.level 对象）
-      where._or = filter.difficulty.map(d => ({
-        _or: [
-          { difficulty: db.command.eq(d) },
-          { 'difficulty.level': db.command.eq(d) }
-        ]
-      }))
-    }
-    if (filter.distance) {
-      const range = parseRange(filter.distance)
-      if (range) {
-        // distance：新格式 OR distance_km（旧格式）
-        if (range[1] === Infinity) {
-          where._or = [
-            { distance: _.gte(range[0]) },
-            { distance_km: _.gte(range[0]) }
-          ]
-        } else {
-          where._or = [
-            { distance: _.gte(range[0]).and(_.lte(range[1])) },
-            { distance_km: _.gte(range[0]).and(_.lte(range[1])) }
-          ]
-        }
-      }
-    }
-    if (filter.elevation) {
-      const range = parseRange(filter.elevation)
-      if (range) {
-        // elevationGain：新格式 OR elevation_gain_m（旧格式）
-        if (range[1] === Infinity) {
-          where._or = [
-            { elevationGain: _.gte(range[0]) },
-            { elevation_gain_m: _.gte(range[0]) }
-          ]
-        } else {
-          where._or = [
-            { elevationGain: _.gte(range[0]).and(_.lte(range[1])) },
-            { elevation_gain_m: _.gte(range[0]).and(_.lte(range[1])) }
-          ]
-        }
-      }
-    }
-    // ========== 统一收集所有 OR 条件，最后用 AND 合并 ==========
-    const allOrs = []
+    // 收集所有 AND 条件，每个条件内部用 OR（兼容新旧字段名）
+    const andConds = []
 
     // difficulty：新格式（数字）OR 旧格式（difficulty.level 对象）
     if (filter.difficulty && filter.difficulty.length > 0) {
+      const diffOrs = []
       filter.difficulty.forEach(d => {
-        allOrs.push({ difficulty: _.eq(d) })
-        allOrs.push({ 'difficulty.level': _.eq(d) })
+        diffOrs.push({ difficulty: _.eq(d) })
+        diffOrs.push({ 'difficulty.level': _.eq(d) })
       })
+      andConds.push(_.or(diffOrs))
     }
 
     // distance：新格式 OR distance_km（旧格式）
     if (filter.distance) {
       const range = parseRange(filter.distance)
       if (range) {
-        const mkCond = (field, op) => range[1] === Infinity ? op(field, range[0]) : op(field, range[0]).and(op(field, range[1]))
-        allOrs.push(mkCond('distance', _.gte))
-        allOrs.push(mkCond('distance_km', _.gte))
+        const distOrs = []
+        if (range[1] === Infinity) {
+          distOrs.push({ distance: _.gte(range[0]) })
+          distOrs.push({ distance_km: _.gte(range[0]) })
+        } else {
+          distOrs.push({ distance: _.gte(range[0]).and(_.lte(range[1])) })
+          distOrs.push({ distance_km: _.gte(range[0]).and(_.lte(range[1])) })
+        }
+        andConds.push(_.or(distOrs))
       }
     }
 
@@ -279,9 +244,15 @@ async function list(event) {
     if (filter.elevation) {
       const range = parseRange(filter.elevation)
       if (range) {
-        const mkCond = (field, op) => range[1] === Infinity ? op(field, range[0]) : op(field, range[0]).and(op(field, range[1]))
-        allOrs.push(mkCond('elevationGain', _.gte))
-        allOrs.push(mkCond('elevation_gain_m', _.gte))
+        const eleOrs = []
+        if (range[1] === Infinity) {
+          eleOrs.push({ elevationGain: _.gte(range[0]) })
+          eleOrs.push({ elevation_gain_m: _.gte(range[0]) })
+        } else {
+          eleOrs.push({ elevationGain: _.gte(range[0]).and(_.lte(range[1])) })
+          eleOrs.push({ elevation_gain_m: _.gte(range[0]).and(_.lte(range[1])) })
+        }
+        andConds.push(_.or(eleOrs))
       }
     }
 
@@ -298,8 +269,9 @@ async function list(event) {
         historic:      ['古道', '古寺', '古迹', '遗址', '烽火台', '博物馆'],
       }
       const kws = TERRN_SCNERY_KW[filter.terrain] || []
-      allOrs.push({ terrainTypes: _.elemMatch(_.eq(filter.terrain)) })
-      kws.forEach(kw => allOrs.push({ scenery: _.elemMatch(_.eq(kw)) }))
+      const terrOrs = [{ terrainTypes: _.elemMatch(_.eq(filter.terrain)) }]
+      kws.forEach(kw => terrOrs.push({ scenery: _.elemMatch(_.eq(kw)) }))
+      andConds.push(_.or(terrOrs))
     }
 
     // season：bestSeasons OR best_season（中文字符串）
@@ -311,8 +283,9 @@ async function list(event) {
         winter: ['冬', '冬季', '冬天'],
       }
       const kws = SEASON_KW[filter.season] || []
-      allOrs.push({ bestSeasons: _.elemMatch(_.eq(filter.season)) })
-      kws.forEach(kw => allOrs.push({ best_season: _.elemMatch(_.eq(kw)) }))
+      const seasonOrs = [{ bestSeasons: _.elemMatch(_.eq(filter.season)) }]
+      kws.forEach(kw => seasonOrs.push({ best_season: _.elemMatch(_.eq(kw)) }))
+      andConds.push(_.or(seasonOrs))
     }
 
     // district（直接精确匹配，不受旧格式影响）
@@ -320,13 +293,11 @@ async function list(event) {
       where['location.district'] = filter.district
     }
 
-    // 最终：所有 OR 条件合并为一个 AND-OR 查询
-    if (allOrs.length > 0) {
-      if (allOrs.length === 1) {
-        Object.assign(where, allOrs[0])
-      } else {
-        where._and = [{ _or: allOrs }]
-      }
+    // 最终：所有条件 AND 合并
+    if (andConds.length === 1) {
+      where._and = [andConds[0]]
+    } else if (andConds.length > 1) {
+      where._and = andConds
     }
     // 以下旧字段不再支持，跳过
     // filter.cost -> 全部免费，无需筛选
