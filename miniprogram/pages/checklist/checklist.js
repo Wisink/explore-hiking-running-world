@@ -370,6 +370,29 @@ Page({
         { key: 'noNeed', title: '🟢 不用带', color: '#4CAF50' }
       ]
 
+      // 文字自动换行绘制，返回实际占用行数
+      const wrapText = (text, x, startY, maxWidth, lineHeight, font, color) => {
+        ctx.font = font
+        ctx.fillStyle = color
+        let line = ''
+        let y = startY
+        for (let i = 0; i < text.length; i++) {
+          const testLine = line + text[i]
+          if (ctx.measureText(testLine).width > maxWidth && line) {
+            ctx.fillText(line, x, y)
+            line = text[i]
+            y += lineHeight
+          } else {
+            line = testLine
+          }
+        }
+        if (line) {
+          ctx.fillText(line, x, y)
+          y += lineHeight
+        }
+        return y - startY // 返回总高度
+      }
+
       categories.forEach(cat => {
         const items = this.data.equipment[cat.key]
         if (items.length === 0) return
@@ -380,17 +403,17 @@ Page({
         y += 30
 
         items.forEach(item => {
-          // 勾选框（统一为空白）
+          // 勾选框
           ctx.strokeStyle = '#CCC'
           ctx.lineWidth = 1
           ctx.strokeRect(40, y - 14, 16, 16)
-          // 不填充，保持空白勾选框
 
-          ctx.fillStyle = '#333'
-          ctx.font = '15px sans-serif'
+          // 换行绘制装备名+理由
           const displayText = item.reason ? `${item.name}（${item.reason}）` : item.name
-          ctx.fillText(displayText, 66, y)
-          y += 28
+          const textX = 66
+          const maxTextWidth = width - textX - 30 // 右边留 30px 间距
+          const used = wrapText(displayText, textX, y, maxTextWidth, 22, '15px sans-serif', '#333')
+          y += used + 6
         })
 
         y += 10
@@ -424,7 +447,7 @@ Page({
     })
   },
 
-  // 计算画布高度
+  // 计算画布高度（考虑文字换行，每项按 60px 估算）
   calculateCanvasHeight: function () {
     let height = 178 // 标题区域 + 提示文案
     const categories = ['must', 'suggest', 'noNeed']
@@ -432,11 +455,11 @@ Page({
       const items = this.data.equipment[key]
       if (items.length > 0) {
         height += 40 // 分类标题
-        height += items.length * 28 // 每项
+        height += items.length * 60 // 每项按 60px 估算（含换行+间距）
         height += 10 // 间距
       }
     })
-    height += 60 // 底部（增加分享提示文字高度）
+    height += 60 // 底部
     return height
   },
 
