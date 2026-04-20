@@ -1,18 +1,16 @@
 <!--pages/admin/admin.wxml-->
 <view class="admin-page">
 
-  <!-- 统一头部 -->
-  <view class="page-header">
-    <view class="page-header__statusbar" style="height: {{statusBarHeight}}px;"></view>
-    <view class="page-header__nav">
-      <view class="page-header__back" bindtap="onBack">
-        <text class="page-header__back-icon">{{lt}}</text>
-      </view>
-      <text class="page-header__title">后台管理</text>
-      <view class="page-header__spacer"></view>
+  <!-- 状态栏占位 -->
+  <view class="page-statusbar" style="height: {{statusBarHeight}}px;"></view>
+  <!-- 导航栏 -->
+  <view class="detail-nav">
+    <view class="detail-nav__back" bindtap="onBack">
+      <text class="detail-nav__back-icon">‹</text>
     </view>
+    <text class="detail-nav__title">后台管理</text>
+    <view class="detail-nav__spacer"></view>
   </view>
-  <view style="height: {{headerHeight}}px;"></view>
 
   <!-- 未登录：密码验证 -->
   <view class="login-wrap" wx:if="{{!isLoggedIn}}">

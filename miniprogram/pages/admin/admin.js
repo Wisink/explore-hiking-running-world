@@ -13,7 +13,7 @@ function validatePasswordStrength(password) {
 
 Page({
   data: {
-    lt: '<',
+    // 状态栏高度
     statusBarHeight: 0,
     // 认证状态
     isLoggedIn: false,
@@ -108,8 +108,7 @@ Page({
 
   onLoad() {
     this.setData({
-      statusBarHeight: wx.getSystemInfoSync().statusBarHeight,
-      headerHeight: wx.getSystemInfoSync().statusBarHeight + 44
+      statusBarHeight: wx.getSystemInfoSync().statusBarHeight
     })
     // 双重保护：先验证管理员身份
     wx.cloud.callFunction({
