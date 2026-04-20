@@ -55,12 +55,44 @@ page {
   color: var(--text2);
 }
 
-/* ===== 状态栏 ===== */
-.statusbar-bg {
+/* ===== 固定顶部栏 ===== */
+.route-fixed-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 999;
   background: linear-gradient(135deg,
     rgba(129, 199, 132, 0.5) 0%,
     rgba(76, 175, 80, 0.4) 100%
   );
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.route-fixed-bar__statusbar {
+  /* 高度由 JS 动态设置 */
+}
+
+.route-fixed-bar__nav {
+  display: flex;
+  align-items: center;
+  height: 88rpx;
+  padding: 0 24rpx;
+}
+
+.route-back {
+  width: 60rpx;
+  height: 88rpx;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.route-back__icon {
+  font-size: 36rpx;
+  color: #fff;
+  font-weight: 300;
 }
 
 /* ===== 离线提示条 ===== */
@@ -97,24 +129,6 @@ page {
   height: 60%;
   background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.5) 100%);
   pointer-events: none;
-}
-
-/* 返回按钮 — 无背景色 */
-.hero-section__back {
-  position: absolute;
-  top: calc(20rpx + env(safe-area-inset-top));
-  left: 24rpx;
-  width: 72rpx;
-  height: 72rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.hero-section__back-icon {
-  font-size: 36rpx;
-  color: #fff;
-  font-weight: 300;
 }
 
 /* 右上角操作按钮 */

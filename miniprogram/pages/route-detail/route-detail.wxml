@@ -1,8 +1,16 @@
 <!--pages/route-detail/route-detail.wxml - 新版毛玻璃设计 v2.0-->
 <view class="detail-page">
 
-  <!-- 状态栏占位 -->
-  <view class="statusbar-bg" style="height: {{statusBarHeight}}px;"></view>
+  <!-- 固定顶部：状态栏 + 返回按钮 -->
+  <view class="route-fixed-bar">
+    <view class="route-fixed-bar__statusbar" style="height: {{statusBarHeight}}px;"></view>
+    <view class="route-fixed-bar__nav">
+      <view class="route-back" bindtap="onBack">
+        <text class="route-back__icon">{{lt}}</text>
+      </view>
+    </view>
+  </view>
+  <view style="height: {{headerHeight}}px;"></view>
 
   <!-- Loading -->
   <view class="loading-wrap" wx:if="{{loading}}">
@@ -20,19 +28,14 @@
 
   <!-- 1. 封面图区域 -->
   <view class="hero-section">
-    <image 
-      class="hero-section__img" 
-      src="{{trail.images[0]}}" 
+    <image
+      class="hero-section__img"
+      src="{{trail.images[0]}}"
       mode="aspectFill"
       bindtap="onPreviewImage"
       data-src="{{trail.images[0]}}"
     />
     <view class="hero-section__overlay"></view>
-    
-    <!-- 左上角返回按钮 -->
-    <view class="hero-section__back" bindtap="onBack">
-      <text class="hero-section__back-icon">{{lt}}</text>
-    </view>
     
     <!-- 底部叠加信息 -->
     <view class="hero-section__info">
