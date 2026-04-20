@@ -24,3 +24,14 @@ miniprogram/miniprogram_npm/
 # Temporary
 *.tmp
 *.temp
+
+# Backup files
+*.bak
+*.bak.*
+backup-*/
+
+# Large data files (scripts should read from /data/ at root)
+miniprogram/data/routes-data.js
+miniprogram/data/routes.json
+miniprogram/data/articles_import.json
+miniprogram/data/articles_import_array.json

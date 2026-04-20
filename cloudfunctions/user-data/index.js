@@ -128,14 +128,14 @@ async function syncFavorites(openid, favorites) {
       await db.runTransaction(async (txn) => {
         await txn.collection('routes').doc(routeId).update({ data: { favoriteCount: _.inc(1) } })
       })
-    } catch (e) { console.error('sync-fav inc txn error:', e) }
+    } catch (e) { console.error('sync-fav inc txn error:', e); throw e; }
   }
   for (const routeId of removed) {
     try {
       await db.runTransaction(async (txn) => {
         await txn.collection('routes').doc(routeId).update({ data: { favoriteCount: _.inc(-1) } })
       })
-    } catch (e) { console.error('sync-fav dec txn error:', e) }
+    } catch (e) { console.error('sync-fav dec txn error:', e); throw e; }
   }
 
   return { code: 0, message: '收藏同步成功' }
@@ -182,7 +182,7 @@ async function syncCompleted(openid, completed) {
         await db.runTransaction(async (txn) => {
           await txn.collection('routes').doc(routeId).update({ data: { completedCount: _.inc(delta) } })
         })
-      } catch (e) { console.error('sync-completed txn count error:', e) }
+      } catch (e) { console.error('sync-completed txn count error:', e); throw e; }
     }
   }
 
@@ -221,7 +221,7 @@ async function addFavorite(openid, routeId) {
       await db.runTransaction(async (txn) => {
         await txn.collection('routes').doc(routeId).update({ data: { favoriteCount: _.inc(1) } })
       })
-    } catch (e) { console.error('更新收藏计数失败:', e) }
+    } catch (e) { console.error('更新收藏计数失败:', e); throw e; }
   } else {
     const userDataDocId = res.data[0]._id
     const currentFavorites = res.data[0].favorites || []
@@ -246,7 +246,7 @@ async function addFavorite(openid, routeId) {
             await txn.collection('routes').doc(routeId).update({ data: { favoriteCount: _.inc(1) } })
           }
         })
-      } catch (e2) { console.error('更新收藏计数失败(重试):', e2) }
+      } catch (e2) { console.error('更新收藏计数失败(重试):', e2); throw e2; }
     }
   }
 
@@ -285,7 +285,7 @@ async function removeFavorite(openid, routeId) {
       if (wasFavorited) {
         await db.collection('routes').doc(routeId).update({ data: { favoriteCount: _.inc(-1) } })
       }
-    } catch (e2) { console.error('取消收藏降级更新失败:', e2) }
+    } catch (e2) { console.error('取消收藏降级更新失败:', e2); throw e2; }
   }
 
   return { code: 0, message: '取消收藏成功' }
@@ -311,7 +311,7 @@ async function addCompleted(openid, routeId, date, note, weather, feeling, diffi
       await db.runTransaction(async (txn) => {
         await txn.collection('routes').doc(routeId).update({ data: { completedCount: _.inc(1) } })
       })
-    } catch (e) { console.error('更新已走过计数失败:', e) }
+    } catch (e) { console.error('更新已走过计数失败:', e); throw e; }
   } else {
     const existing = res.data[0].completed || []
     const duplicate = existing.some(item => item.routeId === routeId && item.date === completedDate)
@@ -333,7 +333,7 @@ async function addCompleted(openid, routeId, date, note, weather, feeling, diffi
           })
           await txn.collection('routes').doc(routeId).update({ data: { completedCount: _.inc(1) } })
         })
-      } catch (e2) { console.error('更新已走过计数失败(重试):', e2) }
+      } catch (e2) { console.error('更新已走过计数失败(重试):', e2); throw e2; }
     }
   }
 
@@ -366,7 +366,7 @@ async function removeCompleted(openid, routeId) {
         data: { completed: newCompleted, updatedAt: db.serverDate() }
       })
       await db.collection('routes').doc(routeId).update({ data: { completedCount: _.inc(-removedCount) } })
-    } catch (e2) { console.error('删除已走过降级更新失败:', e2) }
+    } catch (e2) { console.error('删除已走过降级更新失败:', e2); throw e2; }
   }
 
   return { code: 0, message: '删除成功' }

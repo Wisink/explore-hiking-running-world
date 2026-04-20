@@ -154,7 +154,9 @@ exports.main = async (event) => {
         safeTip: doc.safeTip, suitable: doc.suitable
       }}
     }
-  } catch (e) {}
+  } catch (e) {
+    console.error('[weather] Database query failed:', e.message)
+  }
 
   const r = await getWeatherWithFallback(city)
   if (!r) return getDefaultWeather()

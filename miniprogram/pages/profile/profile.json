@@ -1,6 +1,6 @@
 {
   "usingComponents": {
-    "route-card": "/pages/routes/components/route-card/route-card"
+    "route-card": "/components/route-card/route-card"
   },
   "navigationBarTitleText": "个人中心",
   "enablePullDownRefresh": true,
