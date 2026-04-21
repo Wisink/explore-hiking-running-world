@@ -50,9 +50,8 @@ Page({
     this.loadChecklist()
   },
 
-  // 加载清单数据（优先使用智能推荐，降级为默认装备）
+  // 加载清单数据（优先缓存秒开，后台静默刷新）
   loadChecklist: function () {
-    // 先尝试从缓存恢复勾选状态
     const cacheKey = `checklist_${this.data.trailId}`
     const cachedChecked = wx.getStorageSync(cacheKey) || {}
 
@@ -61,8 +60,82 @@ Page({
       return
     }
 
-    // 调用智能推荐云函数（带重试）
-    this._callRecommendation(cachedChecked, 2) // 最多重试2次
+    // 尝试从缓存恢复推荐结果（秒开）
+    const recCacheKey = `recommendation_${this.data.trailId}`
+    const recCache = wx.getStorageSync(recCacheKey)
+    const CACHE_TTL = 3600000 // 1小时
+    const now = Date.now()
+
+    if (recCache && recCache.data && (now - recCache.timestamp < CACHE_TTL)) {
+      // 缓存命中 → 立即展示
+      const data = recCache.data
+      const equipment = {
+        must: (data.must || []).map(item => ({
+          name: item.icon ? `${item.icon} ${item.name}` : item.name,
+          reason: item.reason || ''
+        })),
+        suggest: (data.suggested || []).map(item => ({
+          name: item.icon ? `${item.icon} ${item.name}` : item.name,
+          reason: item.reason || ''
+        })),
+        noNeed: (data.notNeeded || []).map(item => ({
+          name: item.icon ? `${item.icon} ${item.name}` : item.name,
+          reason: item.reason || ''
+        }))
+      }
+      this.setData({
+        trailName: data.trailName || this.data.trailName,
+        weatherDesc: data.weather || '',
+        loading: false
+      })
+      this.processEquipment(equipment, cachedChecked)
+
+      // 后台静默刷新（不阻塞UI）
+      this._backgroundRefresh(cachedChecked)
+      return
+    }
+
+    // 无缓存 → 正常加载
+    this._callRecommendation(cachedChecked, 2)
+  },
+
+  // 后台静默刷新推荐结果
+  _backgroundRefresh: function (cachedChecked) {
+    wx.cloud.callFunction({
+      name: 'getRecommendation',
+      data: { trailId: this.data.trailId },
+      success: (res) => {
+        if (res.result && res.result.code === 0 && res.result.data) {
+          const data = res.result.data
+          // 更新缓存
+          wx.setStorageSync(`recommendation_${this.data.trailId}`, {
+            data: data,
+            timestamp: Date.now()
+          })
+          // 更新UI（仅在数据有变化时）
+          const equipment = {
+            must: (data.must || []).map(item => ({
+              name: item.icon ? `${item.icon} ${item.name}` : item.name,
+              reason: item.reason || ''
+            })),
+            suggest: (data.suggested || []).map(item => ({
+              name: item.icon ? `${item.icon} ${item.name}` : item.name,
+              reason: item.reason || ''
+            })),
+            noNeed: (data.notNeeded || []).map(item => ({
+              name: item.icon ? `${item.icon} ${item.name}` : item.name,
+              reason: item.reason || ''
+            }))
+          }
+          this.setData({
+            trailName: data.trailName || this.data.trailName,
+            weatherDesc: data.weather || ''
+          })
+          this.processEquipment(equipment, cachedChecked)
+        }
+      },
+      fail: () => { /* 静默失败，已有缓存兜底 */ }
+    })
   },
 
   // 带重试的装备推荐请求
@@ -87,11 +160,16 @@ Page({
               reason: item.reason || ''
             }))
           }
-      this.setData({
-        trailName: data.trailName || this.data.trailName,
-        weatherDesc: data.weather || '',
-        loading: false
-      })
+          this.setData({
+            trailName: data.trailName || this.data.trailName,
+            weatherDesc: data.weather || '',
+            loading: false
+          })
+          // 写入本地缓存
+          wx.setStorageSync(`recommendation_${this.data.trailId}`, {
+            data: data,
+            timestamp: Date.now()
+          })
           this.processEquipment(equipment, cachedChecked)
         } else if (retriesLeft > 0) {
           setTimeout(() => this._callRecommendation(cachedChecked, retriesLeft - 1), 500)

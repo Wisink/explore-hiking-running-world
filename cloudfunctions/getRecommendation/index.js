@@ -1,4 +1,5 @@
 const cloud = require('wx-server-sdk')
+const https = require('https')
 
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
@@ -12,6 +13,45 @@ function getSeason(month) {
   if (month >= 6 && month <= 8) return 'summer'
   if (month >= 9 && month <= 11) return 'autumn'
   return 'winter'
+}
+
+/** 直接调用 wttr.in 获取天气（避免云函数间调用冷启动） */
+async function fetchWeatherDirect(location) {
+  const url = `https://wttr.in/${encodeURIComponent(location)}?format=j1`
+  return new Promise((resolve) => {
+    const timeout = setTimeout(() => {
+      console.warn('[getRecommendation] wttr.in 超时')
+      resolve(null)
+    }, 6000)
+    https.get(url, { headers: { 'User-Agent': 'WeChat-MiniApp' } }, (res) => {
+      let data = ''
+      res.on('data', chunk => { data += chunk })
+      res.on('end', () => {
+        clearTimeout(timeout)
+        try {
+          const w = JSON.parse(data)
+          const c = w.current_condition && w.current_condition[0]
+          if (!c) { resolve(null); return }
+          const desc = c.weatherDesc && c.weatherDesc[0] && c.weatherDesc[0].value || 'Clear'
+          const windKmph = parseFloat(c.windspeedKmph || 0)
+          resolve({
+            temp: c.temp_C,
+            desc: desc,
+            humidity: c.humidity + '%',
+            wind: Math.max(1, Math.round(windKmph / 8)) + '级',
+            icon: ''
+          })
+        } catch (e) {
+          console.warn('[getRecommendation] wttr.in 解析失败:', e.message)
+          resolve(null)
+        }
+      })
+    }).on('error', (e) => {
+      clearTimeout(timeout)
+      console.warn('[getRecommendation] wttr.in 请求失败:', e.message)
+      resolve(null)
+    })
+  })
 }
 
 /** 保守原则：同 priority 时取更高级别的推荐等级 */
@@ -168,7 +208,7 @@ async function recommend(trailId) {
     throw new Error('路线查询失败: ' + e.message)
   }
 
-  // 第二步：获取天气数据
+  // 第二步：获取天气数据（内联调用 wttr.in，避免云函数间调用冷启动）
   let weather = {
     temperature: 20, rain: false, rainLevel: 0, rainChance: 0,
     windSpeed: 2, uvIndex: 0, snow: false, humidity: 50,
@@ -177,29 +217,21 @@ async function recommend(trailId) {
   let weatherDesc = '天气数据暂不可用'
 
   try {
-    // 优先使用路线经纬度获取天气
     const lat = trail.location && trail.location.lat
     const lng = trail.location && trail.location.lng
+    let weatherData = null
 
-    let weatherResult
     if (lat && lng) {
-      // 调用天气云函数，传入经纬度
-      weatherResult = await cloud.callFunction({
-        name: 'weather',
-        data: { lat, lng, type: 'byLocation' }
-      })
-    } else {
-      // 降级：按城市获取
-      weatherResult = await cloud.callFunction({
-        name: 'weather',
-        data: { city: '西安' }
-      })
+      // 直接调用 wttr.in（免费，支持经纬度，无需API Key）
+      weatherData = await fetchWeatherDirect(`${lat},${lng}`)
+    }
+    if (!weatherData) {
+      weatherData = await fetchWeatherDirect('西安')
     }
 
-    if (weatherResult && weatherResult.result && weatherResult.result.code === 0) {
-      const w = weatherResult.result.data
-      weather = normalizeWeather(w)
-      weatherDesc = `${w.icon || ''} ${w.desc || '晴'} ${w.temp || '--'}°C`
+    if (weatherData) {
+      weather = normalizeWeather(weatherData)
+      weatherDesc = `${weatherData.icon || ''} ${weatherData.desc || '晴'} ${weatherData.temp || '--'}°C`
     }
   } catch (e) {
     console.error('[getRecommendation] 天气获取失败:', e.message)
