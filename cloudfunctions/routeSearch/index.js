@@ -237,6 +237,74 @@ function parseRouteInfo(searchResults, routeName) {
     }
   }
 
+  // ===== 花/果子/时令提取 =====
+  const flowerFruitDetails = []
+  const flowerFruitPatterns = [
+    // 花类：X月+赏+花名
+    { re: /(\d{1,2})月\s*(?:赏|观|看|赏)\s*(白鹃梅|紫荆花|紫荆|桃花|杏花|牡丹|杜鹃|山茱萸|连翘|油菜花|樱花|梨花|山花)/g, fmt: '{1}月赏{2}' },
+    { re: /(?:赏|看|观)\s*(白鹃梅|紫荆花|紫荆|桃花|杏花|牡丹|杜鹃|山茱萸|连翘|油菜花|樱花|梨花)\s*(?:最佳)?(?:时间)?[是为：]?\s*(\d{1,2})\s*[-~至到]\s*(\d{1,2})月/g, fmt: '{2}-{3}月赏{1}' },
+    { re: /(白鹃梅|紫荆花|紫荆|桃花|杏花|牡丹|杜鹃|山茱萸|连翘|油菜花|樱花|梨花|山花)\s*(?:盛开|绽放|漫山|满山|遍布|花期)/g, fmt: '{1}' },
+    // 花类：季节+花名
+    { re: /(?:春天|春季|3月|4月|5月)\s*(?:赏|看)?\s*(白鹃梅|紫荆花|紫荆|桃花|杏花|牡丹|杜鹃|山茱萸|连翘|油菜花|樱花|梨花)/g, fmt: '春季赏{1}' },
+    { re: /(白鹃梅|紫荆花|紫荆|桃花|杏花|牡丹|杜鹃|山茱萸|连翘|油菜花|樱花|梨花)\s*(?:春天|春季|3月|4月|5月)/g, fmt: '春季赏{1}' },
+    // 果子类
+    { re: /(?:捡|摘|采)\s*(板栗|栗子|核桃|猕猴桃|柿子|桑葚|野果|山楂|五味子)/g, fmt: '捡{1}' },
+    { re: /(板栗|栗子|核桃|猕猴桃|柿子|桑葚|野果|山楂|五味子)\s*(?:季节|成熟|收获|遍地|满地)/g, fmt: '{1}' },
+    { re: /(\d{1,2})月\s*(?:可以|能)?\s*(?:捡|摘|采)\s*(板栗|栗子|核桃|猕猴桃|柿子|桑葚|野果|山楂)/g, fmt: '{1}月捡{2}' },
+    // 红叶季节
+    { re: /(\d{1,2})\s*[-~至到]\s*(\d{1,2})月\s*(?:赏|看|观赏)\s*(红叶|秋色|枫叶)/g, fmt: '{1}-{2}月赏{3}' },
+    // 银杏
+    { re: /(\d{1,2})月\s*(?:赏|看|观赏)?\s*(银杏)/g, fmt: '{1}月赏{2}' },
+    { re: /(银杏)\s*(?:金黄|变黄|观赏期)/g, fmt: '{1}' },
+    // 瀑布季节
+    { re: /(夏季|夏天|雨季|6月|7月|8月)\s*(?:瀑布|壮观)/g, fmt: '夏季瀑布壮观' }
+  ]
+  for (const fp of flowerFruitPatterns) {
+    let m
+    const re = new RegExp(fp.re.source, fp.re.flags)
+    while ((m = re.exec(allText)) !== null) {
+      let item = fp.fmt
+      for (let i = 1; i < m.length; i++) {
+        item = item.replace('{' + i + '}', m[i])
+      }
+      if (!flowerFruitDetails.includes(item)) {
+        flowerFruitDetails.push(item)
+      }
+    }
+  }
+
+  // ===== 历史文化底蕴提取 =====
+  const historyDetails = []
+  const historyPatterns = [
+    // 人文典故
+    { re: /(韩愈|李白|杜甫|白居易|王维|司马迁|汉武帝|秦始皇|刘邦|刘仲)\s*([^。，,\n]{5,50})/, fmt: '{1}{2}' },
+    { re: /([^。，,\n]{0,30})(韩愈|李白|杜甫|白居易|王维|司马迁|汉武帝|秦始皇)\s*([^。，,\n]{5,30})/, fmt: '{2}{3}' },
+    // 历史事件/典故
+    { re: /(烽火戏诸侯|丝绸之路|秦直道|古驿道|茶马古道|蓝关古道|子午道|褒斜道)/g, fmt: '{1}' },
+    { re: /([^。，,\n]{5,40})(遗址|故里|故城|古战场|兵谏亭|华清宫|大明宫)/g, fmt: '{0}' },
+    // 寺庙文化
+    { re: /(华严宗|律宗|净土宗|三论宗|密宗|禅宗)\s*(?:祖庭|发源地)/g, fmt: '{1}祖庭' },
+    { re: /([^。，,\n]{3,20}(?:寺|庙|庵|观))\s*(?:始建于|创建于|唐代|宋代|隋代|明代|千年)/g, fmt: '{1}' },
+    // 名人诗句
+    { re: /(?:云横秦岭家何在|长安一片月|明月松间照|行到水穷处)/g, fmt: '' }
+  ]
+  for (const hp of historyPatterns) {
+    let m
+    const re = new RegExp(hp.source, hp.flags)
+    while ((m = re.exec(allText)) !== null) {
+      let item = hp.fmt
+      for (let i = 1; i < m.length; i++) {
+        item = item.replace('{' + i + '}', m[i])
+      }
+      item = item.replace(/\{0\}/, m[0])
+      // 清理多余符号
+      item = item.replace(/^[,，\s]+|[,，\s]+$/g, '').trim()
+      if (item && item.length >= 6 && item.length <= 60 && !historyDetails.some(h => h.includes(item) || item.includes(h))) {
+        historyDetails.push(item)
+      }
+    }
+  }
+
   // ===== 距离提取 =====
   const distPatterns = [
     /(?:全程|全程约|全程共计|总长|长度|距离)(?:约|大约)?\s*(\d+(?:\.\d+)?)\s*(?:公里|km|KM)/,
@@ -398,7 +466,7 @@ function parseRouteInfo(searchResults, routeName) {
   // 构建结构化描述
   const descParts = []
 
-  // 第一段：路线概述（核心特色+定位）
+  // 第一段：路线概述（核心特色 + 历史底蕴）
   const overview = []
   if (featurePool.length > 0) {
     overview.push(featurePool.slice(0, 4).join('、'))
@@ -411,12 +479,16 @@ function parseRouteInfo(searchResults, routeName) {
   }
   if (overview.length > 0) descParts.push(overview.join('。'))
 
-  // 第二段：路线详情
+  // 第二段：历史底蕴（如有）
+  if (historyDetails.length > 0) {
+    descParts.push(historyDetails.slice(0, 3).join('。'))
+  }
+
+  // 第三段：路线详情（含数字）
   const detailParts = []
   if (routeSentences.length > 0) {
     detailParts.push(routeSentences.slice(0, 2).join('。'))
   }
-  // 补充数字信息
   const statParts = []
   if (info.distance) statParts.push(`全程约${info.distance}公里`)
   if (info.elevationGain) statParts.push(`累计爬升${info.elevationGain}米`)
@@ -431,14 +503,19 @@ function parseRouteInfo(searchResults, routeName) {
   }
   if (detailParts.length > 0) descParts.push(detailParts.join('。'))
 
-  // 第三段：景观描述（补充更多景观信息）
+  // 第四段：景观描述 + 时令花果
+  const sceneryParts = []
   if (scenerySentences.length > 1) {
-    descParts.push(scenerySentences.slice(1, 3).join('。'))
+    sceneryParts.push(scenerySentences.slice(1, 3).join('。'))
   }
+  if (flowerFruitDetails.length > 0) {
+    sceneryParts.push(flowerFruitDetails.slice(0, 4).join('、'))
+  }
+  if (sceneryParts.length > 0) descParts.push(sceneryParts.join('。'))
 
-  // 第四段：交通方式
+  // 第五段：交通（一句话）
   if (trafficSentences.length > 0) {
-    descParts.push(trafficSentences.slice(0, 2).join('。'))
+    descParts.push(trafficSentences[0])
   }
 
   info.fullDesc = descParts.join('。').substring(0, 800)
