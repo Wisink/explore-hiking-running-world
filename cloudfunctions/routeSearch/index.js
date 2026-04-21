@@ -665,7 +665,7 @@ exports.main = async (event, context) => {
       const { name } = params
       if (!name) return fail('路线名称不能为空')
 
-      // 多轮查询：覆盖攻略、景观、交通、历史文化、花果季节
+      // 多轮查询：覆盖攻略、景观、交通、历史文化、花果季节（并行执行）
       const queries = [
         `${name} 徒步攻略 距离 海拔`,
         `${name} 风景 景色 特色`,
@@ -673,18 +673,19 @@ exports.main = async (event, context) => {
         `${name} 花 季节 果子 红叶`
       ]
 
+      const searchResults = await Promise.all(
+        queries.map(q => smartSearch(q, 5).catch(e => {
+          console.log(`[routeSearch] 搜索"${q}"失败:`, e.message)
+          return { results: [], source: '' }
+        }))
+      )
+
       let allResults = []
       let searchSource = ''
-
-      for (const q of queries) {
-        try {
-          const res = await smartSearch(q, 5)
-          if (res.results && res.results.length > 0) {
-            allResults = allResults.concat(res.results)
-            if (!searchSource) searchSource = res.source
-          }
-        } catch (e) {
-          console.log(`[routeSearch] 搜索"${q}"失败:`, e.message)
+      for (const res of searchResults) {
+        if (res.results && res.results.length > 0) {
+          allResults = allResults.concat(res.results)
+          if (!searchSource) searchSource = res.source
         }
       }
 
