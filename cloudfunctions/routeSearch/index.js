@@ -198,9 +198,60 @@ function parseRouteInfo(searchResults, routeName) {
     _searchResults: searchResults
   }
 
-  // 合并所有搜索文本（去重处理，避免重复内容）
-  const allTexts = searchResults.map(r => ((r.title || '') + ' ' + (r.content || '')).trim()).filter(t => t)
+  // ===== 严格过滤噪音句子 =====
+  // 噪音模式：攻略目录、分步指引、博主废话、搜索元数据
+  const noisePatterns = [
+    // 攻略目录/分节标题
+    /^[一二三四五六七八九十\d]+[、.．]\s*/,
+    /^第[一二三四五六七八九十\d]+[段步天部分]\s*/,
+    /^\(\d+\)\s*/,
+    /^\d+[、.]\s*/,
+    // 分步指引
+    /^从\w+出发|^沿着|^一直走|^继续走|^来到|^走到|^经过|^看到/,
+    /^建议|^推荐|^注意|^提醒|^温馨提示/,
+    // 博主废话
+    /我就不说了|大家可以|大家都能|感兴趣的|据说|听说|网上|各种版本/,
+    /关注|点赞|收藏|转发|分享|评论|攻略里|博主|作者|版权所有/,
+    /这篇文章|本攻略|本帖|本文|上一篇|下一篇|点击查看/,
+    // 搜索元数据
+    /抖音|小红书|知乎|百度|大众点评|携程|马蜂窝/,
+    /详情点击|点击了解|更多内容|完整版/,
+    // 无关信息
+    /门票|收费|价格|团购|优惠|预约|开放时间/
+  ]
+
+  // 合并所有搜索文本（去重处理）
+  const allTexts = searchResults
+    .map(r => ((r.title || '') + ' ' + (r.content || '')).trim())
+    .filter(t => t)
   const allText = allTexts.join('\n')
+
+  // 提取干净的关键句子
+  const cleanSentences = []
+  for (const text of allTexts) {
+    const sentences = text.split(/[。！？；\n]/)
+      .map(s => s.trim())
+      .filter(s => s.length >= 10 && s.length <= 80)
+
+    let added = 0
+    for (const s of sentences) {
+      if (added >= 4) break
+
+      // 严格过滤
+      const isNoise = noisePatterns.some(p => p.test && p.test(s))
+      if (isNoise) continue
+
+      // 过滤纯数字/格式化内容
+      if (/^[约\d\s米公里km%]+$/i.test(s)) continue
+
+      // 骨架去重
+      const skeleton = s.replace(/\d+/g, '#').replace(/\s+/g, '')
+      if (cleanSentences.some(cs => cs.skeleton === skeleton)) continue
+
+      cleanSentences.push({ text: s, skeleton })
+      added++
+    }
+  }
 
   // 提取核心特征关键词（用于生成简介和描述）
   const featurePool = []
@@ -396,114 +447,66 @@ function parseRouteInfo(searchResults, routeName) {
     info.name = cleanName
   }
 
-  // ===== 一句话简介：提炼路线核心亮点（≤30字）=====
-  // 优先从搜索结果中找一句描述性的话
+  // ===== 一句话简介：从干净句子中提炼（≤35字）=====
   let hookSentence = ''
-  const descSentences = allText.split(/[。！？\n]/).map(s => s.trim()).filter(s =>
-    s.length >= 8 && s.length <= 40 &&
-    !/攻略|下载|APP|微信|关注|点赞|转发|评论|搜索/.test(s)
-  )
-
-  // 找包含特征关键词的短句
-  for (const s of descSentences) {
-    if (featurePool.some(f => s.includes(f.replace(/\d+米?\d*/g, '')))) {
-      hookSentence = s.replace(/^路线|^这条线|^本条线|^其特色是|^特色[是为：]/, '').trim()
+  // 优先找包含特征关键词的短句
+  for (const cs of cleanSentences) {
+    if (featurePool.some(f => cs.text.includes(f.replace(/\d+米?\d*/g, '')))) {
+      hookSentence = cs.text.replace(/^路线|^这条线|^本条线|^特色[是为：]/, '').trim()
       break
     }
   }
-
   // 降级：用特征关键词拼接
   if (!hookSentence && featurePool.length > 0) {
     hookSentence = featurePool.slice(0, 3).join('，')
   }
   if (!hookSentence) {
-    // 从搜索结果取第一句有意义的
-    const firstValid = descSentences.find(s => s.length >= 10)
-    hookSentence = firstValid ? firstValid.substring(0, 30) : '适合休闲徒步的自然路线'
+    const firstValid = cleanSentences.find(cs => cs.text.length >= 10)
+    hookSentence = firstValid ? firstValid.text.substring(0, 30) : '适合休闲徒步的自然路线'
   }
   info.shortDesc = hookSentence.substring(0, 35)
 
-  // ===== 详细描述：结构化完整描述（≤800字）=====
-  // 收集去重的关键句子
-  const allKeySentences = []
-  for (const text of allTexts) {
-    const sentences = text.split(/[。！？；\n]/)
-      .map(s => s.trim())
-      .filter(s =>
-        s.length >= 10 && s.length <= 100 &&
-        !/攻略|下载|APP|微信|关注|点赞|转发|评论|搜索|版权所有|免责|广告|推荐|本文|作者|来源|编辑/.test(s) &&
-        !/^其|^该|^这个|^这是|^目前/.test(s)
-      )
-    let added = 0
-    for (const s of sentences) {
-      if (added >= 3) break
-      const skeleton = s.replace(/\d+/g, '#')
-      if (!allKeySentences.some(ks => ks.replace(/\d+/g, '#') === skeleton)) {
-        allKeySentences.push(s)
-        added++
-      }
-    }
-  }
+  // ===== 按主题分类干净句子 =====
+  const scenerySentences = []
+  const routeSentences = []
+  const trafficSentences = []
+  const otherSentences = []
 
-  // 按主题分类句子
-  const scenerySentences = []    // 景观特色
-  const routeSentences = []      // 路线描述
-  const trafficSentences = []    // 交通信息
-  const otherSentences = []      // 其他
-
-  for (const s of allKeySentences) {
-    if (/瀑布|溪流|峡谷|草甸|丹霞|红叶|花海|竹林|石窟|古寺|溶洞|云海|银杏|湿地|石桥|古道|奇石|古村|湖泊|天池|瀑布/.test(s)) {
+  for (const cs of cleanSentences) {
+    const s = cs.text
+    if (/瀑布|溪流|峡谷|草甸|丹霞|红叶|花海|竹林|石窟|古寺|溶洞|云海|银杏|湿地|石桥|古道|奇石|古村|湖泊|天池/.test(s)) {
       scenerySentences.push(s)
-    } else if (/公里|千米|爬升|海拔|山路|步道|台阶|平缓|陡峭|泥泞|穿越|环线|原返|出发|起点|终点|耗时|用时/.test(s)) {
+    } else if (/公里|千米|爬升|海拔|山路|步道|台阶|平缓|陡峭|穿越|环线|原返|起点|终点|耗时|用时/.test(s)) {
       routeSentences.push(s)
-    } else if (/自驾|导航|地铁|公交|高速|停车|出发|从西安|开车/.test(s)) {
+    } else if (/自驾|导航|地铁|公交|高速|停车/.test(s)) {
       trafficSentences.push(s)
     } else {
       otherSentences.push(s)
     }
   }
 
-  // 构建结构化描述
+  // ===== 构建有审美的详细描述（≤600字）=====
+  // 用自然语言串联所有要素，不是机械拼接
   const descParts = []
 
-  // 第一段：路线概述（核心特色 + 历史底蕴）
-  const overview = []
-  if (featurePool.length > 0) {
-    overview.push(featurePool.slice(0, 4).join('、'))
-  }
+  // 第一段：路线定位 + 核心景观
+  const introLines = []
   if (scenerySentences.length > 0) {
-    overview.push(scenerySentences[0])
+    introLines.push(scenerySentences[0])
+  } else if (featurePool.length > 0) {
+    introLines.push(featurePool.slice(0, 3).join('、'))
   }
   if (otherSentences.length > 0) {
-    overview.push(otherSentences[0])
+    introLines.push(otherSentences[0])
   }
-  if (overview.length > 0) descParts.push(overview.join('。'))
+  if (introLines.length > 0) descParts.push(introLines.join('。'))
 
-  // 第二段：历史底蕴（如有）
+  // 第二段：历史底蕴（有则写，无则跳过）
   if (historyDetails.length > 0) {
-    descParts.push(historyDetails.slice(0, 3).join('。'))
+    descParts.push(historyDetails.slice(0, 2).join('。'))
   }
 
-  // 第三段：路线详情（含数字）
-  const detailParts = []
-  if (routeSentences.length > 0) {
-    detailParts.push(routeSentences.slice(0, 2).join('。'))
-  }
-  const statParts = []
-  if (info.distance) statParts.push(`全程约${info.distance}公里`)
-  if (info.elevationGain) statParts.push(`累计爬升${info.elevationGain}米`)
-  if (info.elevationMax) statParts.push(`最高海拔${info.elevationMax}米`)
-  if (info.durationMin && info.durationMax) {
-    statParts.push(info.durationMin === info.durationMax
-      ? `预计耗时${info.durationMin}小时`
-      : `预计耗时${info.durationMin}-${info.durationMax}小时`)
-  }
-  if (statParts.length > 0) {
-    detailParts.push(statParts.join('，'))
-  }
-  if (detailParts.length > 0) descParts.push(detailParts.join('。'))
-
-  // 第四段：景观描述 + 时令花果
+  // 第三段：景观展开 + 时令花果
   const sceneryParts = []
   if (scenerySentences.length > 1) {
     sceneryParts.push(scenerySentences.slice(1, 3).join('。'))
@@ -513,7 +516,26 @@ function parseRouteInfo(searchResults, routeName) {
   }
   if (sceneryParts.length > 0) descParts.push(sceneryParts.join('。'))
 
-  // 第五段：交通（一句话）
+  // 第四段：路线参数（用自然语言）
+  const statParts = []
+  if (routeSentences.length > 0) {
+    statParts.push(routeSentences[0])
+  }
+  const numParts = []
+  if (info.distance) numParts.push(`全程约${info.distance}公里`)
+  if (info.elevationGain) numParts.push(`累计爬升${info.elevationGain}米`)
+  if (info.elevationMax) numParts.push(`最高海拔${info.elevationMax}米`)
+  if (info.durationMin && info.durationMax) {
+    numParts.push(info.durationMin === info.durationMax
+      ? `预计耗时${info.durationMin}小时`
+      : `预计耗时${info.durationMin}-${info.durationMax}小时`)
+  }
+  if (numParts.length > 0) {
+    statParts.push(numParts.join('，'))
+  }
+  if (statParts.length > 0) descParts.push(statParts.join('。'))
+
+  // 第五段：交通（一句话收尾）
   if (trafficSentences.length > 0) {
     descParts.push(trafficSentences[0])
   }
@@ -643,9 +665,12 @@ exports.main = async (event, context) => {
       const { name } = params
       if (!name) return fail('路线名称不能为空')
 
+      // 多轮查询：覆盖攻略、景观、交通、历史文化、花果季节
       const queries = [
-        `${name} 徒步攻略`,
-        `${name} 路线 距离 海拔`
+        `${name} 徒步攻略 距离 海拔`,
+        `${name} 风景 景色 特色`,
+        `${name} 交通 自驾 公交`,
+        `${name} 花 季节 果子 红叶`
       ]
 
       let allResults = []
