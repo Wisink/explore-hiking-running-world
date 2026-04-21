@@ -299,26 +299,38 @@ Page({
   onFavorite: async function () {
     const id = this.data.trailId
     const isFavorited = this.data.isFavorited
+    const name = this.data.trail ? this.data.trail.name : '该路线'
 
-    // 即时反馈
-    this.setData({ isFavorited: !isFavorited })
-
-    // 心形弹跳动画
-    wx.vibrateShort && wx.vibrateShort({ type: 'light' })
-    if (!isFavorited) {
-      this.setData({ showFavHint: true })
-    } else {
-      showNiceToast(this, '已取消收藏', 'info', 2000)
+    // 取消收藏 → 弹确认框
+    if (isFavorited) {
+      wx.showModal({
+        title: '取消收藏',
+        content: `你确认要取消收藏「${name}」吗？`,
+        confirmText: '确认取消',
+        confirmColor: '#FF4D4F',
+        success: async (res) => {
+          if (!res.confirm) return
+          this.setData({ isFavorited: false })
+          try {
+            await cloudSync.removeFavorite(id)
+            showNiceToast(this, '已取消收藏', 'success', 2000)
+            this._refreshRouteCounts()
+          } catch (err) {
+            console.error('取消收藏失败:', err)
+            showNiceToast(this, '操作失败', 'error', 2000)
+          }
+        }
+      })
+      return
     }
 
-    // 同步到云端
+    // 添加收藏 → 即时反馈
+    this.setData({ isFavorited: true })
+    wx.vibrateShort && wx.vibrateShort({ type: 'light' })
+    this.setData({ showFavHint: true })
+
     try {
-      if (!isFavorited) {
-        await cloudSync.addFavorite(id)
-      } else {
-        await cloudSync.removeFavorite(id)
-      }
-      // 收藏操作成功后，重新加载路线详情以刷新统计数字
+      await cloudSync.addFavorite(id)
       this._refreshRouteCounts()
     } catch (err) {
       console.error('收藏同步失败:', err)
@@ -1231,7 +1243,7 @@ Page({
       })
       // 延迟一帧再弹提示，确保面板关闭完成
       setTimeout(() => {
-        this.setData({ showSavedHint: true })
+        showNiceToast(this, isEditMode ? '✅ 记录已更新' : '✅ 记录已保存', 'success', 2000)
       }, 300)
       // 刷新已走过记录列表
       this.checkCompletedStatus()

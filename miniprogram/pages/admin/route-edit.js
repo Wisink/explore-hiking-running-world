@@ -228,9 +228,12 @@ Page({
       this.setData({ formChanged: true })
       // 启用手势返回确认（防误触丢失修改）
       if (wx.enableAlertBeforeUnload) {
-        wx.enableAlertBeforeUnload({
-          message: '内容已修改，离开将丢失修改，是否继续？'
-        }).catch(() => {})
+        try {
+          const ret = wx.enableAlertBeforeUnload({
+            message: '内容已修改，离开将丢失修改，是否继续？'
+          })
+          if (ret && ret.catch) ret.catch(() => {})
+        } catch (e) {}
       }
     }
   },

@@ -779,27 +779,46 @@ Page({
 
   // 收藏/取消收藏
   onFavoriteTap: async function (e) {
-    const id = e.currentTarget.dataset.id
-    const index = e.currentTarget.dataset.index
-    const isFavorited = this.data.routes[index].isFavorited
+    const route = e.detail.route
+    if (!route || !route._id) return
+    const id = route._id
+    const isFavorited = route.isFavorited || false
+    const name = route.name || '该路线'
 
-    // 更新列表状态（即时反馈）
-    const key = `routes[${index}].isFavorited`
-    this.setData({ [key]: !isFavorited })
-
-    if (!isFavorited) {
-      this.setData({ showFavHint: true })
-    } else {
-      showNiceToast(this, '已取消收藏', 'info', 2000)
+    // 取消收藏 → 弹确认框（与个人中心一致）
+    if (isFavorited) {
+      wx.showModal({
+        title: '取消收藏',
+        content: `你确认要取消收藏「${name}」吗？`,
+        confirmText: '确认取消',
+        confirmColor: '#FF4D4F',
+        success: async (res) => {
+          if (!res.confirm) return
+          // 即时更新UI
+          const index = this.data.routes.findIndex(r => r._id === id)
+          if (index >= 0) {
+            this.setData({ [`routes[${index}].isFavorited`]: false })
+          }
+          try {
+            await cloudSync.removeFavorite(id)
+            showNiceToast(this, '已取消收藏', 'success', 2000)
+          } catch (err) {
+            handleError(err, '取消收藏失败')
+          }
+        }
+      })
+      return
     }
 
-    // 同步到云端
+    // 添加收藏 → 即时反馈
+    const index = this.data.routes.findIndex(r => r._id === id)
+    if (index >= 0) {
+      this.setData({ [`routes[${index}].isFavorited`]: true })
+    }
+    this.setData({ showFavHint: true })
+
     try {
-      if (!isFavorited) {
-        await cloudSync.addFavorite(id)
-      } else {
-        await cloudSync.removeFavorite(id)
-      }
+      await cloudSync.addFavorite(id)
     } catch (err) {
       handleError(err, '收藏同步失败，请稍后重试')
     }
