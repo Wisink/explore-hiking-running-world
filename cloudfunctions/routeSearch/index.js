@@ -12,65 +12,34 @@ function fail(message = '操作失败', data = null) {
   return { code: -1, message, data }
 }
 
-// ===== 百度AI搜索API =====
-// 百度千帆AI搜索 endpoint
-const BAIDU_SEARCH_ENDPOINT = 'https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop/ai_search/v1/search'
-
-// 从云数据库 config 集合读取 API Key
-async function getBaiduApiKey() {
-  // 1. 优先从环境变量读取（本地调试用）
-  if (process.env.BAIDU_API_KEY) {
-    return process.env.BAIDU_API_KEY
-  }
-  // 2. 从云数据库 config 集合读取
+// ===== 云数据库读取配置 =====
+async function getConfig(key) {
   try {
-    const res = await db.collection('config').doc('baidu_search').get()
-    if (res.data && res.data.apiKey) {
-      return res.data.apiKey
-    }
+    const res = await db.collection('config').doc(key).get()
+    return res.data || null
   } catch (e) {
-    // config 文档不存在
+    return null
   }
-  throw new Error('百度搜索API Key未配置。请在云数据库config集合中添加文档 _id=baidu_search, apiKey=你的Key')
 }
 
-// ===== HTTPS 请求封装 =====
-function httpsPost(url, data) {
+// ===== HTTPS POST =====
+function httpsPost(url, data, headers = {}) {
   return new Promise((resolve, reject) => {
     const urlObj = new URL(url)
-    const postData = JSON.stringify(data)
+    const postData = typeof data === 'string' ? data : JSON.stringify(data)
+    const defaultHeaders = {
+      'Content-Type': 'application/json',
+      'Content-Length': Buffer.byteLength(postData)
+    }
     const options = {
       hostname: urlObj.hostname,
       path: urlObj.pathname + urlObj.search,
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Content-Length': Buffer.byteLength(postData)
-      },
+      headers: { ...defaultHeaders, ...headers },
       timeout: 15000
     }
 
     const req = https.request(options, (res) => {
-      let body = ''
-      res.on('data', chunk => { body += chunk })
-      res.on('end', () => {
-        try {
-          resolve(JSON.parse(body))
-        } catch (e) {
-          reject(new Error('百度API返回非JSON: ' + body.substring(0, 300)))
-        }
-      })
-    })
-    req.on('error', reject)
-    req.on('timeout', () => { req.destroy(); reject(new Error('请求超时')) })
-    req.write(postData)
-    req.end()
-  })
-}
-
-function httpsGet(url) {
-  return new Promise((resolve, reject) => {
-    const req = https.get(url, { timeout: 15000 }, (res) => {
       let body = ''
       res.on('data', chunk => { body += chunk })
       res.on('end', () => {
@@ -83,62 +52,109 @@ function httpsGet(url) {
     })
     req.on('error', reject)
     req.on('timeout', () => { req.destroy(); reject(new Error('请求超时')) })
+    req.write(postData)
+    req.end()
   })
 }
 
 // ===== 百度千帆AI搜索 =====
 async function baiduSearch(query, count = 5) {
-  const apiKey = await getBaiduApiKey()
-
-  // 千帆AI搜索接口
-  const url = `${BAIDU_SEARCH_ENDPOINT}?access_token=${apiKey}`
-
-  const payload = {
-    messages: [
-      { role: 'user', content: query }
-    ],
-    search_source: 'baidu_search_v1',
-    max_search_results: count
+  const config = await getConfig('baidu_search')
+  if (!config || !config.apiKey) {
+    throw new Error('百度搜索API Key未配置')
   }
 
-  // 尝试千帆接口，失败则回退到规则解析
-  try {
-    const res = await httpsPost(url, payload)
-    if (res && res.result) {
-      const ref = res.result.reference || []
-      return {
-        answer: res.result.answer || '',
-        results: ref.map(r => ({
-          title: r.title || '',
-          url: r.url || '',
-          content: r.content || ''
-        }))
-      }
-    }
-  } catch (e) {
-    console.log('[routeSearch] 千帆接口失败，尝试传统搜索:', e.message)
+  const url = 'https://qianfan.baidubce.com/v2/ai_search/web_search'
+  const requestBody = {
+    messages: [{ content: query, role: 'user' }],
+    search_source: 'baidu_search_v2',
+    resource_type_filter: [{ type: 'web', top_k: count }]
   }
 
-  // 回退：使用百度搜索建议API（无需额外Key）
-  return await baiduFallbackSearch(query, count)
+  const res = await httpsPost(url, requestBody, {
+    'Authorization': `Bearer ${config.apiKey}`,
+    'X-Appbuilder-From': 'qinren-outdoor'
+  })
+
+  if (res.code) {
+    throw new Error('百度搜索错误: ' + (res.message || JSON.stringify(res)))
+  }
+
+  return {
+    source: 'baidu',
+    results: (res.references || []).map(r => ({
+      title: r.title || '',
+      url: r.url || '',
+      content: r.content || r.snippet || ''
+    }))
+  }
 }
 
-// ===== 回退搜索方案 =====
-async function baiduFallbackSearch(query, count) {
-  const encodedQuery = encodeURIComponent(query + ' 徒步攻略 路线')
-  const url = `https://www.baidu.com/s?wd=${encodedQuery}&rn=${count}`
-
-  // 使用百度移动搜索API（更容易解析）
-  const mobileUrl = `https://m.baidu.com/su?action=opensearch&word=${encodedQuery}`
-
-  // 简单返回：让客户端使用搜索结果页面
-  // 实际部署时，这里应该用网页抓取服务
-  return {
-    answer: '',
-    results: [],
-    fallback: true,
-    searchUrl: `https://www.baidu.com/s?wd=${encodedQuery}`
+// ===== Tavily搜索 =====
+async function tavilySearch(query, count = 5) {
+  const config = await getConfig('tavily_search')
+  if (!config || !config.apiKey) {
+    throw new Error('Tavily API Key未配置')
   }
+
+  const requestBody = {
+    api_key: config.apiKey,
+    query: query,
+    max_results: count,
+    search_depth: 'basic',
+    include_answer: false,
+    include_images: false,
+    include_raw_content: false
+  }
+
+  const res = await httpsPost('https://api.tavily.com/search', requestBody)
+
+  if (res.detail) {
+    throw new Error('Tavily搜索错误: ' + JSON.stringify(res.detail))
+  }
+
+  return {
+    source: 'tavily',
+    results: (res.results || []).map(r => ({
+      title: r.title || '',
+      url: r.url || '',
+      content: r.content || ''
+    }))
+  }
+}
+
+// ===== 智能搜索（百度优先，Tavily降级） =====
+async function smartSearch(query, count = 5) {
+  let lastError = null
+
+  // 优先百度
+  try {
+    console.log('[smartSearch] 尝试百度搜索:', query)
+    const result = await baiduSearch(query, count)
+    if (result.results && result.results.length > 0) {
+      console.log('[smartSearch] 百度搜索成功，结果数:', result.results.length)
+      return result
+    }
+    console.log('[smartSearch] 百度搜索无结果，降级到Tavily')
+  } catch (e) {
+    console.log('[smartSearch] 百度搜索失败:', e.message)
+    lastError = e
+  }
+
+  // 降级Tavily
+  try {
+    console.log('[smartSearch] 尝试Tavily搜索:', query)
+    const result = await tavilySearch(query, count)
+    if (result.results && result.results.length > 0) {
+      console.log('[smartSearch] Tavily搜索成功，结果数:', result.results.length)
+      return result
+    }
+  } catch (e) {
+    console.log('[smartSearch] Tavily搜索也失败:', e.message)
+    if (!lastError) lastError = e
+  }
+
+  throw new Error(lastError ? lastError.message : '所有搜索引擎均无结果')
 }
 
 // ===== 规则解析：从搜索结果提取路线信息 =====
@@ -178,8 +194,7 @@ function parseRouteInfo(searchResults, routeName) {
     restPoints: 0,
     familyFriendly: 3,
     estimatedCalories: '',
-    dataSource: '百度搜索',
-    // 搜索结果原文（供参考）
+    dataSource: '智能搜索',
     _searchResults: searchResults
   }
 
@@ -306,11 +321,9 @@ function parseRouteInfo(searchResults, routeName) {
     if (parkingM) info.transport_parkingNote = parkingM[0]
   }
 
-  // 公共交通
   const transM = allText.match(/(?:地铁|公交|乘\d+路|换乘)\s*([^。，,\n]{10,80})/);
   if (transM) info.transport_publicTransport = transM[0].trim()
 
-  // 自驾指引
   const driveM = allText.match(/(?:自驾|导航|走\w+路|走\w+高速)\s*([^。，,\n]{10,80})/);
   if (driveM) info.transport_drivingGuide = driveM[0].trim()
 
@@ -350,20 +363,23 @@ exports.main = async (event, context) => {
   try {
     // 0. 设置API Key（管理员用）
     if (action === 'setApiKey') {
-      const { apiKey } = params
-      if (!apiKey) return fail('apiKey不能为空')
-      await db.collection('config').doc('baidu_search').set({
+      const { type, apiKey } = params
+      if (!type || !apiKey) return fail('type和apiKey不能为空')
+      const docId = type === 'baidu' ? 'baidu_search' : 'tavily_search'
+      await db.collection('config').doc(docId).set({
         data: { apiKey, updatedAt: db.serverDate() }
       })
-      return success(null, 'API Key已保存')
+      return success(null, `${type} API Key已保存`)
     }
 
     // 1. 纯搜索
     if (action === 'search') {
-      const { query, count = 5 } = params
+      const { query, count = 5, engine } = params
       if (!query) return fail('搜索词不能为空')
-      const results = await baiduSearch(query, count)
-      return success(results)
+
+      if (engine === 'baidu') return success(await baiduSearch(query, count))
+      if (engine === 'tavily') return success(await tavilySearch(query, count))
+      return success(await smartSearch(query, count))
     }
 
     // 2. 搜索 + 智能解析（主要入口）
@@ -371,18 +387,20 @@ exports.main = async (event, context) => {
       const { name } = params
       if (!name) return fail('路线名称不能为空')
 
-      // 多关键词搜索，提高覆盖率
       const queries = [
         `${name} 徒步攻略`,
         `${name} 路线 距离 海拔`
       ]
 
       let allResults = []
+      let searchSource = ''
+
       for (const q of queries) {
         try {
-          const res = await baiduSearch(q, 5)
+          const res = await smartSearch(q, 5)
           if (res.results && res.results.length > 0) {
             allResults = allResults.concat(res.results)
+            if (!searchSource) searchSource = res.source
           }
         } catch (e) {
           console.log(`[routeSearch] 搜索"${q}"失败:`, e.message)
@@ -402,8 +420,8 @@ exports.main = async (event, context) => {
         return true
       })
 
-      // 规则解析
       const parsed = parseRouteInfo(allResults, name)
+      parsed._searchSource = searchSource
       return success(parsed)
     }
 
