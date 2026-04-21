@@ -241,7 +241,10 @@ Page({
   // 取消手势返回确认
   _disableAlert() {
     if (wx.disableAlertBeforeUnload) {
-      wx.disableAlertBeforeUnload().catch(() => {})
+      try {
+        const ret = wx.disableAlertBeforeUnload()
+        if (ret && ret.catch) ret.catch(() => {})
+      } catch (e) {}
     }
   },
 
