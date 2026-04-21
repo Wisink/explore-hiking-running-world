@@ -36,7 +36,7 @@ function httpsPost(url, data, headers = {}) {
       path: urlObj.pathname + urlObj.search,
       method: 'POST',
       headers: { ...defaultHeaders, ...headers },
-      timeout: 2000
+      timeout: 8000
     }
 
     const req = https.request(options, (res) => {
@@ -674,28 +674,17 @@ exports.main = async (event, context) => {
       const { name } = params
       if (!name) return fail('路线名称不能为空')
 
-      // 多轮查询：覆盖攻略、景观、交通、历史文化、花果季节（并行执行）
-      const queries = [
-        `${name} 徒步攻略 距离 海拔`,
-        `${name} 风景 景色 特色`,
-        `${name} 交通 自驾 公交`,
-        `${name} 花 季节 果子 红叶`
-      ]
-
-      const searchResults = await Promise.all(
-        queries.map(q => smartSearch(q, 5).catch(e => {
-          console.log(`[routeSearch] 搜索"${q}"失败:`, e.message)
-          return { results: [], source: '' }
-        }))
-      )
-
+      // 单轮精准搜索（合并4轮意图到1个查询，10条结果覆盖全量信息）
       let allResults = []
       let searchSource = ''
-      for (const res of searchResults) {
+      try {
+        const res = await smartSearch(`${name} 徒步 距离 海拔 景色 花 季节 交通`, 10)
         if (res.results && res.results.length > 0) {
-          allResults = allResults.concat(res.results)
-          if (!searchSource) searchSource = res.source
+          allResults = res.results
+          searchSource = res.source
         }
+      } catch (e) {
+        console.log(`[routeSearch] 搜索失败:`, e.message)
       }
 
       if (allResults.length === 0) {
