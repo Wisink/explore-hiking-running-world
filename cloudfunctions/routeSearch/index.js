@@ -36,7 +36,7 @@ function httpsPost(url, data, headers = {}) {
       path: urlObj.pathname + urlObj.search,
       method: 'POST',
       headers: { ...defaultHeaders, ...headers },
-      timeout: 15000
+      timeout: 2000
     }
 
     const req = https.request(options, (res) => {
