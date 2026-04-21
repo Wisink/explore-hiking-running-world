@@ -157,10 +157,10 @@ async function smartSearch(query, count = 5) {
   throw new Error(lastError ? lastError.message : '所有搜索引擎均无结果')
 }
 
-// ===== 规则解析：从搜索结果提取路线信息 =====
+// ===== 规则解析：从搜索结果提取路线信息（严格遵循 routes 集合规范）=====
 function parseRouteInfo(searchResults, routeName) {
   const info = {
-    name: routeName,
+    name: '',
     shortDesc: '',
     fullDesc: '',
     coverImage: '',
@@ -198,10 +198,44 @@ function parseRouteInfo(searchResults, routeName) {
     _searchResults: searchResults
   }
 
-  // 合并所有搜索文本
-  const allText = searchResults.map(r =>
-    (r.title || '') + ' ' + (r.content || '')
-  ).join('\n')
+  // 合并所有搜索文本（去重处理，避免重复内容）
+  const allTexts = searchResults.map(r => ((r.title || '') + ' ' + (r.content || '')).trim()).filter(t => t)
+  const allText = allTexts.join('\n')
+
+  // 提取核心特征关键词（用于生成简介和描述）
+  const featurePool = []
+  const featurePatterns = [
+    { re: /(?:海拔|主峰|顶峰)\s*(?:约|大约)?\s*(\d+)\s*(?:米|m)/, tag: '海拔{1}米' },
+    { re: /(?:全程|全程约)\s*(\d+(?:\.\d+)?)\s*(?:公里|km)/, tag: '全程{1}公里' },
+    { re: /(?:累计爬升|爬升|拔高)\s*(?:约)?\s*(\d+)\s*(?:米|m)/, tag: '累计爬升{1}米' },
+    { re: /(瀑布群|多级瀑布|多层瀑布)/, tag: '瀑布群' },
+    { re: /(丹霞地貌|丹霞)/, tag: '丹霞地貌' },
+    { re: /(高山草甸|大草甸)/, tag: '高山草甸' },
+    { re: /(溶洞|古洞|钟乳石)/, tag: '溶洞奇观' },
+    { re: /(红叶|赏秋)/, tag: '红叶胜地' },
+    { re: /(石窟|石刻|摩崖)/, tag: '石窟古迹' },
+    { re: /(古道|古驿道)/, tag: '千年古道' },
+    { re: /(云海)/, tag: '云海' },
+    { re: /(湿地|芦苇)/, tag: '黄河湿地' },
+    { re: /(银杏林)/, tag: '银杏林' },
+    { re: /(古村|古镇|红色古镇)/, tag: '古村' },
+    { re: /(竹林)/, tag: '竹林' },
+    { re: /(花海|桃花|牡丹)/, tag: '花海' },
+    { re: /(天然石桥|天生桥|仙人桥)/, tag: '天然石桥' },
+    { re: /(古寺|古刹|寺庙|祖庭)/, tag: '古寺' },
+    { re: /(烽火台|历史遗迹)/, tag: '历史遗迹' },
+    { re: /(峡谷|溪谷)/, tag: '峡谷' },
+    { re: /(盘山公路|环山公路)/, tag: '盘山公路' },
+    { re: /(溯溪|溪流|涉水)/, tag: '溪流' },
+    { re: /(登山步道|步道)/, tag: '步道' },
+    { re: /(杜甫|李白|韩愈|司马迁)/, tag: '文人足迹' }
+  ]
+  for (const fp of featurePatterns) {
+    const m = allText.match(fp.re)
+    if (m) {
+      featurePool.push(m[1] ? fp.tag.replace('{1}', m[1]) : fp.tag)
+    }
+  }
 
   // ===== 距离提取 =====
   const distPatterns = [
@@ -216,9 +250,9 @@ function parseRouteInfo(searchResults, routeName) {
 
   // ===== 时间提取 =====
   const timePatterns = [
-    /(?:耗时|用时|预计|规划总耗时|大约)\s*(?:约|大约)?\s*(\d+(?:\.\d+)?)\s*(?:[-~至到]\s*(\d+(?:\.\d+)?))?\s*(?:小时|h|H)/,
+    /(?:耗时|用时|预计|规划总耗时|大约)\s*(?:约|大约)?\s*(\d+(?:\.\d+)?)\s*[-~至到]\s*(\d+(?:\.\d+)?)\s*(?:小时|h|H)/,
     /(\d+(?:\.\d+)?)\s*[-~至到]\s*(\d+(?:\.\d+)?)\s*(?:小时|h)/,
-    /(?:耗时|用时)\s*(\d+(?:\.\d+)?)\s*(?:小时|h)/
+    /(?:耗时|用时|预计|大约)\s*(?:约)?\s*(\d+(?:\.\d+)?)\s*(?:小时|h)/
   ]
   for (const p of timePatterns) {
     const m = allText.match(p)
@@ -256,9 +290,10 @@ function parseRouteInfo(searchResults, routeName) {
 
   // ===== 区县提取 =====
   const districtPatterns = [
-    /(?:陕西省西安市|西安)(\w+区|\w+县)/,
-    /(\w+区|\w+县)(?:子午街道|庞光镇|蓝桥镇|石井镇)/,
-    /(?:长安|蓝田|鄠邑|周至|临潼|眉县)(?:区|县)/
+    /(?:陕西省西安市|西安)([\w·]+区|[\w·]+县)/,
+    /([\w·]+区|[\w·]+县)(?:子午街道|庞光镇|蓝桥镇|石井镇|东大街道|引镇)/,
+    /(?:长安|蓝田|鄠邑|周至|临潼|眉县)(?:区|县)/,
+    /(?:渭南|咸阳|铜川|韩城|合阳|淳化|旬邑|礼泉|泾阳|彬州|华州|华阴)(?:市|区|县)/
   ]
   for (const p of districtPatterns) {
     const m = allText.match(p)
@@ -268,14 +303,106 @@ function parseRouteInfo(searchResults, routeName) {
     }
   }
 
+  // ===== 路线类型提取 =====
+  let routeType = ''
+  if (/穿越/.test(allText)) routeType = '穿越'
+  else if (/P形环线|P形/.test(allText)) routeType = 'P形环线'
+  else if (/环线|环穿|环山/.test(allText)) routeType = '环线'
+  else if (/原返|原路返回/.test(allText)) routeType = '原返'
+
+  // ===== 路线命名：区县 + 路线名称 + 路线类型（区县）=====
+  // 清洗原始名称：去掉括号内容、去掉"徒步"等通用词尾
+  let cleanName = routeName
+    .replace(/[（(][\w·]+[）)]/g, '')  // 去掉已有括号
+    .replace(/徒步$/, '').trim()
+
+  // 检查是否已有路线类型
+  if (!/穿越|环线|原返|P形环线/.test(cleanName) && routeType) {
+    cleanName = cleanName + routeType
+  }
+
+  // 组装最终名称：区县 + 路线名（区县）
+  if (info.location_district && !cleanName.includes(info.location_district)) {
+    info.name = `${cleanName}（${info.location_district}）`
+  } else {
+    info.name = cleanName
+  }
+
+  // ===== 一句话简介：提炼路线核心亮点（≤30字）=====
+  // 优先从搜索结果中找一句描述性的话
+  let hookSentence = ''
+  const descSentences = allText.split(/[。！？\n]/).map(s => s.trim()).filter(s =>
+    s.length >= 8 && s.length <= 40 &&
+    !/攻略|下载|APP|微信|关注|点赞|转发|评论|搜索/.test(s)
+  )
+
+  // 找包含特征关键词的短句
+  for (const s of descSentences) {
+    if (featurePool.some(f => s.includes(f.replace(/\d+米?\d*/g, '')))) {
+      hookSentence = s.replace(/^路线|^这条线|^本条线|^其特色是|^特色[是为：]/, '').trim()
+      break
+    }
+  }
+
+  // 降级：用特征关键词拼接
+  if (!hookSentence && featurePool.length > 0) {
+    hookSentence = featurePool.slice(0, 3).join('，')
+  }
+  if (!hookSentence) {
+    // 从搜索结果取第一句有意义的
+    const firstValid = descSentences.find(s => s.length >= 10)
+    hookSentence = firstValid ? firstValid.substring(0, 30) : '适合休闲徒步的自然路线'
+  }
+  info.shortDesc = hookSentence.substring(0, 35)
+
+  // ===== 详细描述：结构化、去重、精炼（≤300字）=====
+  // 提取所有搜索结果中的关键句子（去重）
+  const keySentences = new Set()
+  for (const text of allTexts) {
+    const sentences = text.split(/[。！？；\n]/)
+      .map(s => s.trim())
+      .filter(s =>
+        s.length >= 10 && s.length <= 80 &&
+        !/攻略|下载|APP|微信|关注|点赞|转发|评论|搜索|版权所有|免责|广告|推荐/.test(s) &&
+        !/^其|^该|^这个|^这是/.test(s)
+      )
+    // 每条搜索结果取前2句
+    let added = 0
+    for (const s of sentences) {
+      if (added >= 2) break
+      // 去重：忽略数字差异，只看文本骨架
+      const skeleton = s.replace(/\d+/g, '#')
+      if (![...keySentences].some(ks => ks.replace(/\d+/g, '#') === skeleton)) {
+        keySentences.add(s)
+        added++
+      }
+    }
+  }
+
+  // 组装描述：核心特色 → 地理位置 → 适合人群
+  const descParts = []
+
+  // 核心特色（前3个特征）
+  if (featurePool.length > 0) {
+    descParts.push(featurePool.slice(0, 4).join('、'))
+  }
+
+  // 关键描述句（去重后取前3句）
+  const sentencesArr = [...keySentences]
+  if (sentencesArr.length > 0) {
+    descParts.push(sentencesArr.slice(0, 3).join('。'))
+  }
+
+  info.fullDesc = descParts.join('。').substring(0, 300)
+
   // ===== 难度推断 =====
-  if (/困难|难度大|危险|慎入|偏难|技术/.test(allText)) {
+  if (/困难|难度大|危险|慎入|偏难|技术攀登|绳索/.test(allText)) {
     info.difficulty = 4
-  } else if (/适中|中等|有一定基础|略有挑战/.test(allText)) {
+  } else if (/适中|中等|有一定基础|略有挑战|初级进阶/.test(allText)) {
     info.difficulty = 3
-  } else if (/轻松|简单|新手|亲子|休闲|平缓|封神/.test(allText)) {
+  } else if (/轻松|简单|新手|亲子|休闲|平缓|第一次|全程平缓/.test(allText)) {
     info.difficulty = 2
-  } else if (/非常轻松|第一次|全程平缓/.test(allText)) {
+  } else if (/非常轻松|散步|观光/.test(allText)) {
     info.difficulty = 1
   }
 
@@ -337,20 +464,24 @@ function parseRouteInfo(searchResults, routeName) {
     info.safetyLevel = 2
   }
 
+  // ===== 补水点 =====
+  if (/沿途有水|溪水|水源充足|可补水/.test(allText)) {
+    info.waterSupply = 3
+  } else if (/全程无水|无水源|缺水/.test(allText)) {
+    info.waterSupply = 1
+  }
+
+  // ===== 路标 =====
+  if (/路标清晰|标识清楚|成熟线路/.test(allText)) {
+    info.trailMarking = 3
+  } else if (/无路标|路标少|容易迷路/.test(allText)) {
+    info.trailMarking = 1
+  }
+
   // ===== 封面图 =====
   const imageUrls = searchResults.flatMap(r => r.images || [])
   if (imageUrls.length > 0) {
     info.coverImage = imageUrls[0]
-  }
-
-  // ===== 简介 =====
-  const firstResult = searchResults[0]
-  if (firstResult && firstResult.content) {
-    info.shortDesc = firstResult.content.substring(0, 80)
-    info.fullDesc = searchResults.map(r => {
-      let text = r.content || ''
-      return text.substring(0, 200)
-    }).filter(t => t).join('\n\n')
   }
 
   return info
