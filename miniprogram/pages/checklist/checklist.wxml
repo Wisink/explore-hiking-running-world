@@ -15,6 +15,14 @@
   </view>
   <view style="height: {{headerHeight}}px;"></view>
 
+  <!-- 加载中提示 -->
+  <view class="loading-overlay" wx:if="{{loading}}">
+    <view class="loading-card">
+      <view class="loading-spinner"></view>
+      <text class="loading-text">{{loadingMsg}}</text>
+    </view>
+  </view>
+
   <!-- 进度概览 -->
   <view class="progress-card">
     <view class="progress-card__row">
