@@ -453,7 +453,7 @@ Page({
       ctx.font = '14px sans-serif'
       ctx.fillText(`共 ${this.data.totalCount} 项`, 30, 158)
 
-      // 绘制清单项（分享时全部显示为未勾选）
+      // ===== 先绘制所有内容 =====
       let y = 188
       const categories = [
         { key: 'must', title: '🔴 必须带', color: '#F44336' },
@@ -510,15 +510,32 @@ Page({
         y += 10
       })
 
-      // 分享提示
+      // ===== 动态调整画布高度（裁掉底部空白） =====
+      const footerHeight = 55 // 底部留白 + 两行提示文字
+      const finalHeight = y + footerHeight
+
+      // 读取已绘制的像素内容
+      const imageData = ctx.getImageData(0, 0, canvas.width, Math.min(canvas.height, finalHeight * dpr))
+
+      // 重设画布尺寸
+      canvas.height = finalHeight * dpr
+      ctx.scale(dpr, dpr)
+
+      // 重绘背景
+      ctx.fillStyle = '#FFFFFF'
+      ctx.fillRect(0, 0, width, finalHeight)
+
+      // 还原已绘制的内容
+      ctx.putImageData(imageData, 0, 0)
+
+      // 绘制底部提示
       ctx.fillStyle = '#999'
       ctx.font = '14px sans-serif'
-      ctx.fillText('长按图片进行分享或保存', width / 2 - 85, height - 45)
+      ctx.fillText('长按图片进行分享或保存', width / 2 - 85, finalHeight - 30)
 
-      // 底部水印
       ctx.fillStyle = '#CCC'
       ctx.font = '12px sans-serif'
-      ctx.fillText('秦人徒步 · 安全出行', width / 2 - 60, height - 20)
+      ctx.fillText('秦人徒步 · 安全出行', width / 2 - 60, finalHeight - 10)
 
       // 导出图片
       wx.canvasToTempFilePath({
