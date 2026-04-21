@@ -639,7 +639,16 @@ exports.main = async (event, context) => {
   const { action, params = {} } = event
 
   try {
-    // 0. 设置API Key（管理员用）
+    // 0. 获取搜索API Key（仅管理员）
+    if (action === 'getSearchApiKey') {
+      try {
+        const doc = await db.collection('config').doc('baidu_search').get()
+        if (doc.data && doc.data.apiKey) {
+          return success({ key: doc.data.apiKey })
+        }
+      } catch (e) {}
+      return fail('未配置搜索API Key')
+    }
     if (action === 'setApiKey') {
       const { type, apiKey } = params
       if (!type || !apiKey) return fail('type和apiKey不能为空')
@@ -704,6 +713,24 @@ exports.main = async (event, context) => {
 
       const parsed = parseRouteInfo(allResults, name)
       parsed._searchSource = searchSource
+      return success(parsed)
+    }
+
+    // 3. 仅解析（客户端搜索结果丢过来，云函数只做解析）
+    if (action === 'parse') {
+      const { name, searchResults } = params
+      if (!name || !searchResults || !searchResults.length) return fail('路线名称和搜索结果不能为空')
+
+      // 去重
+      const seen = new Set()
+      const deduped = searchResults.filter(r => {
+        const key = r.url || r.title
+        if (seen.has(key)) return false
+        seen.add(key)
+        return true
+      })
+
+      const parsed = parseRouteInfo(deduped, name)
       return success(parsed)
     }
 

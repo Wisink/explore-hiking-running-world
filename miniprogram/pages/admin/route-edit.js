@@ -462,26 +462,55 @@ Page({
     })
 
     try {
-      const res = await wx.cloud.callFunction({
+      // 1. 获取API Key
+      const keyRes = await wx.cloud.callFunction({
+        name: 'routeSearch',
+        data: { action: 'getSearchApiKey' }
+      })
+      if (keyRes.result.code !== 0) throw new Error(keyRes.result.message || '未配置搜索API Key')
+      const apiKey = keyRes.result.data.key
+
+      // 2. 客户端并行搜索（4轮，无超时限制）
+      const queries = [
+        `${name} 徒步攻略 距离 海拔`,
+        `${name} 风景 景色 特色`,
+        `${name} 交通 自驾 公交`,
+        `${name} 花 季节 果子 红叶`
+      ]
+
+      const allResults = await this._baiduSearchParallel(queries, apiKey)
+
+      if (allResults.length === 0) {
+        this.setData({
+          searching: false,
+          searchStatus: '未搜索到相关路线信息',
+          searchStatusType: 'search-status--error'
+        })
+        return
+      }
+
+      this.setData({ searchStatus: '正在解析路线信息...' })
+
+      // 3. 发送给云函数解析（纯文本处理，1秒内完成）
+      const parseRes = await wx.cloud.callFunction({
         name: 'routeSearch',
         data: {
-          action: 'searchAndParse',
-          params: { name }
+          action: 'parse',
+          params: { name, searchResults: allResults }
         }
       })
 
-      const result = res.result
+      const result = parseRes.result
       if (result.code !== 0) {
         this.setData({
           searching: false,
-          searchStatus: result.message || '搜索失败',
+          searchStatus: result.message || '解析失败',
           searchStatusType: 'search-status--error'
         })
         return
       }
 
       const data = result.data
-      // 将解析结果填充到表单
       this._fillFormFromSearch(data)
 
       const filledCount = this._countFilledFields(data)
@@ -499,6 +528,69 @@ Page({
         searchStatusType: 'search-status--error'
       })
     }
+  },
+
+  // 客户端并行调用百度搜索API
+  async _baiduSearchParallel(queries, apiKey) {
+    const searchOne = (query) => new Promise((resolve) => {
+      wx.request({
+        url: 'https://bdse.juhe.ai/api/v1/chat-messages',
+        method: 'POST',
+        timeout: 10000,
+        header: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`
+        },
+        data: {
+          query: query,
+          conversation_id: '',
+          user: 'miniprogram',
+          inputs: {}
+        },
+        success: (res) => {
+          if (res.statusCode === 200 && res.data && res.data.answer) {
+            try {
+              const jsonStr = this._extractJson(res.data.answer)
+              const parsed = JSON.parse(jsonStr)
+              resolve(parsed.results || [])
+            } catch (e) {
+              console.warn('[百度搜索] 解析失败:', e.message)
+              resolve([])
+            }
+          } else {
+            resolve([])
+          }
+        },
+        fail: (err) => {
+          console.warn('[百度搜索] 请求失败:', err.errMsg)
+          resolve([])
+        }
+      })
+    })
+
+    const results = await Promise.all(queries.map(q => searchOne(q)))
+    // 合并去重
+    const seen = new Set()
+    const merged = []
+    for (const items of results) {
+      for (const item of items) {
+        const key = item.url || item.title
+        if (key && !seen.has(key)) {
+          seen.add(key)
+          merged.push(item)
+        }
+      }
+    }
+    return merged
+  },
+
+  // 从AI回答中提取JSON
+  _extractJson(text) {
+    const jsonBlock = text.match(/```json\s*([\s\S]*?)\s*```/)
+    if (jsonBlock) return jsonBlock[1].trim()
+    const obj = text.match(/\{[\s\S]*\}/)
+    if (obj) return obj[0]
+    return text.trim()
   },
 
   // 用搜索结果填充表单
