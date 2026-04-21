@@ -81,6 +81,7 @@ App({
   },
 
   globalData: {
+    world: wx.getStorageSync('world') || 'hiking',
     favorites: [],
     completed: [],
     systemInfo: null,

@@ -1,0 +1,242 @@
+/* pages/running-home/running-home.wxss - 蓝色系跑步主题 */
+
+/* 状态栏占位 — 毛玻璃 */
+.page-statusbar {
+  background: linear-gradient(135deg,
+    rgba(21, 101, 192, 0.5) 0%,
+    rgba(66, 165, 245, 0.4) 100%
+  );
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+/* ===== CSS Variables ===== */
+:host {
+  --glass-bg: rgba(255, 255, 255, 0.22);
+  --glass-bg-light: rgba(255, 255, 255, 0.12);
+  --glass-bg-strong: rgba(255, 255, 255, 0.35);
+  --glass-border: rgba(255, 255, 255, 0.25);
+  --glass-blur: blur(16px);
+  --glass-shadow: 0 8rpx 32rpx rgba(31, 38, 50, 0.18);
+  --text: #0d47a1;
+  --text2: #1565c0;
+  --primary: #1565c0;
+  --primary-dark: #0d47a1;
+  --r: 36rpx;
+  --tr: all 350ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.running-home {
+  min-height: 100vh;
+  padding-bottom: calc(140rpx + constant(safe-area-inset-bottom));
+  padding-bottom: calc(140rpx + env(safe-area-inset-bottom));
+  background-color: #bbdefb;
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(21,101,192,.6) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(66,165,245,.5) 0%, transparent 50%),
+    radial-gradient(ellipse at 60% 80%, rgba(100,181,246,.4) 0%, transparent 50%),
+    radial-gradient(ellipse at 10% 90%, rgba(187,222,251,.6) 0%, transparent 40%),
+    linear-gradient(160deg, #e3f2fd 0%, #bbdefb 25%, #90caf9 50%, #64b5f6 75%, #42a5f5 100%);
+}
+
+/* 顶部标题 — 毛玻璃 */
+.page-header {
+  position: relative;
+  padding: 48rpx 32rpx 40rpx;
+  margin-bottom: 16rpx;
+  overflow: hidden;
+}
+
+.page-header__bg {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(135deg, rgba(21,101,192,.5) 0%, rgba(66,165,245,.4) 100%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255,255,255,.25);
+}
+
+.page-header__content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.page-header__emoji { font-size: 48rpx; margin-bottom: 8rpx; }
+
+.page-header__title {
+  font-size: 44rpx;
+  font-weight: 800;
+  color: #0d47a1;
+  letter-spacing: 1rpx;
+  text-shadow: 0 1rpx 6rpx rgba(255,255,255,.5);
+}
+
+.page-header__sub {
+  font-size: 26rpx;
+  color: #1565c0;
+  letter-spacing: 2rpx;
+}
+
+/* 搜索框 — 毛玻璃 */
+.search-bar {
+  position: relative;
+  margin: 0 24rpx 36rpx;
+  border-radius: 24rpx;
+  overflow: hidden;
+  box-shadow: 0 8rpx 32rpx rgba(31,38,50,.12);
+}
+
+.search-bar__bg {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255,255,255,.25);
+  border-radius: 24rpx;
+}
+
+.search-bar__inner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 28rpx 24rpx;
+  gap: 16rpx;
+}
+
+.search-bar__icon {
+  font-size: 36rpx;
+}
+
+.search-bar__text {
+  font-size: 28rpx;
+  color: #1565c0;
+  opacity: 0.7;
+}
+
+/* 频道区域 */
+.channel-section {
+  margin: 0 24rpx 36rpx;
+}
+
+.section__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+  padding: 0 8rpx;
+}
+
+.section__title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+}
+
+.section__icon { font-size: 32rpx; }
+
+.section__title {
+  font-size: 34rpx;
+  font-weight: 700;
+  color: #0d47a1;
+}
+
+/* 频道网格 */
+.channel-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+/* 频道卡片 — 毛玻璃 */
+.channel-card {
+  position: relative;
+  border-radius: 24rpx;
+  overflow: hidden;
+  box-shadow: 0 8rpx 32rpx rgba(31,38,50,.12);
+  transition: transform 150ms ease;
+}
+
+.channel-card:active {
+  transform: scale(0.98);
+}
+
+.channel-card__bg {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255,255,255,.25);
+  border-radius: 24rpx;
+}
+
+.channel-card__inner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 28rpx 24rpx;
+  gap: 20rpx;
+}
+
+.channel-card__icon {
+  font-size: 48rpx;
+  width: 80rpx;
+  height: 80rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(21, 101, 192, 0.1);
+  border-radius: 20rpx;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,.2);
+}
+
+.channel-card__name {
+  flex: 1;
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #0d47a1;
+}
+
+.channel-card__count {
+  font-size: 24rpx;
+  color: #1565c0;
+  background: rgba(21, 101, 192, 0.1);
+  padding: 6rpx 16rpx;
+  border-radius: 20rpx;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,.15);
+}
+
+.channel-card__arrow {
+  position: absolute;
+  right: 24rpx;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 36rpx;
+  color: #1565c0;
+  font-weight: 300;
+}
+
+/* 底部 */
+.footer {
+  text-align: center;
+  padding: 48rpx 24rpx 32rpx;
+}
+
+.footer__icon { font-size: 48rpx; margin-bottom: 12rpx; display: block; }
+
+.footer__main {
+  font-size: 28rpx;
+  color: #0d47a1;
+  font-weight: 600;
+  display: block;
+  margin-bottom: 8rpx;
+}
+
+.footer__sub { font-size: 22rpx; color: #1565c0; }

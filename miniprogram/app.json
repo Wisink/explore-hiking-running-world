@@ -1,5 +1,6 @@
 {
   "pages": [
+    "pages/world-select/world-select",
     "pages/routes/routes",
     "pages/route-detail/route-detail",
     "pages/nearby/nearby",
@@ -10,7 +11,15 @@
     "pages/article-detail/article-detail",
     "pages/profile/profile",
     "pages/admin/admin",
-    "pages/admin/route-edit"
+    "pages/admin/route-edit",
+    "pages/running-home/running-home",
+    "pages/channel-detail/channel-detail",
+    "pages/running-article-list/running-article-list",
+    "pages/running-search/running-search",
+    "pages/running-article/running-article",
+    "pages/running-profile/running-profile",
+    "pages/running-admin/running-admin",
+    "pages/running-admin/article-edit"
   ],
   "window": {
     "navigationStyle": "custom",

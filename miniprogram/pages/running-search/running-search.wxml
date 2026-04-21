@@ -1,0 +1,123 @@
+<!--pages/running-search/running-search.wxml-->
+<view class="search-page">
+  <!-- 状态栏占位 -->
+  <view class="page-statusbar" style="height: {{statusBarHeight}}px;"></view>
+  
+  <!-- 顶部固定栏 -->
+  <view class="page-header">
+    <view class="page-header__bg"></view>
+    <view class="page-header__content">
+      <view class="page-header__back" bindtap="onBackTap">
+        <text class="page-header__back-text">{{lt}}</text>
+      </view>
+      <view class="search-input-wrap">
+        <view class="search-input-bg"></view>
+        <view class="search-input-inner">
+          <text class="search-input-icon">🔍</text>
+          <input 
+            class="search-input" 
+            placeholder="搜索跑步文章..." 
+            value="{{keyword}}"
+            bindinput="onInput"
+            bindconfirm="onSearch"
+            focus="{{autoFocus}}"
+            confirm-type="search"
+          />
+          <view class="search-clear" wx:if="{{keyword}}" bindtap="onClearInput">
+            <text class="search-clear-icon">✕</text>
+          </view>
+        </view>
+      </view>
+      <view class="search-btn" bindtap="onSearch">
+        <text class="search-btn-text">搜索</text>
+      </view>
+    </view>
+  </view>
+
+  <view style="height: {{headerHeight}}px;"></view>
+
+  <!-- 搜索历史 -->
+  <view class="history-section" wx:if="{{!searching && !searchDone && history.length > 0}}">
+    <view class="section-head">
+      <view class="section-title-wrap">
+        <text class="section-icon">🕐</text>
+        <text class="section-title">搜索历史</text>
+      </view>
+      <view class="section-clear" bindtap="onClearHistory">
+        <text class="section-clear-text">清除</text>
+      </view>
+    </view>
+    
+    <view class="history-list">
+      <view 
+        class="history-item" 
+        wx:for="{{history}}" 
+        wx:key="index"
+        data-keyword="{{item}}"
+        bindtap="onHistoryTap"
+        hover-class="history-item--hover"
+        hover-stay-time="80"
+      >
+        <text class="history-item__text">{{item}}</text>
+        <text class="history-item__arrow">›</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 搜索中 -->
+  <view class="loading-wrap" wx:if="{{searching}}">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">正在搜索...</text>
+  </view>
+
+  <!-- 搜索结果 -->
+  <view class="result-section" wx:if="{{!searching && searchDone}}">
+    <view class="section-head" wx:if="{{results.length > 0}}">
+      <view class="section-title-wrap">
+        <text class="section-icon">📄</text>
+        <text class="section-title">搜索结果</text>
+      </view>
+      <view class="section-count">
+        <text>{{results.length}}篇文章</text>
+      </view>
+    </view>
+    
+    <!-- 结果列表 -->
+    <view class="result-list" wx:if="{{results.length > 0}}">
+      <view 
+        class="result-item" 
+        wx:for="{{results}}" 
+        wx:key="_id"
+        data-id="{{item._id}}"
+        bindtap="onResultTap"
+        hover-class="result-item--hover"
+        hover-stay-time="80"
+      >
+        <view class="result-item__icon">
+          <text>{{item.icon || '📄'}}</text>
+        </view>
+        <view class="result-item__body">
+          <text class="result-item__title">{{item.title}}</text>
+          <view class="result-item__meta">
+            <view class="result-item__tag" wx:if="{{item.difficulty}}">
+              <text class="result-item__tag-text">{{item.difficulty}}</text>
+            </view>
+            <text class="result-item__read-time" wx:if="{{item.readTime}}">{{item.readTime}}分钟</text>
+            <text class="result-item__read-count" wx:if="{{item.readCount}}">{{item.readCount}}人阅读</text>
+          </view>
+        </view>
+        <text class="result-item__arrow">›</text>
+      </view>
+    </view>
+    
+    <!-- 空状态 -->
+    <empty-state wx:if="{{results.length === 0}}" icon="📭" title="未找到相关文章" text="换个关键词试试吧"></empty-state>
+  </view>
+
+  <!-- 底部 -->
+  <view class="footer" wx:if="{{results.length > 0}}">
+    <text class="footer__icon">🔍</text>
+    <text class="footer__main">搜索更多跑步知识</text>
+    <text class="footer__sub">持续探索，持续进步</text>
+  </view>
+</view>

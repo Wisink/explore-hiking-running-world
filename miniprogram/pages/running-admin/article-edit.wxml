@@ -1,0 +1,101 @@
+<!--pages/running-admin/article-edit.wxml-->
+<view class="edit-page">
+
+  <!-- 固定头部 -->
+  <view class="detail-fixed-header" style="padding-top: {{statusBarHeight}}px;">
+    <view class="detail-nav">
+      <view class="detail-nav__back" bindtap="onBack">
+        <text class="detail-nav__back-icon">‹</text>
+        <text class="detail-nav__back-text">返回</text>
+      </view>
+      <text class="detail-nav__title">{{isEdit ? '编辑文章' : '新增文章'}}</text>
+      <view class="detail-nav__spacer"></view>
+    </view>
+  </view>
+  <view class="detail-header-placeholder" style="height: {{statusBarHeight + 44}}px;"></view>
+
+  <!-- 表单内容 -->
+  <view class="form-container">
+    <!-- 标题 -->
+    <view class="form-section">
+      <text class="form-label">标题</text>
+      <input class="form-input" placeholder="请输入文章标题" value="{{formData.title}}" bindinput="onTitleInput" />
+    </view>
+
+    <!-- 所属频道 -->
+    <view class="form-section">
+      <text class="form-label">所属频道</text>
+      <picker mode="selector" range="{{channels}}" range-key="name" bindchange="onChannelChange" value="{{formData.channelIndex}}">
+        <view class="form-picker">
+          <text>{{channels[formData.channelIndex].name || '请选择频道'}}</text>
+          <text class="form-picker__arrow">▾</text>
+        </view>
+      </picker>
+    </view>
+
+    <!-- 所属子分类 -->
+    <view class="form-section">
+      <text class="form-label">所属子分类</text>
+      <picker mode="selector" range="{{subcategories}}" range-key="name" bindchange="onSubcategoryChange" value="{{formData.subcategoryIndex}}">
+        <view class="form-picker">
+          <text>{{subcategories[formData.subcategoryIndex].name || '请选择子分类'}}</text>
+          <text class="form-picker__arrow">▾</text>
+        </view>
+      </picker>
+    </view>
+
+    <!-- 难度等级 -->
+    <view class="form-section">
+      <text class="form-label">难度等级</text>
+      <picker mode="selector" range="{{difficultyLevels}}" bindchange="onDifficultyChange" value="{{formData.difficultyIndex}}">
+        <view class="form-picker">
+          <text>{{difficultyLevels[formData.difficultyIndex] || '请选择难度'}}</text>
+          <text class="form-picker__arrow">▾</text>
+        </view>
+      </picker>
+    </view>
+
+    <!-- 阅读时长 -->
+    <view class="form-section">
+      <text class="form-label">阅读时长（分钟）</text>
+      <input class="form-input" type="number" placeholder="请输入阅读时长" value="{{formData.readTime}}" bindinput="onReadTimeInput" />
+    </view>
+
+    <!-- 排序权重 -->
+    <view class="form-section">
+      <text class="form-label">排序权重</text>
+      <input class="form-input" type="number" placeholder="请输入排序权重" value="{{formData.sortWeight}}" bindinput="onSortWeightInput" />
+    </view>
+
+    <!-- 正文内容 -->
+    <view class="form-section">
+      <text class="form-label">正文内容</text>
+      <textarea class="form-textarea" placeholder="请输入文章正文" value="{{formData.content}}" bindinput="onContentInput" />
+    </view>
+
+    <!-- 摘要 -->
+    <view class="form-section">
+      <text class="form-label">摘要（60字以内）</text>
+      <textarea class="form-textarea form-textarea--short" placeholder="请输入文章摘要" value="{{formData.summary}}" bindinput="onSummaryInput" maxlength="60" />
+    </view>
+
+    <!-- 标签 -->
+    <view class="form-section">
+      <text class="form-label">标签（逗号分隔）</text>
+      <input class="form-input" placeholder="例如：跑步,训练,健康" value="{{formData.tags}}" bindinput="onTagsInput" />
+    </view>
+
+    <!-- 是否上架 -->
+    <view class="form-section form-section--switch">
+      <text class="form-label">是否上架</text>
+      <switch checked="{{formData.isActive}}" bindchange="onActiveChange" color="#1565c0" />
+    </view>
+
+    <!-- 保存按钮 -->
+    <view class="save-btn" bindtap="onSave">
+      <text>保存文章</text>
+    </view>
+  </view>
+
+  <view class="nice-toast nice-toast--{{toastType}} {{showToast ? 'nice-toast--show' : ''}}">{{toastMessage}}</view>
+</view>

@@ -1,0 +1,426 @@
+/* pages/running-article/running-article.wxss - 蓝色系跑步主题 */
+@import '/styles/common.wxss';
+
+.article-page {
+  min-height: 100vh;
+  padding-bottom: 200rpx;
+  background-color: #bbdefb;
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(21,101,192,.6) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(66,165,245,.5) 0%, transparent 50%),
+    radial-gradient(ellipse at 60% 80%, rgba(100,181,246,.4) 0%, transparent 50%),
+    linear-gradient(160deg, #e3f2fd 0%, #bbdefb 25%, #90caf9 50%, #64b5f6 75%, #42a5f5 100%);
+}
+
+/* 加载 */
+.loading-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 60vh;
+  gap: 24rpx;
+}
+
+.loading-spinner {
+  width: 48rpx;
+  height: 48rpx;
+  border: 4rpx solid rgba(255,255,255,.3);
+  border-top-color: #1565c0;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.loading-text { font-size: 28rpx; color: #1565c0; }
+
+/* 文章头部 — 毛玻璃 */
+.article-header {
+  background: rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255,255,255,.22);
+  padding: 40rpx 32rpx 36rpx;
+  margin: 16rpx 24rpx;
+  border-radius: 20rpx;
+  box-shadow: 0 8rpx 32rpx rgba(31,38,50,.15);
+}
+
+.article-header__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24rpx;
+}
+
+.article-header__tag {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  background: rgba(21, 101, 192, 0.2);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 8rpx 18rpx;
+  border-radius: 20rpx;
+  border: 1px solid rgba(21,101,192,.15);
+}
+
+.article-header__tag-text {
+  font-size: 22rpx;
+  color: #0d47a1;
+  font-weight: 500;
+}
+
+.article-header__right {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.article-header__read-time,
+.article-header__views {
+  font-size: 22rpx;
+  color: #1565c0;
+}
+
+.article-header__title {
+  font-size: 42rpx;
+  font-weight: 800;
+  color: #0d47a1;
+  line-height: 1.4;
+  display: block;
+  margin-bottom: 16rpx;
+  letter-spacing: 0.5rpx;
+  text-shadow: 0 1rpx 6rpx rgba(255,255,255,.4);
+}
+
+.article-header__summary {
+  font-size: 28rpx;
+  color: #1565c0;
+  line-height: 1.6;
+  display: block;
+}
+
+/* 正文 — 毛玻璃 */
+.article-body {
+  background: rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255,255,255,.18);
+  padding: 36rpx 32rpx;
+  margin: 16rpx 24rpx;
+  border-radius: 20rpx;
+  font-size: 30rpx;
+  color: #0d47a1;
+  line-height: 1.9;
+  box-shadow: 0 4rpx 16rpx rgba(31,38,50,.1);
+}
+
+/* 阅读感受区域 */
+.review-section {
+  margin: 24rpx;
+}
+
+.section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20rpx;
+  padding: 0 8rpx;
+}
+
+.section-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+}
+
+.section-icon { font-size: 32rpx; }
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #0d47a1;
+}
+
+/* 我的感受卡片 */
+.my-review {
+  margin-bottom: 24rpx;
+}
+
+.review-card {
+  background: rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255,255,255,.22);
+  padding: 24rpx;
+  border-radius: 16rpx;
+  box-shadow: 0 4rpx 16rpx rgba(31,38,50,.1);
+}
+
+.review-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16rpx;
+}
+
+.review-label {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #0d47a1;
+}
+
+.review-edit-btn {
+  background: rgba(21, 101, 192, 0.15);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 6rpx 16rpx;
+  border-radius: 12rpx;
+  border: 1px solid rgba(21,101,192,.1);
+}
+
+.review-edit-text {
+  font-size: 22rpx;
+  color: #1565c0;
+  font-weight: 500;
+}
+
+.review-content {
+  font-size: 28rpx;
+  color: #0d47a1;
+  line-height: 1.6;
+  display: block;
+  margin-bottom: 12rpx;
+}
+
+.review-time {
+  font-size: 22rpx;
+  color: #1565c0;
+  opacity: 0.7;
+}
+
+/* 感受输入框 */
+.review-input-card {
+  background: rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255,255,255,.22);
+  padding: 24rpx;
+  border-radius: 16rpx;
+  box-shadow: 0 4rpx 16rpx rgba(31,38,50,.1);
+}
+
+.review-textarea {
+  width: 100%;
+  min-height: 160rpx;
+  font-size: 28rpx;
+  color: #0d47a1;
+  line-height: 1.6;
+  padding: 16rpx;
+  background: rgba(255,255,255,.1);
+  border-radius: 12rpx;
+  border: 1px solid rgba(255,255,255,.2);
+  box-sizing: border-box;
+}
+
+.review-textarea::placeholder {
+  color: #1565c0;
+  opacity: 0.6;
+}
+
+.review-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 16rpx;
+  margin-top: 16rpx;
+}
+
+.review-cancel-btn {
+  padding: 12rpx 24rpx;
+  border-radius: 12rpx;
+  background: rgba(255,255,255,.2);
+  border: 1px solid rgba(255,255,255,.3);
+}
+
+.review-cancel-text {
+  font-size: 26rpx;
+  color: #1565c0;
+}
+
+.review-save-btn {
+  padding: 12rpx 24rpx;
+  border-radius: 12rpx;
+  background: linear-gradient(135deg, #1565c0 0%, #42a5f5 100%);
+  box-shadow: 0 4rpx 12rpx rgba(21,101,192,.3);
+}
+
+.review-save-text {
+  font-size: 26rpx;
+  color: #fff;
+  font-weight: 500;
+}
+
+/* 延伸阅读 — 毛玻璃 */
+.related {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255,255,255,.2);
+  padding: 32rpx;
+  margin: 16rpx 24rpx;
+  border-radius: 20rpx;
+  box-shadow: 0 4rpx 16rpx rgba(31,38,50,.1);
+}
+
+.related__head {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  margin-bottom: 24rpx;
+}
+
+.related__icon { font-size: 28rpx; }
+
+.related__title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #0d47a1;
+}
+
+.related__list { margin-top: 16rpx; }
+
+.related__item {
+  display: flex;
+  align-items: center;
+  padding: 24rpx 0;
+  border-bottom: 1px solid rgba(255,255,255,.12);
+  transition: background 150ms ease;
+}
+
+.related__item:last-child { border-bottom: none; }
+.related__item--hover { background: rgba(255,255,255,.08); }
+
+.related__info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6rpx;
+}
+
+.related__name {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #0d47a1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.related__desc {
+  font-size: 24rpx;
+  color: #1565c0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.related__arrow {
+  font-size: 36rpx;
+  color: #1565c0;
+  font-weight: 300;
+  margin-left: 12rpx;
+  flex-shrink: 0;
+}
+
+/* 底部 */
+.footer {
+  text-align: center;
+  padding: 48rpx 24rpx 32rpx;
+}
+
+.footer__icon { font-size: 40rpx; margin-bottom: 12rpx; display: block; }
+.footer__text { font-size: 24rpx; color: #1565c0; }
+
+/* 底部操作栏 */
+.bottom-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  padding-bottom: constant(safe-area-inset-bottom);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.bottom-bar__bg {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(135deg, rgba(21,101,192,.7) 0%, rgba(66,165,245,.6) 100%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(255,255,255,.25);
+}
+
+.bottom-bar__content {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  height: 120rpx;
+  padding: 0 24rpx;
+}
+
+.bottom-bar__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6rpx;
+  padding: 12rpx 24rpx;
+  border-radius: 16rpx;
+  transition: background 150ms ease;
+}
+
+.bottom-bar__item:active {
+  background: rgba(255,255,255,.1);
+}
+
+.bottom-bar__icon {
+  font-size: 40rpx;
+  line-height: 1;
+}
+
+.bottom-bar__text {
+  font-size: 22rpx;
+  color: #fff;
+  font-weight: 500;
+}
+
+/* Toast */
+.nice-toast {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.8);
+  background: rgba(0,0,0,.75);
+  color: #fff;
+  padding: 24rpx 40rpx;
+  border-radius: 12rpx;
+  font-size: 28rpx;
+  z-index: 9999;
+  opacity: 0;
+  transition: all 300ms ease;
+  pointer-events: none;
+}
+
+.nice-toast--show {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.nice-toast--error { background: rgba(244,67,54,.9); }
+.nice-toast--success { background: rgba(76,175,80,.9); }

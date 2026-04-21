@@ -1,0 +1,53 @@
+<!--pages/running-home/running-home.wxml-->
+<view class="running-home">
+  <!-- 状态栏占位 -->
+  <view class="page-statusbar" style="height: {{statusBarHeight}}px;"></view>
+  
+  <!-- 顶部标题 -->
+  <view class="page-header">
+    <view class="page-header__bg"></view>
+    <view class="page-header__content">
+      <text class="page-header__emoji">🏃</text>
+      <text class="page-header__title">跑步知识</text>
+      <text class="page-header__sub">科学训练 · 无伤跑步 · 持续进步</text>
+    </view>
+  </view>
+
+  <!-- 搜索框 -->
+  <view class="search-bar" bindtap="onSearchTap">
+    <view class="search-bar__bg"></view>
+    <view class="search-bar__inner">
+      <text class="search-bar__icon">🔍</text>
+      <text class="search-bar__text">搜索跑步知识...</text>
+    </view>
+  </view>
+
+  <!-- 7个频道入口 -->
+  <view class="channel-section">
+    <view class="section__head">
+      <view class="section__title-wrap">
+        <text class="section__icon">📚</text>
+        <text class="section__title">知识频道</text>
+      </view>
+    </view>
+    
+    <view class="channel-grid">
+      <view class="channel-card" wx:for="{{channels}}" wx:key="id" data-channel="{{item.id}}" data-name="{{item.name}}" bindtap="onChannelTap">
+        <view class="channel-card__bg"></view>
+        <view class="channel-card__inner">
+          <text class="channel-card__icon">{{item.icon}}</text>
+          <text class="channel-card__name">{{item.name}}</text>
+          <text class="channel-card__count">{{item.count}}篇</text>
+        </view>
+        <text class="channel-card__arrow">›</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部 -->
+  <view class="footer">
+    <text class="footer__icon">🏃‍♂️</text>
+    <text class="footer__main">科学跑步，从学习开始</text>
+    <text class="footer__sub">每一步都是进步</text>
+  </view>
+</view>

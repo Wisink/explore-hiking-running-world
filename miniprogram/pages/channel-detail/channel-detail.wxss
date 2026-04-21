@@ -1,0 +1,272 @@
+/* pages/channel-detail/channel-detail.wxss - 蓝色系跑步主题 */
+
+/* 状态栏占位 — 毛玻璃 */
+.page-statusbar {
+  background: linear-gradient(135deg,
+    rgba(21, 101, 192, 0.5) 0%,
+    rgba(66, 165, 245, 0.4) 100%
+  );
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+/* ===== CSS Variables ===== */
+:host {
+  --glass-bg: rgba(255, 255, 255, 0.22);
+  --glass-bg-light: rgba(255, 255, 255, 0.12);
+  --glass-bg-strong: rgba(255, 255, 255, 0.35);
+  --glass-border: rgba(255, 255, 255, 0.25);
+  --glass-blur: blur(16px);
+  --glass-shadow: 0 8rpx 32rpx rgba(31, 38, 50, 0.18);
+  --text: #0d47a1;
+  --text2: #1565c0;
+  --primary: #1565c0;
+  --primary-dark: #0d47a1;
+  --r: 36rpx;
+  --tr: all 350ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.channel-detail {
+  min-height: 100vh;
+  padding-bottom: calc(140rpx + constant(safe-area-inset-bottom));
+  padding-bottom: calc(140rpx + env(safe-area-inset-bottom));
+  background-color: #bbdefb;
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(21,101,192,.6) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(66,165,245,.5) 0%, transparent 50%),
+    radial-gradient(ellipse at 60% 80%, rgba(100,181,246,.4) 0%, transparent 50%),
+    radial-gradient(ellipse at 10% 90%, rgba(187,222,251,.6) 0%, transparent 40%),
+    linear-gradient(160deg, #e3f2fd 0%, #bbdefb 25%, #90caf9 50%, #64b5f6 75%, #42a5f5 100%);
+}
+
+/* 顶部固定栏 — 毛玻璃 */
+.page-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  padding: 0 32rpx;
+  height: 88rpx;
+  display: flex;
+  align-items: center;
+}
+
+.page-header__bg {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(135deg, rgba(21,101,192,.5) 0%, rgba(66,165,245,.4) 100%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255,255,255,.25);
+}
+
+.page-header__content {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 20rpx;
+}
+
+.page-header__back {
+  width: 60rpx;
+  height: 60rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,.2);
+}
+
+.page-header__back-text {
+  font-size: 36rpx;
+  color: #0d47a1;
+  font-weight: 300;
+}
+
+.page-header__title {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #0d47a1;
+  letter-spacing: 1rpx;
+  text-shadow: 0 1rpx 6rpx rgba(255,255,255,.5);
+}
+
+/* 搜索框 — 毛玻璃 */
+.search-bar {
+  position: relative;
+  margin: 120rpx 24rpx 36rpx;
+  border-radius: 24rpx;
+  overflow: hidden;
+  box-shadow: 0 8rpx 32rpx rgba(31,38,50,.12);
+}
+
+.search-bar__bg {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255,255,255,.25);
+  border-radius: 24rpx;
+}
+
+.search-bar__inner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 28rpx 24rpx;
+  gap: 16rpx;
+}
+
+.search-bar__icon {
+  font-size: 36rpx;
+}
+
+.search-bar__text {
+  font-size: 28rpx;
+  color: #1565c0;
+  opacity: 0.7;
+}
+
+/* 子分类区域 */
+.subcategory-section {
+  margin: 0 24rpx 36rpx;
+}
+
+.section__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+  padding: 0 8rpx;
+}
+
+.section__title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+}
+
+.section__icon { font-size: 32rpx; }
+
+.section__title {
+  font-size: 34rpx;
+  font-weight: 700;
+  color: #0d47a1;
+}
+
+.section__count {
+  background: rgba(21, 101, 192, 0.2);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 6rpx 16rpx;
+  border-radius: 20rpx;
+  font-size: 22rpx;
+  color: #0d47a1;
+  font-weight: 500;
+  border: 1px solid rgba(21,101,192,.15);
+}
+
+/* 子分类列表 */
+.subcategory-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+/* 子分类项 — 毛玻璃 */
+.subcategory-item {
+  position: relative;
+  border-radius: 24rpx;
+  overflow: hidden;
+  box-shadow: 0 8rpx 32rpx rgba(31,38,50,.12);
+  transition: transform 150ms ease;
+}
+
+.subcategory-item:active {
+  transform: scale(0.98);
+}
+
+.subcategory-item__bg {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255,255,255,.25);
+  border-radius: 24rpx;
+}
+
+.subcategory-item__inner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 28rpx 24rpx;
+  gap: 20rpx;
+}
+
+.subcategory-item__index {
+  width: 60rpx;
+  height: 60rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(21, 101, 192, 0.1);
+  border-radius: 16rpx;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,.2);
+}
+
+.subcategory-item__index-text {
+  font-size: 24rpx;
+  font-weight: 700;
+  color: #0d47a1;
+}
+
+.subcategory-item__body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6rpx;
+}
+
+.subcategory-item__name {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #0d47a1;
+}
+
+.subcategory-item__count {
+  font-size: 24rpx;
+  color: #1565c0;
+}
+
+.subcategory-item__arrow {
+  font-size: 36rpx;
+  color: #1565c0;
+  font-weight: 300;
+}
+
+/* 底部 */
+.footer {
+  text-align: center;
+  padding: 48rpx 24rpx 32rpx;
+}
+
+.footer__icon { font-size: 48rpx; margin-bottom: 12rpx; display: block; }
+
+.footer__main {
+  font-size: 28rpx;
+  color: #0d47a1;
+  font-weight: 600;
+  display: block;
+  margin-bottom: 8rpx;
+}
+
+.footer__sub { font-size: 22rpx; color: #1565c0; }

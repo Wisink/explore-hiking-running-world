@@ -1,0 +1,144 @@
+<!--pages/running-article/running-article.wxml-->
+<view class="article-page">
+  <!-- 统一头部 -->
+  <view class="page-header">
+    <view class="page-header__statusbar" style="height: {{statusBarHeight}}px;"></view>
+    <view class="page-header__nav">
+      <view class="page-header__back" bindtap="onBack">
+        <text class="page-header__back-icon">{{lt}}</text>
+        <text class="page-header__back-text">返回</text>
+      </view>
+      <text class="page-header__title">{{article.title}}</text>
+      <view class="page-header__spacer"></view>
+    </view>
+  </view>
+  <view style="height: {{headerHeight}}px;"></view>
+
+  <!-- 加载 -->
+  <view class="loading-wrap" wx:if="{{loading}}">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">正在加载文章...</text>
+  </view>
+
+  <block wx:if="{{!loading && article}}">
+    <!-- 文章头部 -->
+    <view class="article-header">
+      <view class="article-header__meta">
+        <view class="article-header__tag" wx:if="{{article.difficulty}}">
+          <text class="article-header__tag-text">{{article.difficulty}}</text>
+        </view>
+        <view class="article-header__right">
+          <text class="article-header__read-time" wx:if="{{article.readTime}}">{{article.readTime}}分钟阅读</text>
+          <text class="article-header__views">👁 {{article.viewCount}} 次阅读</text>
+        </view>
+      </view>
+
+      <text class="article-header__title">{{article.title}}</text>
+      <text class="article-header__summary" wx:if="{{article.summary}}">{{article.summary}}</text>
+    </view>
+
+    <!-- 正文 -->
+    <view class="article-body">
+      <rich-text nodes="{{article.content}}"></rich-text>
+    </view>
+
+    <!-- 阅读感受区域 -->
+    <view class="review-section">
+      <view class="section-head">
+        <view class="section-title-wrap">
+          <text class="section-icon">✍️</text>
+          <text class="section-title">阅读感受</text>
+        </view>
+      </view>
+      
+      <!-- 当前用户感受 -->
+      <view class="my-review" wx:if="{{myReview}}">
+        <view class="review-card">
+          <view class="review-header">
+            <text class="review-label">我的感受</text>
+            <view class="review-edit-btn" bindtap="onEditReview">
+              <text class="review-edit-text">编辑</text>
+            </view>
+          </view>
+          <text class="review-content">{{myReview.content}}</text>
+          <text class="review-time">{{myReview.formattedTime}}</text>
+        </view>
+      </view>
+
+      <!-- 感受输入框 -->
+      <view class="review-input-wrap" wx:if="{{!myReview || showReviewInput}}">
+        <view class="review-input-card">
+          <textarea 
+            class="review-textarea" 
+            placeholder="写下你的阅读感受..." 
+            value="{{reviewText}}"
+            bindinput="onReviewInput"
+            maxlength="500"
+            auto-height
+          ></textarea>
+          <view class="review-actions">
+            <view class="review-cancel-btn" wx:if="{{showReviewInput}}" bindtap="onCancelReview">
+              <text class="review-cancel-text">取消</text>
+            </view>
+            <view class="review-save-btn" bindtap="onSaveReview">
+              <text class="review-save-text">保存感受</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 延伸阅读 -->
+    <view class="related" wx:if="{{relatedArticles.length > 0}}">
+      <view class="related__head">
+        <text class="related__icon">📎</text>
+        <text class="related__title">延伸阅读</text>
+      </view>
+
+      <view class="related__list">
+        <view
+          class="related__item"
+          wx:for="{{relatedArticles}}"
+          wx:key="_id"
+          data-id="{{item._id}}"
+          bindtap="onRelatedTap"
+          hover-class="related__item--hover"
+          hover-stay-time="80"
+        >
+          <view class="related__info">
+            <text class="related__name">{{item.title}}</text>
+            <text class="related__desc">{{item.summary}}</text>
+          </view>
+          <text class="related__arrow">›</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 底部 -->
+    <view class="footer">
+      <text class="footer__icon">🏃</text>
+      <text class="footer__text">科学跑步，健康生活</text>
+    </view>
+  </block>
+
+  <!-- 底部操作栏 -->
+  <view class="bottom-bar">
+    <view class="bottom-bar__bg"></view>
+    <view class="bottom-bar__content">
+      <view class="bottom-bar__item" bindtap="onToggleFavorite">
+        <text class="bottom-bar__icon">{{isFavorited ? '❤️' : '🤍'}}</text>
+        <text class="bottom-bar__text">{{isFavorited ? '已收藏' : '收藏'}}</text>
+      </view>
+      <view class="bottom-bar__item" bindtap="onWriteReview">
+        <text class="bottom-bar__icon">✍️</text>
+        <text class="bottom-bar__text">写感受</text>
+      </view>
+      <view class="bottom-bar__item" bindtap="onShare">
+        <text class="bottom-bar__icon">📤</text>
+        <text class="bottom-bar__text">分享</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="nice-toast nice-toast--{{toastType}} {{showToast ? 'nice-toast--show' : ''}}">{{toastMessage}}</view>
+</view>

@@ -1,0 +1,126 @@
+/* pages/running-admin/article-edit.wxss */
+
+.container {
+  min-height: 100vh;
+  background: #f5f5f5;
+  padding-bottom: 40rpx;
+}
+
+/* 固定头部 */
+.fixed-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: linear-gradient(135deg, #1565c0, #42a5f5);
+  padding-top: var(--status-bar-height, 20px);
+}
+.header-bar {
+  display: flex;
+  align-items: center;
+  height: 88rpx;
+  padding: 0 24rpx;
+}
+.back-btn {
+  font-size: 40rpx;
+  color: #fff;
+  padding: 10rpx 20rpx 10rpx 0;
+}
+.header-title {
+  flex: 1;
+  font-size: 34rpx;
+  color: #fff;
+  font-weight: 600;
+  text-align: center;
+}
+.header-right {
+  width: 100rpx;
+}
+.header-placeholder {
+  height: calc(var(--status-bar-height, 20px) + 88rpx);
+}
+
+/* 表单 */
+.form {
+  padding: 24rpx;
+}
+.form-group {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 24rpx 28rpx;
+  margin-bottom: 20rpx;
+}
+.form-label {
+  font-size: 28rpx;
+  color: #333;
+  font-weight: 600;
+  margin-bottom: 16rpx;
+  display: block;
+}
+.form-label .required {
+  color: #e53935;
+  margin-left: 4rpx;
+}
+.form-input {
+  width: 100%;
+  font-size: 28rpx;
+  color: #333;
+  padding: 16rpx 0;
+  border-bottom: 1rpx solid #eee;
+}
+.form-textarea {
+  width: 100%;
+  min-height: 300rpx;
+  font-size: 28rpx;
+  color: #333;
+  padding: 16rpx 0;
+  line-height: 1.6;
+}
+.form-textarea--short {
+  min-height: 120rpx;
+}
+.form-picker {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16rpx 0;
+  border-bottom: 1rpx solid #eee;
+}
+.form-picker-text {
+  font-size: 28rpx;
+  color: #333;
+}
+.form-picker-placeholder {
+  color: #999;
+}
+.picker-arrow {
+  font-size: 24rpx;
+  color: #ccc;
+}
+.form-switch {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16rpx 0;
+}
+
+/* 保存按钮 */
+.save-btn {
+  margin: 40rpx 24rpx;
+  height: 88rpx;
+  line-height: 88rpx;
+  text-align: center;
+  background: linear-gradient(135deg, #1565c0, #42a5f5);
+  color: #fff;
+  font-size: 32rpx;
+  font-weight: 600;
+  border-radius: 44rpx;
+  border: none;
+}
+.save-btn:active {
+  opacity: 0.85;
+}
+.save-btn[disabled] {
+  opacity: 0.5;
+}

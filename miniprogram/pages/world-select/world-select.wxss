@@ -1,0 +1,172 @@
+/* pages/world-select/world-select.wxss */
+
+.container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(160deg, #e8f5e9 0%, #f1f8e9 40%, #e3f2fd 100%);
+  position: relative;
+  overflow: hidden;
+  padding: 40rpx;
+  box-sizing: border-box;
+}
+
+/* 背景装饰 */
+.bg-decor {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.15;
+}
+.bg-decor--tl {
+  width: 400rpx;
+  height: 400rpx;
+  background: #66bb6a;
+  top: -100rpx;
+  left: -100rpx;
+}
+.bg-decor--br {
+  width: 500rpx;
+  height: 500rpx;
+  background: #42a5f5;
+  bottom: -150rpx;
+  right: -150rpx;
+}
+
+/* 标题区域 */
+.header {
+  text-align: center;
+  margin-bottom: 80rpx;
+}
+.header__icon {
+  font-size: 80rpx;
+  margin-bottom: 16rpx;
+}
+.header__title {
+  display: block;
+  font-size: 52rpx;
+  font-weight: 700;
+  color: #2e3d2e;
+  letter-spacing: 4rpx;
+}
+.header__subtitle {
+  display: block;
+  font-size: 28rpx;
+  color: #6b7b6b;
+  margin-top: 12rpx;
+}
+
+/* 卡片容器 */
+.cards {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 36rpx;
+}
+
+/* 卡片基础 */
+.card {
+  position: relative;
+  border-radius: 24rpx;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  padding: 48rpx 40rpx;
+  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
+}
+.card:active {
+  transform: scale(0.97);
+}
+
+/* 卡片背景 */
+.card__bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  opacity: 0.12;
+}
+.card__bg--hiking {
+  background: linear-gradient(135deg, #2e7d32, #66bb6a);
+}
+.card__bg--running {
+  background: linear-gradient(135deg, #1565c0, #42a5f5);
+}
+
+/* 徒步卡片边框 */
+.card--hiking {
+  background: rgba(255, 255, 255, 0.92);
+  border: 2rpx solid rgba(46, 125, 50, 0.2);
+}
+
+/* 跑步卡片边框 */
+.card--running {
+  background: rgba(255, 255, 255, 0.92);
+  border: 2rpx solid rgba(21, 101, 192, 0.2);
+}
+
+/* 卡片内容 */
+.card__content {
+  flex: 1;
+  position: relative;
+  z-index: 1;
+}
+.card__icon {
+  font-size: 56rpx;
+  margin-bottom: 12rpx;
+}
+.card__title {
+  display: block;
+  font-size: 40rpx;
+  font-weight: 700;
+  color: #2e3d2e;
+  margin-bottom: 8rpx;
+}
+.card--running .card__title {
+  color: #1a2e4a;
+}
+.card__desc {
+  display: block;
+  font-size: 26rpx;
+  color: #6b7b6b;
+  margin-bottom: 16rpx;
+}
+
+/* 标签 */
+.card__tags {
+  display: flex;
+  gap: 12rpx;
+  flex-wrap: wrap;
+}
+.card__tag {
+  font-size: 22rpx;
+  padding: 6rpx 16rpx;
+  border-radius: 20rpx;
+  background: rgba(46, 125, 50, 0.1);
+  color: #2e7d32;
+}
+.card--running .card__tag {
+  background: rgba(21, 101, 192, 0.1);
+  color: #1565c0;
+}
+
+/* 箭头 */
+.card__arrow {
+  font-size: 48rpx;
+  color: #aaa;
+  margin-left: 20rpx;
+  position: relative;
+  z-index: 1;
+}
+
+/* 底部 */
+.footer {
+  margin-top: 60rpx;
+}
+.footer__text {
+  font-size: 24rpx;
+  color: #999;
+}

@@ -1,0 +1,53 @@
+<!--pages/world-select/world-select.wxml-->
+<view class="container">
+  <!-- 背景装饰 -->
+  <view class="bg-decor bg-decor--tl"></view>
+  <view class="bg-decor bg-decor--br"></view>
+
+  <!-- 标题区域 -->
+  <view class="header">
+    <view class="header__icon">🌍</view>
+    <text class="header__title">秦人户外</text>
+    <text class="header__subtitle">选择你想探索的世界</text>
+  </view>
+
+  <!-- 世界卡片 -->
+  <view class="cards">
+    <!-- 徒步世界 -->
+    <view class="card card--hiking" bindtap="selectWorld" data-world="hiking">
+      <view class="card__bg card__bg--hiking"></view>
+      <view class="card__content">
+        <view class="card__icon">🏔️</view>
+        <text class="card__title">徒步世界</text>
+        <text class="card__desc">探索山野路线 · 徒步知识科普</text>
+        <view class="card__tags">
+          <text class="card__tag">路线查询</text>
+          <text class="card__tag">装备推荐</text>
+          <text class="card__tag">安全自救</text>
+        </view>
+      </view>
+      <view class="card__arrow">›</view>
+    </view>
+
+    <!-- 跑步世界 -->
+    <view class="card card--running" bindtap="selectWorld" data-world="running">
+      <view class="card__bg card__bg--running"></view>
+      <view class="card__content">
+        <view class="card__icon">🏃</view>
+        <text class="card__title">跑步世界</text>
+        <text class="card__desc">科学跑步训练 · 跑步知识科普</text>
+        <view class="card__tags">
+          <text class="card__tag">训练方法</text>
+          <text class="card__tag">无伤跑步</text>
+          <text class="card__tag">装备指南</text>
+        </view>
+      </view>
+      <view class="card__arrow">›</view>
+    </view>
+  </view>
+
+  <!-- 底部提示 -->
+  <view class="footer">
+    <text class="footer__text">随时可以在个人中心切换世界</text>
+  </view>
+</view>

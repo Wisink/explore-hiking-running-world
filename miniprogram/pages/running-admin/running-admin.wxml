@@ -1,0 +1,236 @@
+<!--pages/running-admin/running-admin.wxml-->
+<view class="admin-page">
+
+  <!-- 固定头部 -->
+  <view class="detail-fixed-header" style="padding-top: {{statusBarHeight}}px;">
+    <view class="detail-nav">
+      <view class="detail-nav__back" bindtap="onBack">
+        <text class="detail-nav__back-icon">‹</text>
+        <text class="detail-nav__back-text">返回</text>
+      </view>
+      <text class="detail-nav__title">跑步后台管理</text>
+      <view class="detail-nav__spacer"></view>
+    </view>
+  </view>
+  <view class="detail-header-placeholder" style="height: {{statusBarHeight + 44}}px;"></view>
+
+  <!-- 数据概览卡片 -->
+  <view class="dashboard-section">
+    <view class="section-title">📊 数据概览</view>
+    <view class="stats-grid">
+      <view class="stats-item">
+        <text class="stats-item__num">{{dashboard.totalArticles}}</text>
+        <text class="stats-item__label">📝 文章总数</text>
+      </view>
+      <view class="stats-item">
+        <text class="stats-item__num">{{dashboard.totalUsers}}</text>
+        <text class="stats-item__label">👥 累计用户</text>
+      </view>
+      <view class="stats-item">
+        <text class="stats-item__num">{{dashboard.totalReads}}</text>
+        <text class="stats-item__label">👁 累计阅读</text>
+      </view>
+      <view class="stats-item">
+        <text class="stats-item__num">{{dashboard.totalFavorites}}</text>
+        <text class="stats-item__label">❤️ 累计收藏</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 增长趋势 -->
+  <view class="dashboard-section">
+    <view class="section-title">📈 增长趋势</view>
+    <view class="trend-tabs">
+      <view class="trend-tab {{trendDimension === 'day' ? 'trend-tab--on' : ''}}" data-value="day" catchtap="onTrendDimensionChange">
+        <text>按日</text>
+      </view>
+      <view class="trend-tab {{trendDimension === 'week' ? 'trend-tab--on' : ''}}" data-value="week" catchtap="onTrendDimensionChange">
+        <text>按周</text>
+      </view>
+      <view class="trend-tab {{trendDimension === 'month' ? 'trend-tab--on' : ''}}" data-value="month" catchtap="onTrendDimensionChange">
+        <text>按月</text>
+      </view>
+    </view>
+    
+    <!-- 趋势图表 -->
+    <view class="trend-charts">
+      <!-- 用户数趋势 -->
+      <view class="trend-panel">
+        <view class="trend-panel__header" data-field="userTrend" catchtap="toggleTrendPanel">
+          <text class="trend-panel__title">👥 用户数趋势</text>
+          <text class="trend-panel__arrow">{{userTrendExpanded ? '▼' : '▶'}}</text>
+        </view>
+        <view class="trend-panel__body" wx:if="{{userTrendExpanded}}">
+          <view class="bar-chart" wx:if="{{userTrendList.length > 0}}">
+            <view class="bar-row" wx:for="{{userTrendList}}" wx:key="label">
+              <text class="bar-row__label">{{item.label}}</text>
+              <view class="bar-row__track">
+                <view class="bar-row__fill bar-row__fill--blue" style="width: {{item.barPct}}%"></view>
+              </view>
+              <text class="bar-row__value">{{item.value}}</text>
+            </view>
+          </view>
+          <view class="chart-empty" wx:else>
+            <text>暂无数据</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 阅读数趋势 -->
+      <view class="trend-panel">
+        <view class="trend-panel__header" data-field="readTrend" catchtap="toggleTrendPanel">
+          <text class="trend-panel__title">👁 阅读数趋势</text>
+          <text class="trend-panel__arrow">{{readTrendExpanded ? '▼' : '▶'}}</text>
+        </view>
+        <view class="trend-panel__body" wx:if="{{readTrendExpanded}}">
+          <view class="bar-chart" wx:if="{{readTrendList.length > 0}}">
+            <view class="bar-row" wx:for="{{readTrendList}}" wx:key="label">
+              <text class="bar-row__label">{{item.label}}</text>
+              <view class="bar-row__track">
+                <view class="bar-row__fill bar-row__fill--green" style="width: {{item.barPct}}%"></view>
+              </view>
+              <text class="bar-row__value">{{item.value}}</text>
+            </view>
+          </view>
+          <view class="chart-empty" wx:else>
+            <text>暂无数据</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 收藏数趋势 -->
+      <view class="trend-panel">
+        <view class="trend-panel__header" data-field="favoriteTrend" catchtap="toggleTrendPanel">
+          <text class="trend-panel__title">❤️ 收藏数趋势</text>
+          <text class="trend-panel__arrow">{{favoriteTrendExpanded ? '▼' : '▶'}}</text>
+        </view>
+        <view class="trend-panel__body" wx:if="{{favoriteTrendExpanded}}">
+          <view class="bar-chart" wx:if="{{favoriteTrendList.length > 0}}">
+            <view class="bar-row" wx:for="{{favoriteTrendList}}" wx:key="label">
+              <text class="bar-row__label">{{item.label}}</text>
+              <view class="bar-row__track">
+                <view class="bar-row__fill bar-row__fill--yellow" style="width: {{item.barPct}}%"></view>
+              </view>
+              <text class="bar-row__value">{{item.value}}</text>
+            </view>
+          </view>
+          <view class="chart-empty" wx:else>
+            <text>暂无数据</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 感受数趋势 -->
+      <view class="trend-panel">
+        <view class="trend-panel__header" data-field="reviewTrend" catchtap="toggleTrendPanel">
+          <text class="trend-panel__title">✍️ 感受数趋势</text>
+          <text class="trend-panel__arrow">{{reviewTrendExpanded ? '▼' : '▶'}}</text>
+        </view>
+        <view class="trend-panel__body" wx:if="{{reviewTrendExpanded}}">
+          <view class="bar-chart" wx:if="{{reviewTrendList.length > 0}}">
+            <view class="bar-row" wx:for="{{reviewTrendList}}" wx:key="label">
+              <text class="bar-row__label">{{item.label}}</text>
+              <view class="bar-row__track">
+                <view class="bar-row__fill bar-row__fill--orange" style="width: {{item.barPct}}%"></view>
+              </view>
+              <text class="bar-row__value">{{item.value}}</text>
+            </view>
+          </view>
+          <view class="chart-empty" wx:else>
+            <text>暂无数据</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 分享数趋势 -->
+      <view class="trend-panel">
+        <view class="trend-panel__header" data-field="shareTrend" catchtap="toggleTrendPanel">
+          <text class="trend-panel__title">🔄 分享数趋势</text>
+          <text class="trend-panel__arrow">{{shareTrendExpanded ? '▼' : '▶'}}</text>
+        </view>
+        <view class="trend-panel__body" wx:if="{{shareTrendExpanded}}">
+          <view class="bar-chart" wx:if="{{shareTrendList.length > 0}}">
+            <view class="bar-row" wx:for="{{shareTrendList}}" wx:key="label">
+              <text class="bar-row__label">{{item.label}}</text>
+              <view class="bar-row__track">
+                <view class="bar-row__fill bar-row__fill--purple" style="width: {{item.barPct}}%"></view>
+              </view>
+              <text class="bar-row__value">{{item.value}}</text>
+            </view>
+          </view>
+          <view class="chart-empty" wx:else>
+            <text>暂无数据</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 分类Top10阅读排行 -->
+  <view class="dashboard-section">
+    <view class="section-title">🏆 分类Top10阅读排行</view>
+    <view class="channel-tabs">
+      <view class="channel-tab {{activeChannel === index ? 'channel-tab--on' : ''}}" 
+            wx:for="{{channels}}" wx:key="index" 
+            data-index="{{index}}" catchtap="onChannelChange">
+        <text>{{item}}</text>
+      </view>
+    </view>
+    <view class="top-articles">
+      <view class="top-article-item" wx:for="{{topArticles}}" wx:key="_id">
+        <text class="top-article-rank {{index < 3 ? 'top-article-rank--top' : ''}}">{{index + 1}}</text>
+        <view class="top-article-info">
+          <text class="top-article-title">{{item.title}}</text>
+          <text class="top-article-reads">{{item.readCount}} 次阅读</text>
+        </view>
+      </view>
+      <view class="empty-tip" wx:if="{{topArticles.length === 0}}">
+        <text>暂无数据</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 文章管理 -->
+  <view class="dashboard-section">
+    <view class="section-title">📚 文章管理</view>
+    <view class="add-article-btn" bindtap="onAddArticle">
+      <text>+ 新增文章</text>
+    </view>
+    <view class="article-list">
+      <view class="article-item" wx:for="{{articles}}" wx:key="_id">
+        <view class="article-info">
+          <text class="article-title">{{item.title}}</text>
+          <view class="article-meta">
+            <text class="article-category">{{item.categoryName}}</text>
+            <text class="article-status {{item.isActive ? 'article-status--active' : 'article-status--inactive'}}">
+              {{item.isActive ? '上架' : '下架'}}
+            </text>
+            <text class="article-reads">👁 {{item.readCount}}</text>
+          </view>
+        </view>
+        <view class="article-actions">
+          <view class="action-btn action-btn--edit" catchtap="onEditArticle" data-id="{{item._id}}">
+            <text>编辑</text>
+          </view>
+          <view class="action-btn action-btn--delete" catchtap="onDeleteArticle" data-id="{{item._id}}">
+            <text>删除</text>
+          </view>
+          <view class="action-btn {{item.isActive ? 'action-btn--off' : 'action-btn--on'}}" 
+                catchtap="onToggleArticle" data-id="{{item._id}}" data-active="{{item.isActive}}">
+            <text>{{item.isActive ? '下架' : '上架'}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 加载更多 -->
+    <view class="loading-wrap" wx:if="{{articlesLoading}}">
+      <text class="loading-text">加载中...</text>
+    </view>
+    <view class="list-end" wx:if="{{!articlesHasMore && articles.length > 0}}">
+      <text>— 没有更多了 —</text>
+    </view>
+  </view>
+
+  <view class="nice-toast nice-toast--{{toastType}} {{showToast ? 'nice-toast--show' : ''}}">{{toastMessage}}</view>
+</view>
