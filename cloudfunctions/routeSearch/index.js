@@ -310,10 +310,10 @@ function parseRouteInfo(searchResults, routeName) {
   else if (/环线|环穿|环山/.test(allText)) routeType = '环线'
   else if (/原返|原路返回/.test(allText)) routeType = '原返'
 
-  // ===== 路线命名：区县 + 路线名称 + 路线类型（区县）=====
+  // ===== 路线命名：区县 + 路线名称 + 路线类型 =====
   // 清洗原始名称：去掉括号内容、去掉"徒步"等通用词尾
   let cleanName = routeName
-    .replace(/[（(][\w·]+[）)]/g, '')  // 去掉已有括号
+    .replace(/[（(][^）)]*[）)]/g, '')  // 去掉已有括号
     .replace(/徒步$/, '').trim()
 
   // 检查是否已有路线类型
@@ -321,9 +321,9 @@ function parseRouteInfo(searchResults, routeName) {
     cleanName = cleanName + routeType
   }
 
-  // 组装最终名称：区县 + 路线名（区县）
+  // 组装最终名称：区县 + 路线名（不加括号）
   if (info.location_district && !cleanName.includes(info.location_district)) {
-    info.name = `${cleanName}（${info.location_district}）`
+    info.name = info.location_district + cleanName
   } else {
     info.name = cleanName
   }
@@ -355,45 +355,93 @@ function parseRouteInfo(searchResults, routeName) {
   }
   info.shortDesc = hookSentence.substring(0, 35)
 
-  // ===== 详细描述：结构化、去重、精炼（≤300字）=====
-  // 提取所有搜索结果中的关键句子（去重）
-  const keySentences = new Set()
+  // ===== 详细描述：结构化完整描述（≤800字）=====
+  // 收集去重的关键句子
+  const allKeySentences = []
   for (const text of allTexts) {
     const sentences = text.split(/[。！？；\n]/)
       .map(s => s.trim())
       .filter(s =>
-        s.length >= 10 && s.length <= 80 &&
-        !/攻略|下载|APP|微信|关注|点赞|转发|评论|搜索|版权所有|免责|广告|推荐/.test(s) &&
-        !/^其|^该|^这个|^这是/.test(s)
+        s.length >= 10 && s.length <= 100 &&
+        !/攻略|下载|APP|微信|关注|点赞|转发|评论|搜索|版权所有|免责|广告|推荐|本文|作者|来源|编辑/.test(s) &&
+        !/^其|^该|^这个|^这是|^目前/.test(s)
       )
-    // 每条搜索结果取前2句
     let added = 0
     for (const s of sentences) {
-      if (added >= 2) break
-      // 去重：忽略数字差异，只看文本骨架
+      if (added >= 3) break
       const skeleton = s.replace(/\d+/g, '#')
-      if (![...keySentences].some(ks => ks.replace(/\d+/g, '#') === skeleton)) {
-        keySentences.add(s)
+      if (!allKeySentences.some(ks => ks.replace(/\d+/g, '#') === skeleton)) {
+        allKeySentences.push(s)
         added++
       }
     }
   }
 
-  // 组装描述：核心特色 → 地理位置 → 适合人群
+  // 按主题分类句子
+  const scenerySentences = []    // 景观特色
+  const routeSentences = []      // 路线描述
+  const trafficSentences = []    // 交通信息
+  const otherSentences = []      // 其他
+
+  for (const s of allKeySentences) {
+    if (/瀑布|溪流|峡谷|草甸|丹霞|红叶|花海|竹林|石窟|古寺|溶洞|云海|银杏|湿地|石桥|古道|奇石|古村|湖泊|天池|瀑布/.test(s)) {
+      scenerySentences.push(s)
+    } else if (/公里|千米|爬升|海拔|山路|步道|台阶|平缓|陡峭|泥泞|穿越|环线|原返|出发|起点|终点|耗时|用时/.test(s)) {
+      routeSentences.push(s)
+    } else if (/自驾|导航|地铁|公交|高速|停车|出发|从西安|开车/.test(s)) {
+      trafficSentences.push(s)
+    } else {
+      otherSentences.push(s)
+    }
+  }
+
+  // 构建结构化描述
   const descParts = []
 
-  // 核心特色（前3个特征）
+  // 第一段：路线概述（核心特色+定位）
+  const overview = []
   if (featurePool.length > 0) {
-    descParts.push(featurePool.slice(0, 4).join('、'))
+    overview.push(featurePool.slice(0, 4).join('、'))
+  }
+  if (scenerySentences.length > 0) {
+    overview.push(scenerySentences[0])
+  }
+  if (otherSentences.length > 0) {
+    overview.push(otherSentences[0])
+  }
+  if (overview.length > 0) descParts.push(overview.join('。'))
+
+  // 第二段：路线详情
+  const detailParts = []
+  if (routeSentences.length > 0) {
+    detailParts.push(routeSentences.slice(0, 2).join('。'))
+  }
+  // 补充数字信息
+  const statParts = []
+  if (info.distance) statParts.push(`全程约${info.distance}公里`)
+  if (info.elevationGain) statParts.push(`累计爬升${info.elevationGain}米`)
+  if (info.elevationMax) statParts.push(`最高海拔${info.elevationMax}米`)
+  if (info.durationMin && info.durationMax) {
+    statParts.push(info.durationMin === info.durationMax
+      ? `预计耗时${info.durationMin}小时`
+      : `预计耗时${info.durationMin}-${info.durationMax}小时`)
+  }
+  if (statParts.length > 0) {
+    detailParts.push(statParts.join('，'))
+  }
+  if (detailParts.length > 0) descParts.push(detailParts.join('。'))
+
+  // 第三段：景观描述（补充更多景观信息）
+  if (scenerySentences.length > 1) {
+    descParts.push(scenerySentences.slice(1, 3).join('。'))
   }
 
-  // 关键描述句（去重后取前3句）
-  const sentencesArr = [...keySentences]
-  if (sentencesArr.length > 0) {
-    descParts.push(sentencesArr.slice(0, 3).join('。'))
+  // 第四段：交通方式
+  if (trafficSentences.length > 0) {
+    descParts.push(trafficSentences.slice(0, 2).join('。'))
   }
 
-  info.fullDesc = descParts.join('。').substring(0, 300)
+  info.fullDesc = descParts.join('。').substring(0, 800)
 
   // ===== 难度推断 =====
   if (/困难|难度大|危险|慎入|偏难|技术攀登|绳索/.test(allText)) {
