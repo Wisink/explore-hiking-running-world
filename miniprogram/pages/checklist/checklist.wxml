@@ -40,12 +40,7 @@
     <text class="progress-card__tip" wx:else>开始准备吧！逐项打勾 ✅</text>
   </view>
 
-  <!-- 天气概况 -->
-  <view class="weather-bar" wx:if="{{weatherDesc}}">
-    <text class="weather-bar__icon">🌤️</text>
-    <text class="weather-bar__text">{{weatherDesc}}</text>
-    <text class="weather-bar__tip">装备根据路线+天气智能推荐</text>
-  </view>
+  <!-- 天气概况（已移除：天气与出发日不同步，无参考性） -->
 
   <!-- 必须带 -->
   <view class="check-group" wx:if="{{equipment.must.length > 0}}">

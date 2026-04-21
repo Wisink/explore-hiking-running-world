@@ -25,8 +25,6 @@ Page({
     // 统计
     totalCount: 0,
     checkedCount: 0,
-    // 天气概况
-    weatherDesc: '',
     // Canvas
     canvasHidden: true,
     // 加载状态
@@ -39,7 +37,7 @@ Page({
       statusBarHeight: wx.getSystemInfoSync().statusBarHeight,
       headerHeight: wx.getSystemInfoSync().statusBarHeight + 44,
       loading: true,
-      loadingMsg: '正在根据路线和天气信息为你推荐装备清单，请稍候...'
+      loadingMsg: '正在根据路线信息为你推荐装备清单，请稍候...'
     })
     const trailId = options.id || ''
     const trailName = options.name ? decodeURIComponent(options.name) : ''
@@ -85,7 +83,6 @@ Page({
       }
       this.setData({
         trailName: data.trailName || this.data.trailName,
-        weatherDesc: data.weather || '',
         loading: false
       })
       this.processEquipment(equipment, cachedChecked)
@@ -128,8 +125,7 @@ Page({
             }))
           }
           this.setData({
-            trailName: data.trailName || this.data.trailName,
-            weatherDesc: data.weather || ''
+            trailName: data.trailName || this.data.trailName
           })
           this.processEquipment(equipment, cachedChecked)
         }
@@ -162,7 +158,6 @@ Page({
           }
           this.setData({
             trailName: data.trailName || this.data.trailName,
-            weatherDesc: data.weather || '',
             loading: false
           })
           // 写入本地缓存
