@@ -1,0 +1,110 @@
+/* pages/running-my-favorites/running-my-favorites.wxss - 跑步世界主题色 */
+
+/* 页面容器 — 蓝系渐变背景 */
+.container {
+  min-height: 100vh;
+  background-color: #e3f2fd;
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(21,101,192,.35) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(66,165,245,.25) 0%, transparent 50%),
+    radial-gradient(ellipse at 60% 80%, rgba(33,150,243,.2) 0%, transparent 50%),
+    linear-gradient(160deg, #e3f2fd 0%, #bbdefb 25%, #90caf9 50%, #64b5f6 75%, #42a5f5 100%);
+  padding-bottom: calc(120rpx + constant(safe-area-inset-bottom));
+  padding-bottom: calc(120rpx + env(safe-area-inset-bottom));
+}
+
+/* 顶部导航栏 — 毛玻璃 */
+.header {
+  display: flex;
+  align-items: center;
+  padding: 0 16rpx;
+  height: 88rpx;
+  background: linear-gradient(135deg, rgba(21,101,192,.5) 0%, rgba(66,165,245,.4) 100%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255,255,255,.25);
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: 10;
+}
+
+/* 返回按钮 */
+.back-btn {
+  font-size: 36rpx;
+  width: 88rpx;
+  height: 88rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0d47a1;
+  transition: opacity 200ms ease;
+}
+
+.back-btn:active {
+  opacity: 0.6;
+}
+
+/* 标题 */
+.header-title {
+  font-size: 34rpx;
+  font-weight: 700;
+  color: #0d47a1;
+  flex: 1;
+  text-shadow: 0 1rpx 6rpx rgba(255,255,255,.5);
+}
+
+/* 列表区域 */
+.list-area {
+  padding-top: calc(var(--status-bar-height, 0px) + 88rpx + 20rpx);
+  min-height: 100vh;
+}
+
+/* 文章卡片 — 毛玻璃 */
+.article-item {
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255,255,255,.25);
+  border-radius: 24rpx;
+  margin: 0 24rpx 16rpx;
+  padding: 24rpx 28rpx;
+  box-shadow: 0 8rpx 32rpx rgba(31,38,50,.15);
+  animation: fadeInUp 400ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.article-title {
+  font-size: 30rpx;
+  color: #0d47a1;
+  font-weight: 600;
+  margin-bottom: 12rpx;
+  line-height: 1.5;
+}
+
+.article-meta {
+  font-size: 24rpx;
+  color: #1565c0;
+  display: flex;
+  gap: 20rpx;
+}
+
+/* 加载和空状态 */
+.loading-text, .empty-tip {
+  text-align: center;
+  color: #1565c0;
+  padding: 120rpx 0;
+  font-size: 28rpx;
+  font-weight: 500;
+}
+
+/* 动画 */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30rpx);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

@@ -58,7 +58,7 @@ exports.main = async (event, context) => {
         return await deleteArticle(params)
       
       // 上下架文章
-      case 'toggleActive':
+      case 'toggleArticle':
         return await toggleActive(params)
       
       default:
@@ -103,52 +103,57 @@ async function getDashboard() {
   })
   
   return success({
-    articleCount: articlesRes.total,
-    userCount: usersRes.total,
-    totalReadCount: readingHistoryRes.total,
-    totalFavoriteCount: favoritesRes.total,
-    totalReviewCount: reviewsRes.total,
-    totalShareCount
+    totalArticles: articlesRes.total,
+    totalUsers: usersRes.total,
+    totalReads: readingHistoryRes.total,
+    totalFavorites: favoritesRes.total,
+    totalReviews: reviewsRes.total,
+    totalShares: totalShareCount
   })
 }
 
 // 获取趋势数据
 async function getTrendData(params) {
-  const { period = 'day', date } = params
-  if (!date) {
-    return fail('缺少日期参数')
+  const { dimension = 'day' } = params
+
+  // 根据维度计算日期范围
+  const now = new Date()
+  const today = now.toISOString().split('T')[0]
+  let startDate = new Date()
+
+  if (dimension === 'day') {
+    startDate.setDate(startDate.getDate() - 29) // 最近30天
+  } else if (dimension === 'week') {
+    startDate.setDate(startDate.getDate() - 7 * 12) // 最近12周
+  } else if (dimension === 'month') {
+    startDate.setMonth(startDate.getMonth() - 11) // 最近12个月
   }
-  
-  let query = { date: date }
-  if (period === 'week') {
-    // 查询最近7天
-    const startDate = new Date(date)
-    startDate.setDate(startDate.getDate() - 6)
-    query = {
-      date: _.and(_.gte(startDate.toISOString().split('T')[0]), _.lte(date))
-    }
-  } else if (period === 'month') {
-    // 查询最近30天
-    const startDate = new Date(date)
-    startDate.setDate(startDate.getDate() - 29)
-    query = {
-      date: _.and(_.gte(startDate.toISOString().split('T')[0]), _.lte(date))
-    }
-  } else if (period === 'year') {
-    // 查询最近12个月
-    const startDate = new Date(date)
-    startDate.setMonth(startDate.getMonth() - 11)
-    query = {
-      date: _.and(_.gte(startDate.toISOString().split('T')[0]), _.lte(date))
-    }
-  }
-  
+
+  const startStr = startDate.toISOString().split('T')[0]
+
+  // 从 running_daily_stats 集合查询
   const { data } = await db.collection('running_daily_stats')
-    .where(query)
+    .where({
+      date: _.and(_.gte(startStr), _.lte(today))
+    })
     .orderBy('date', 'asc')
     .get()
-  
-  return success(data)
+
+  // 按维度聚合
+  const userTrend = [], readTrend = [], favoriteTrend = [], reviewTrend = [], shareTrend = []
+
+  if (data.length > 0) {
+    data.forEach(item => {
+      const label = dimension === 'day' ? item.date.slice(5) : item.date
+      userTrend.push({ label, value: item.newUsers || 0 })
+      readTrend.push({ label, value: item.reads || 0 })
+      favoriteTrend.push({ label, value: item.favorites || 0 })
+      reviewTrend.push({ label, value: item.reviews || 0 })
+      shareTrend.push({ label, value: item.shares || 0 })
+    })
+  }
+
+  return success({ userTrend, readTrend, favoriteTrend, reviewTrend, shareTrend })
 }
 
 // 获取分类阅读排行

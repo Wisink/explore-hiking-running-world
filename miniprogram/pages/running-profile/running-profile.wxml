@@ -46,9 +46,10 @@
       <text class="menu-item__text">我的阅读感受</text>
       <text class="menu-item__arrow">›</text>
     </view>
+    <!-- 徒步世界传送门 -->
     <view class="menu-item" bindtap="switchToHiking">
-      <text class="menu-item__icon">🔄</text>
-      <text class="menu-item__text">切换到徒步世界</text>
+      <text class="menu-item__icon">🏔️</text>
+      <text class="menu-item__text">徒步世界传送门</text>
       <text class="menu-item__arrow">›</text>
     </view>
   </view>
@@ -69,6 +70,15 @@
   </view>
   <view class="icp-footer">
     <text class="icp-footer__text" bindtap="onIcpTap">陕ICP备2026006901号</text>
+  </view>
+
+  <!-- 传送门动画覆盖层 -->
+  <view class="portal-overlay {{showPortal ? 'portal-overlay--active' : ''}}">
+    <view class="portal-ring portal-ring--1"></view>
+    <view class="portal-ring portal-ring--2"></view>
+    <view class="portal-ring portal-ring--3"></view>
+    <text class="portal-emoji">{{portalEmoji}}</text>
+    <text class="portal-label">{{portalLabel}}</text>
   </view>
 
   <view class="nice-toast nice-toast--{{toastType}} {{showToast ? 'nice-toast--show' : ''}}">{{toastMessage}}</view>

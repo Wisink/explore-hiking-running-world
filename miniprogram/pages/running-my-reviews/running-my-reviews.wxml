@@ -1,0 +1,25 @@
+<!--pages/running-my-reviews/running-my-reviews.wxml-->
+<view class="container" style="padding-top: {{statusBarHeight}}px">
+  <!-- 顶部栏 -->
+  <view class="header">
+    <view class="back-btn" bindtap="onBack">{{lt}}</view>
+    <text class="header-title">我的感受</text>
+  </view>
+
+  <!-- 感受列表 -->
+  <scroll-view scroll-y class="list-area">
+    <block wx:if="{{loading}}">
+      <view class="loading-text">加载中...</view>
+    </block>
+    <block wx:elif="{{reviews.length === 0}}">
+      <view class="empty-tip">还没有写过感受</view>
+    </block>
+    <block wx:else>
+      <view class="review-item" wx:for="{{reviews}}" wx:key="_id" bindtap="onArticleTap" data-id="{{item.articleId}}">
+        <view class="review-article">{{item.articleTitle}}</view>
+        <view class="review-content">{{item.content}}</view>
+        <view class="review-time">{{item.createdAtStr}}</view>
+      </view>
+    </block>
+  </scroll-view>
+</view>

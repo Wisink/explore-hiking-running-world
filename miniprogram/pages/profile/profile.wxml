@@ -113,6 +113,13 @@
     </view>
   </view>
 
+  <!-- 跑步世界传送门 -->
+  <view class="admin-entry portal-entry" bindtap="switchToRunning">
+    <text class="admin-entry__icon">🏃</text>
+    <text class="admin-entry__text">跑步世界传送门</text>
+    <text class="admin-entry__arrow">›</text>
+  </view>
+
   <!-- 后台管理入口（仅管理员可见） -->
   <view class="admin-entry" wx:if="{{isAdmin}}" bindtap="goAdmin">
     <text class="admin-entry__icon">⚙️</text>
@@ -138,6 +145,15 @@
   </view>
   <view class="icp-footer">
     <text class="icp-footer__text" bindtap="onIcpTap">陕ICP备2026006901号</text>
+  </view>
+
+  <!-- 传送门动画覆盖层 -->
+  <view class="portal-overlay {{showPortal ? 'portal-overlay--active' : ''}}">
+    <view class="portal-ring portal-ring--1"></view>
+    <view class="portal-ring portal-ring--2"></view>
+    <view class="portal-ring portal-ring--3"></view>
+    <text class="portal-emoji">{{portalEmoji}}</text>
+    <text class="portal-label">{{portalLabel}}</text>
   </view>
 
   <view class="nice-toast nice-toast--{{toastType}} {{showToast ? 'nice-toast--show' : ''}}">{{toastMessage}}</view>

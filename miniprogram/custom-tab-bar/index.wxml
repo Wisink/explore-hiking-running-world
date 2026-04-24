@@ -1,5 +1,4 @@
-<!--custom-tab-bar/index.wxml-->
-<view class="tab-bar">
+<view class="tab-bar tab-bar--{{world}}">
   <view class="tab-bar__inner">
     <view
       wx:for="{{list}}"
@@ -17,6 +16,5 @@
       <text class="tab-bar__text">{{item.text}}</text>
     </view>
   </view>
-  <!-- 安全区域占位：底部留白 -->
   <view class="tab-bar__safe"></view>
 </view>

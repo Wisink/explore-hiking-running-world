@@ -1,6 +1,20 @@
 /* pages/running-article/running-article.wxss - 蓝色系跑步主题 */
-@import '/styles/common.wxss';
 
+/* ===== CSS Variables ===== */
+:host {
+  --glass-bg: rgba(255, 255, 255, 0.22);
+  --glass-bg-light: rgba(255, 255, 255, 0.12);
+  --glass-bg-strong: rgba(255, 255, 255, 0.35);
+  --glass-border: rgba(255, 255, 255, 0.25);
+  --glass-blur: blur(16px);
+  --glass-shadow: 0 8rpx 32rpx rgba(31, 38, 50, 0.18);
+  --text: #0d47a1;
+  --text2: #1565c0;
+  --primary: #1565c0;
+  --primary-dark: #0d47a1;
+}
+
+/* ===== 页面容器 ===== */
 .article-page {
   min-height: 100vh;
   padding-bottom: 200rpx;
@@ -10,6 +24,84 @@
     radial-gradient(ellipse at 80% 20%, rgba(66,165,245,.5) 0%, transparent 50%),
     radial-gradient(ellipse at 60% 80%, rgba(100,181,246,.4) 0%, transparent 50%),
     linear-gradient(160deg, #e3f2fd 0%, #bbdefb 25%, #90caf9 50%, #64b5f6 75%, #42a5f5 100%);
+}
+
+/* 状态栏占位 — 毛玻璃 */
+.page-statusbar {
+  background: linear-gradient(135deg,
+    rgba(21, 101, 192, 0.5) 0%,
+    rgba(66, 165, 245, 0.4) 100%
+  );
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+/* ===== 固定顶部标题栏 ===== */
+.fixed-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  overflow: hidden;
+}
+
+.fixed-header__bg {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(135deg, rgba(21,101,192,.5) 0%, rgba(66,165,245,.4) 100%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255,255,255,.25);
+}
+
+.fixed-header__content {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 88rpx;
+  padding: 0 32rpx;
+}
+
+.back-btn {
+  display: flex;
+  align-items: center;
+  gap: 4rpx;
+  padding: 12rpx 8rpx 12rpx 0;
+}
+
+.back-btn__icon {
+  font-size: 44rpx;
+  color: #0d47a1;
+  font-weight: 300;
+  line-height: 1;
+}
+
+.back-btn__text {
+  font-size: 28rpx;
+  color: #0d47a1;
+}
+
+.header-title {
+  flex: 1;
+  text-align: center;
+  font-size: 34rpx;
+  font-weight: 700;
+  color: #0d47a1;
+  letter-spacing: 1rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin: 0 16rpx;
+}
+
+.header-spacer {
+  width: 80rpx;
+}
+
+.fixed-header-spacer {
+  /* 占位，防止内容被固定头部遮挡 */
 }
 
 /* 加载 */
@@ -172,6 +264,11 @@
   color: #0d47a1;
 }
 
+.review-btn-group {
+  display: flex;
+  gap: 12rpx;
+}
+
 .review-edit-btn {
   background: rgba(21, 101, 192, 0.15);
   backdrop-filter: blur(8px);
@@ -181,9 +278,24 @@
   border: 1px solid rgba(21,101,192,.1);
 }
 
+.review-delete-btn {
+  background: rgba(229, 57, 53, 0.12);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 6rpx 16rpx;
+  border-radius: 12rpx;
+  border: 1px solid rgba(229,57,53,.1);
+}
+
 .review-edit-text {
   font-size: 22rpx;
   color: #1565c0;
+  font-weight: 500;
+}
+
+.review-delete-text {
+  font-size: 22rpx;
+  color: #e53935;
   font-weight: 500;
 }
 

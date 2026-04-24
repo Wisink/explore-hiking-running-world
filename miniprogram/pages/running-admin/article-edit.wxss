@@ -2,11 +2,11 @@
 
 .container {
   min-height: 100vh;
-  background: #f5f5f5;
+  background: #f0f4f8;
   padding-bottom: 40rpx;
 }
 
-/* 固定头部 */
+/* ===== 固定头部 ===== */
 .fixed-header {
   position: fixed;
   top: 0;
@@ -14,19 +14,36 @@
   right: 0;
   z-index: 100;
   background: linear-gradient(135deg, #1565c0, #42a5f5);
-  padding-top: var(--status-bar-height, 20px);
+  box-shadow: 0 2rpx 16rpx rgba(21, 101, 192, 0.3);
 }
+
 .header-bar {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   height: 88rpx;
   padding: 0 24rpx;
 }
+
 .back-btn {
-  font-size: 40rpx;
-  color: #fff;
-  padding: 10rpx 20rpx 10rpx 0;
+  display: flex;
+  align-items: center;
+  gap: 4rpx;
+  padding: 16rpx 8rpx 16rpx 0;
 }
+
+.back-btn__icon {
+  font-size: 48rpx;
+  color: #fff;
+  font-weight: 300;
+  line-height: 1;
+}
+
+.back-btn__text {
+  font-size: 28rpx;
+  color: #fff;
+}
+
 .header-title {
   flex: 1;
   font-size: 34rpx;
@@ -34,70 +51,114 @@
   font-weight: 600;
   text-align: center;
 }
+
 .header-right {
-  width: 100rpx;
-}
-.header-placeholder {
-  height: calc(var(--status-bar-height, 20px) + 88rpx);
+  width: 80rpx;
 }
 
-/* 表单 */
+.header-placeholder {
+  /* 占位，防止内容被固定头部遮挡 */
+}
+
+/* ===== 表单 ===== */
 .form {
   padding: 24rpx;
 }
+
 .form-group {
   background: #fff;
   border-radius: 16rpx;
-  padding: 24rpx 28rpx;
-  margin-bottom: 20rpx;
+  padding: 28rpx 32rpx;
+  margin-bottom: 24rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
 }
+
 .form-label {
   font-size: 28rpx;
   color: #333;
   font-weight: 600;
-  margin-bottom: 16rpx;
+  margin-bottom: 20rpx;
   display: block;
 }
+
 .form-label .required {
   color: #e53935;
   margin-left: 4rpx;
 }
+
+/* 输入框样式 - 增加高度 */
 .form-input {
   width: 100%;
-  font-size: 28rpx;
+  height: 88rpx;
+  line-height: 88rpx;
+  font-size: 30rpx;
   color: #333;
-  padding: 16rpx 0;
-  border-bottom: 1rpx solid #eee;
+  padding: 0 20rpx;
+  background: #f8f9fa;
+  border-radius: 12rpx;
+  border: 1rpx solid #e0e0e0;
+  box-sizing: border-box;
 }
+
+.form-input:focus {
+  border-color: #1565c0;
+  background: #fff;
+}
+
+/* 多行文本框 */
 .form-textarea {
   width: 100%;
-  min-height: 300rpx;
-  font-size: 28rpx;
+  min-height: 280rpx;
+  font-size: 30rpx;
   color: #333;
-  padding: 16rpx 0;
-  line-height: 1.6;
+  padding: 24rpx 20rpx;
+  line-height: 1.8;
+  background: #f8f9fa;
+  border-radius: 12rpx;
+  border: 1rpx solid #e0e0e0;
+  box-sizing: border-box;
 }
+
 .form-textarea--short {
-  min-height: 120rpx;
+  min-height: 160rpx;
 }
+
+.form-textarea:focus {
+  border-color: #1565c0;
+  background: #fff;
+}
+
+/* 选择器 */
 .form-picker {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16rpx 0;
-  border-bottom: 1rpx solid #eee;
+  height: 88rpx;
+  padding: 0 20rpx;
+  background: #f8f9fa;
+  border-radius: 12rpx;
+  border: 1rpx solid #e0e0e0;
 }
+
+.form-picker--disabled {
+  opacity: 0.5;
+}
+
 .form-picker-text {
-  font-size: 28rpx;
+  font-size: 30rpx;
   color: #333;
 }
+
 .form-picker-placeholder {
   color: #999;
 }
+
 .picker-arrow {
-  font-size: 24rpx;
-  color: #ccc;
+  font-size: 28rpx;
+  color: #999;
 }
+
+/* 开关 */
 .form-switch {
   display: flex;
   align-items: center;
@@ -105,22 +166,62 @@
   padding: 16rpx 0;
 }
 
-/* 保存按钮 */
+.form-switch .form-label {
+  margin-bottom: 0;
+}
+
+/* ===== 保存按钮 ===== */
 .save-btn {
-  margin: 40rpx 24rpx;
-  height: 88rpx;
-  line-height: 88rpx;
+  margin: 48rpx 0;
+  height: 96rpx;
+  line-height: 96rpx;
   text-align: center;
   background: linear-gradient(135deg, #1565c0, #42a5f5);
   color: #fff;
   font-size: 32rpx;
   font-weight: 600;
-  border-radius: 44rpx;
+  border-radius: 48rpx;
   border: none;
+  box-shadow: 0 4rpx 20rpx rgba(21, 101, 192, 0.4);
+  transition: all 150ms ease;
 }
+
 .save-btn:active {
-  opacity: 0.85;
+  transform: scale(0.98);
+  opacity: 0.9;
 }
-.save-btn[disabled] {
-  opacity: 0.5;
+
+.save-btn--disabled {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* ===== Toast ===== */
+.nice-toast {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.8);
+  background: rgba(0, 0, 0, 0.75);
+  color: #fff;
+  padding: 24rpx 48rpx;
+  border-radius: 12rpx;
+  font-size: 28rpx;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 200ms ease;
+  z-index: 1000;
+}
+
+.nice-toast--show {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.nice-toast--error {
+  background: rgba(229, 57, 53, 0.9);
+}
+
+.nice-toast--success {
+  background: rgba(46, 125, 50, 0.9);
 }

@@ -70,6 +70,10 @@ Page({
     displayedCompleted: [],
     // 轮循欢迎语
     greetingText: '',
+    // 传送门动画
+    showPortal: false,
+    portalEmoji: '🏃',
+    portalLabel: '正在传送...',
   },
 
   onLoad() {
@@ -117,17 +121,25 @@ Page({
     const app = getApp()
     if (app.globalData && app.globalData.userInfo) {
       this.setData({ userInfo: app.globalData.userInfo })
-      // 同步昵称为云端用户编号
-      if (app.globalData.userInfo.nickName) {
-        this.setData({ hikerNickname: app.globalData.userInfo.nickName })
+      // 使用云端序号动态生成昵称（根据当前世界决定后缀）
+      if (app.globalData.userInfo.userNumber) {
+        const world = app.globalData.world || 'hiking'
+        const suffix = world === 'running' ? '跑步爱好者' : '徒步爱好者'
+        this.setData({
+          hikerNickname: `${String(app.globalData.userInfo.userNumber).padStart(3, '0')}号${suffix}`
+        })
       }
     } else if (app._userInitPromise) {
       // initUser 后台异步执行中，监听其完成结果
       app._userInitPromise.then(() => {
         if (app.globalData && app.globalData.userInfo) {
           this.setData({ userInfo: app.globalData.userInfo })
-          if (app.globalData.userInfo.nickName) {
-            this.setData({ hikerNickname: app.globalData.userInfo.nickName })
+          if (app.globalData.userInfo.userNumber) {
+            const world = app.globalData.world || 'hiking'
+            const suffix = world === 'running' ? '跑步爱好者' : '徒步爱好者'
+            this.setData({
+              hikerNickname: `${String(app.globalData.userInfo.userNumber).padStart(3, '0')}号${suffix}`
+            })
           }
         }
       }).catch(() => {
@@ -143,28 +155,62 @@ Page({
   },
 
   /**
-   * 初始化徒步者头像和昵称
-   * 首次进入随机生成，再次进入从缓存读取
+   * 初始化用户头像和昵称
+   * - 序号从云端 users 集合获取（保证徒步世界和跑步世界一致）
+   * - 昵称后缀根据当前世界动态决定
    */
   initHikerProfile() {
-    let hikerNumber = wx.getStorageSync('hikerNumber')
+    const app = getApp()
+    const world = app.globalData.world || 'hiking'
+    
+    // 头像：本地随机生成（首次进入时）
     let avatarIndex = wx.getStorageSync('hikerAvatarIndex')
-
-    if (!hikerNumber) {
-      hikerNumber = this.generateNumber(3)
-      wx.setStorageSync('hikerNumber', hikerNumber)
-    }
-
     if (!avatarIndex) {
       avatarIndex = Math.floor(Math.random() * 8) + 1
       wx.setStorageSync('hikerAvatarIndex', avatarIndex)
     }
-
     const paddedIndex = String(avatarIndex).padStart(2, '0')
     this.setData({
-      avatarUrl: `/images/avatars/avatar-${paddedIndex}.jpg`,
-      hikerNickname: `${hikerNumber}号徒步爱好者`
+      avatarUrl: `/images/avatars/avatar-${paddedIndex}.jpg`
     })
+
+    // 序号：优先从云端获取
+    if (app.globalData && app.globalData.userInfo && app.globalData.userInfo.userNumber) {
+      const number = app.globalData.userInfo.userNumber
+      const suffix = world === 'running' ? '跑步爱好者' : '徒步爱好者'
+      this.setData({
+        hikerNickname: `${String(number).padStart(3, '0')}号${suffix}`
+      })
+    } else if (app._userInitPromise) {
+      // 云端数据还在加载中，等待完成
+      app._userInitPromise.then(() => {
+        if (app.globalData && app.globalData.userInfo && app.globalData.userInfo.userNumber) {
+          const number = app.globalData.userInfo.userNumber
+          const suffix = world === 'running' ? '跑步爱好者' : '徒步爱好者'
+          this.setData({
+            hikerNickname: `${String(number).padStart(3, '0')}号${suffix}`
+          })
+        }
+      }).catch(() => {
+        // 云端获取失败，使用本地缓存的序号（兜底）
+        const cachedNumber = wx.getStorageSync('hikerNumber')
+        if (cachedNumber) {
+          const suffix = world === 'running' ? '跑步爱好者' : '徒步爱好者'
+          this.setData({
+            hikerNickname: `${cachedNumber}号${suffix}`
+          })
+        }
+      })
+    } else {
+      // 兜底：使用本地缓存的序号
+      const cachedNumber = wx.getStorageSync('hikerNumber')
+      if (cachedNumber) {
+        const suffix = world === 'running' ? '跑步爱好者' : '徒步爱好者'
+        this.setData({
+          hikerNickname: `${cachedNumber}号${suffix}`
+        })
+      }
+    }
   },
 
   /**
@@ -692,6 +738,23 @@ Page({
   },
 
   // ========== 导航 ==========
+
+  // ========== 世界传送门 ==========
+
+  switchToRunning() {
+    this.setData({
+      showPortal: true,
+      portalEmoji: '🏃',
+      portalLabel: '正在传送至跑步世界...'
+    })
+    setTimeout(() => {
+      wx.setStorageSync('world', 'running')
+      getApp().globalData.world = 'running'
+      // 先关闭传送门动画，再跳转
+      this.setData({ showPortal: false })
+      wx.switchTab({ url: '/pages/running-home/running-home' })
+    }, 1200)
+  },
 
   // ========== 后台管理 ==========
 

@@ -17,6 +17,8 @@
     "pages/running-article-list/running-article-list",
     "pages/running-search/running-search",
     "pages/running-article/running-article",
+    "pages/running-my-favorites/running-my-favorites",
+    "pages/running-my-reviews/running-my-reviews",
     "pages/running-profile/running-profile",
     "pages/running-admin/running-admin",
     "pages/running-admin/article-edit"
@@ -35,26 +37,38 @@
     "backgroundColor": "#c8e6c9",
     "borderStyle": "white",
     "position": "bottom",
-    "list": [
-      {
-        "pagePath": "pages/routes/routes",
-        "text": "路线查询",
-        "iconPath": "images/tabbar/trail.png",
-        "selectedIconPath": "images/tabbar/trail-active.png"
-      },
-      {
-        "pagePath": "pages/knowledge/knowledge",
-        "text": "徒步知识",
-        "iconPath": "images/tabbar/knowledge.png",
-        "selectedIconPath": "images/tabbar/knowledge-active.png"
-      },
-      {
-        "pagePath": "pages/profile/profile",
-        "text": "个人中心",
-        "iconPath": "images/tabbar/profile.png",
-        "selectedIconPath": "images/tabbar/profile-active.png"
-      }
-    ]
+  "list": [
+    {
+      "pagePath": "pages/routes/routes",
+      "text": "路线查询",
+      "iconPath": "images/tabbar/trail.png",
+      "selectedIconPath": "images/tabbar/trail-active.png"
+    },
+    {
+      "pagePath": "pages/knowledge/knowledge",
+      "text": "徒步知识",
+      "iconPath": "images/tabbar/knowledge.png",
+      "selectedIconPath": "images/tabbar/knowledge-active.png"
+    },
+    {
+      "pagePath": "pages/profile/profile",
+      "text": "个人中心",
+      "iconPath": "images/tabbar/profile.png",
+      "selectedIconPath": "images/tabbar/profile-active.png"
+    },
+    {
+      "pagePath": "pages/running-home/running-home",
+      "text": "跑步知识",
+      "iconPath": "images/tabbar/knowledge.png",
+      "selectedIconPath": "images/tabbar/knowledge-active.png"
+    },
+    {
+      "pagePath": "pages/running-profile/running-profile",
+      "text": "个人中心",
+      "iconPath": "images/tabbar/profile.png",
+      "selectedIconPath": "images/tabbar/profile-active.png"
+    }
+  ]
   },
   "sitemapLocation": "sitemap.json",
   "usingComponents": {

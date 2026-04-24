@@ -267,3 +267,96 @@
 .nice-toast--error {
   background: rgba(244, 67, 54, 0.9);
 }
+
+/* 传送门动画覆盖层 — 蓝绿色系 */
+.portal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0);
+  pointer-events: none;
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+
+.portal-overlay--active {
+  background: rgba(0,0,0,0.85);
+  pointer-events: auto;
+  opacity: 1;
+}
+
+.portal-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 4rpx solid transparent;
+  opacity: 0;
+}
+
+.portal-overlay--active .portal-ring--1 {
+  width: 200rpx;
+  height: 200rpx;
+  border-color: #4caf50;
+  animation: portalSpin 1.2s ease-out forwards;
+}
+
+.portal-overlay--active .portal-ring--2 {
+  width: 300rpx;
+  height: 300rpx;
+  border-color: #009688;
+  animation: portalSpin 1.2s 0.15s ease-out forwards;
+}
+
+.portal-overlay--active .portal-ring--3 {
+  width: 400rpx;
+  height: 400rpx;
+  border-color: #00bcd4;
+  animation: portalSpin 1.2s 0.3s ease-out forwards;
+}
+
+@keyframes portalSpin {
+  0% { transform: scale(0) rotate(0deg); opacity: 0; }
+  50% { transform: scale(1) rotate(180deg); opacity: 1; }
+  100% { transform: scale(1.5) rotate(360deg); opacity: 0; }
+}
+
+.portal-emoji {
+  font-size: 120rpx;
+  z-index: 1;
+  opacity: 0;
+}
+
+.portal-overlay--active .portal-emoji {
+  animation: portalEmojiIn 1.2s ease-out forwards;
+}
+
+@keyframes portalEmojiIn {
+  0% { transform: scale(0); opacity: 0; }
+  30% { transform: scale(1.3); opacity: 1; }
+  60% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(3); opacity: 0; }
+}
+
+.portal-label {
+  font-size: 32rpx;
+  color: #fff;
+  margin-top: 20rpx;
+  z-index: 1;
+  opacity: 0;
+  font-weight: 600;
+}
+
+.portal-overlay--active .portal-label {
+  animation: portalFadeIn 0.5s 0.3s ease-out forwards;
+}
+
+@keyframes portalFadeIn {
+  0% { opacity: 0; transform: translateY(20rpx); }
+  100% { opacity: 1; transform: translateY(0); }
+}

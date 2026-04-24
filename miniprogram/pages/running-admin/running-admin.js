@@ -47,6 +47,14 @@ Page({
     articlesPage: 1,
     articlesHasMore: true,
     
+    // 数据导入状态
+    importState: {
+      status: '',  // idle | uploading | importing | done
+      progress: '',
+      progressPct: 0,
+      result: ''
+    },
+    
     // Toast
     showToast: false,
     toastMessage: '',
@@ -179,6 +187,121 @@ Page({
     } catch (err) {
       console.error('加载文章列表失败：', err)
       this.setData({ articlesLoading: false })
+    }
+  },
+
+  // ========== 数据导入 ==========
+
+  async onImportArticles() {
+    // 防止重复操作
+    if (this.data.importState.status === 'uploading' || this.data.importState.status === 'importing') {
+      return
+    }
+
+    try {
+      // 1. 选择文件
+      const chooseRes = await new Promise((resolve, reject) => {
+        wx.chooseMessageFile({
+          count: 1,
+          type: 'file',
+          extension: ['json'],
+          success: resolve,
+          fail: reject
+        })
+      })
+
+      const file = chooseRes.tempFiles[0]
+      if (!file) return
+
+      // 检查文件大小（上限 10MB）
+      if (file.size > 10 * 1024 * 1024) {
+        this.showToast('文件过大，请选择 10MB 以内的文件', 'error')
+        return
+      }
+
+      this.setData({
+        'importState.status': 'uploading',
+        'importState.progress': '上传文件到云存储...',
+        'importState.progressPct': 10,
+        'importState.result': ''
+      })
+
+      // 2. 上传到云存储
+      const uploadRes = await wx.cloud.uploadFile({
+        cloudPath: `imports/articles_${Date.now()}.json`,
+        filePath: file.path
+      })
+
+      const fileID = uploadRes.fileID
+      console.log('文件上传成功:', fileID)
+
+      this.setData({
+        'importState.status': 'importing',
+        'importState.progress': '正在导入文章到数据库...',
+        'importState.progressPct': 50
+      })
+
+      // 3. 调用云函数导入
+      const importRes = await wx.cloud.callFunction({
+        name: 'import-data',
+        data: {
+          action: 'import-articles-from-cloud',
+          fileID: fileID
+        }
+      })
+
+      console.log('导入结果:', importRes.result)
+
+      if (importRes.result && importRes.result.code === 0) {
+        const data = importRes.result.data || {}
+        this.setData({
+          'importState.status': 'done',
+          'importState.progress': `✅ 成功导入 ${data.imported} 篇，跳过重复 ${data.skipped || 0} 篇`,
+          'importState.progressPct': 100,
+          'importState.result': importRes.result.message
+        })
+        this.showToast(importRes.result.message, 'success')
+        
+        // 刷新概览数据
+        this.loadDashboard()
+        this.loadArticles()
+      } else {
+        this.setData({
+          'importState.status': 'done',
+          'importState.progress': '',
+          'importState.progressPct': 0,
+          'importState.result': '❌ ' + (importRes.result?.message || '导入失败')
+        })
+        this.showToast(importRes.result?.message || '导入失败', 'error')
+      }
+
+      // 清理云存储临时文件（可选）
+      try {
+        await wx.cloud.deleteFile({ fileList: [fileID] })
+      } catch (e) {
+        console.log('清理临时文件失败（不影响导入）:', e)
+      }
+
+    } catch (err) {
+      console.error('导入文章失败:', err)
+      
+      // 用户取消选择文件不算错误
+      if (err.errMsg && err.errMsg.includes('cancel')) {
+        this.setData({
+          'importState.status': '',
+          'importState.progress': '',
+          'importState.progressPct': 0
+        })
+        return
+      }
+
+      this.setData({
+        'importState.status': 'done',
+        'importState.progress': '',
+        'importState.progressPct': 0,
+        'importState.result': '❌ 导入失败：' + (err.errMsg || err.message || '未知错误')
+      })
+      this.showToast('导入失败', 'error')
     }
   },
 

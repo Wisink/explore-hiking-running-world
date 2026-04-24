@@ -15,6 +15,7 @@ Page({
   data: {
     // 状态栏高度
     statusBarHeight: 0,
+    headerHeight: 0,
     // 认证状态
     isLoggedIn: false,
     showPassword: false,
@@ -107,8 +108,10 @@ Page({
   },
 
   onLoad() {
+    const systemInfo = wx.getSystemInfoSync()
     this.setData({
-      statusBarHeight: wx.getSystemInfoSync().statusBarHeight
+      statusBarHeight: systemInfo.statusBarHeight,
+      headerHeight: systemInfo.statusBarHeight + 44
     })
     // 双重保护：先验证管理员身份
     wx.cloud.callFunction({

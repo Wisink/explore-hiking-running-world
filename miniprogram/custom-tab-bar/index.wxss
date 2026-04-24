@@ -6,9 +6,36 @@
   right: 0;
   bottom: 0;
   z-index: 999;
-  background: #c8e6c9;
   /* 防止被内容遮挡 */
   box-shadow: 0 -2rpx 16rpx rgba(0, 0, 0, 0.06);
+}
+
+/* 徒步世界 - 绿色系 */
+.tab-bar--hiking {
+  background: #e8f5e9;
+}
+.tab-bar--hiking .tab-bar__text {
+  color: #6b8b6b;
+}
+.tab-bar--hiking .tab-bar__item--active .tab-bar__text {
+  color: #1a2e1a;
+}
+.tab-bar--hiking .tab-bar__safe {
+  background: #e8f5e9;
+}
+
+/* 跑步世界 - 蓝色系 */
+.tab-bar--running {
+  background: #e3f2fd;
+}
+.tab-bar--running .tab-bar__text {
+  color: #5b7fa5;
+}
+.tab-bar--running .tab-bar__item--active .tab-bar__text {
+  color: #0d47a1;
+}
+.tab-bar--running .tab-bar__safe {
+  background: #e3f2fd;
 }
 
 .tab-bar__inner {
@@ -37,12 +64,10 @@
 
 .tab-bar__text {
   font-size: 20rpx;
-  color: #6b8b6b;
   font-weight: 400;
 }
 
 .tab-bar__item--active .tab-bar__text {
-  color: #1a2e1a;
   font-weight: 600;
 }
 
@@ -50,5 +75,4 @@
 .tab-bar__safe {
   height: constant(safe-area-inset-bottom);
   height: env(safe-area-inset-bottom);
-  background: #c8e6c9;
 }

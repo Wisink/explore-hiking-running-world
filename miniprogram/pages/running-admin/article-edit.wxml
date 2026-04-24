@@ -1,99 +1,178 @@
 <!--pages/running-admin/article-edit.wxml-->
-<view class="edit-page">
-
+<view class="container">
   <!-- 固定头部 -->
-  <view class="detail-fixed-header" style="padding-top: {{statusBarHeight}}px;">
-    <view class="detail-nav">
-      <view class="detail-nav__back" bindtap="onBack">
-        <text class="detail-nav__back-icon">‹</text>
-        <text class="detail-nav__back-text">返回</text>
+  <view class="fixed-header" style="padding-top: {{statusBarHeight}}px;">
+    <view class="header-bar">
+      <view class="back-btn" bindtap="onBack">
+        <text class="back-btn__icon">‹</text>
+        <text class="back-btn__text">返回</text>
       </view>
-      <text class="detail-nav__title">{{isEdit ? '编辑文章' : '新增文章'}}</text>
-      <view class="detail-nav__spacer"></view>
+      <text class="header-title">{{isEdit ? '编辑文章' : '新增文章'}}</text>
+      <view class="header-right"></view>
     </view>
   </view>
-  <view class="detail-header-placeholder" style="height: {{statusBarHeight + 44}}px;"></view>
+  
+  <!-- 固定头部占位 -->
+  <view class="header-placeholder" style="height: {{statusBarHeight + 44}}px;"></view>
 
   <!-- 表单内容 -->
-  <view class="form-container">
+  <view class="form">
     <!-- 标题 -->
-    <view class="form-section">
-      <text class="form-label">标题</text>
-      <input class="form-input" placeholder="请输入文章标题" value="{{formData.title}}" bindinput="onTitleInput" />
+    <view class="form-group">
+      <text class="form-label">标题 <text class="required">*</text></text>
+      <input class="form-input" 
+             placeholder="请输入文章标题" 
+             value="{{title}}" 
+             bindinput="onTitleInput" />
     </view>
 
     <!-- 所属频道 -->
-    <view class="form-section">
-      <text class="form-label">所属频道</text>
-      <picker mode="selector" range="{{channels}}" range-key="name" bindchange="onChannelChange" value="{{formData.channelIndex}}">
+    <view class="form-group">
+      <text class="form-label">所属频道 <text class="required">*</text></text>
+      <picker mode="selector" 
+              range="{{channelNames}}" 
+              bindchange="onChannelChange" 
+              value="{{channelIndex}}">
         <view class="form-picker">
-          <text>{{channels[formData.channelIndex].name || '请选择频道'}}</text>
-          <text class="form-picker__arrow">▾</text>
+          <text class="form-picker-text {{channelName ? '' : 'form-picker-placeholder'}}">
+            {{channelName || '请选择频道'}}
+          </text>
+          <text class="picker-arrow">▾</text>
         </view>
       </picker>
     </view>
 
     <!-- 所属子分类 -->
-    <view class="form-section">
-      <text class="form-label">所属子分类</text>
-      <picker mode="selector" range="{{subcategories}}" range-key="name" bindchange="onSubcategoryChange" value="{{formData.subcategoryIndex}}">
-        <view class="form-picker">
-          <text>{{subcategories[formData.subcategoryIndex].name || '请选择子分类'}}</text>
-          <text class="form-picker__arrow">▾</text>
+    <view class="form-group">
+      <text class="form-label">所属子分类 <text class="required">*</text></text>
+      <picker mode="selector" 
+              range="{{subcategoryNames}}" 
+              bindchange="onSubcategoryChange" 
+              value="{{subcategoryIndex}}"
+              disabled="{{channelIndex < 0}}">
+        <view class="form-picker {{channelIndex < 0 ? 'form-picker--disabled' : ''}}">
+          <text class="form-picker-text {{subcategoryName ? '' : 'form-picker-placeholder'}}">
+            {{subcategoryName || '请选择子分类'}}
+          </text>
+          <text class="picker-arrow">▾</text>
         </view>
       </picker>
     </view>
 
     <!-- 难度等级 -->
-    <view class="form-section">
+    <view class="form-group">
       <text class="form-label">难度等级</text>
-      <picker mode="selector" range="{{difficultyLevels}}" bindchange="onDifficultyChange" value="{{formData.difficultyIndex}}">
+      <picker mode="selector" 
+              range="{{difficultyLevels}}" 
+              bindchange="onDifficultyChange" 
+              value="{{difficultyIndex}}">
         <view class="form-picker">
-          <text>{{difficultyLevels[formData.difficultyIndex] || '请选择难度'}}</text>
-          <text class="form-picker__arrow">▾</text>
+          <text class="form-picker-text {{difficultyIndex >= 0 ? '' : 'form-picker-placeholder'}}">
+            {{difficultyIndex >= 0 ? difficultyLevels[difficultyIndex] : '请选择难度'}}
+          </text>
+          <text class="picker-arrow">▾</text>
         </view>
       </picker>
     </view>
 
     <!-- 阅读时长 -->
-    <view class="form-section">
+    <view class="form-group">
       <text class="form-label">阅读时长（分钟）</text>
-      <input class="form-input" type="number" placeholder="请输入阅读时长" value="{{formData.readTime}}" bindinput="onReadTimeInput" />
+      <input class="form-input" 
+             type="number" 
+             placeholder="请输入阅读时长" 
+             value="{{readTime}}" 
+             bindinput="onReadTimeInput" />
     </view>
 
     <!-- 排序权重 -->
-    <view class="form-section">
+    <view class="form-group">
       <text class="form-label">排序权重</text>
-      <input class="form-input" type="number" placeholder="请输入排序权重" value="{{formData.sortWeight}}" bindinput="onSortWeightInput" />
-    </view>
-
-    <!-- 正文内容 -->
-    <view class="form-section">
-      <text class="form-label">正文内容</text>
-      <textarea class="form-textarea" placeholder="请输入文章正文" value="{{formData.content}}" bindinput="onContentInput" />
+      <input class="form-input" 
+             type="number" 
+             placeholder="数字越大排序越前" 
+             value="{{order}}" 
+             bindinput="onOrderInput" />
     </view>
 
     <!-- 摘要 -->
-    <view class="form-section">
+    <view class="form-group">
       <text class="form-label">摘要（60字以内）</text>
-      <textarea class="form-textarea form-textarea--short" placeholder="请输入文章摘要" value="{{formData.summary}}" bindinput="onSummaryInput" maxlength="60" />
+      <textarea class="form-textarea form-textarea--short" 
+                placeholder="请输入文章摘要" 
+                value="{{summary}}" 
+                bindinput="onSummaryInput" 
+                maxlength="60" />
+    </view>
+
+    <!-- 正文内容 - 富文本编辑器 -->
+    <view class="form-group">
+      <text class="form-label">正文内容 <text class="required">*</text></text>
+      
+      <!-- 工具栏 -->
+      <view class="editor-toolbar">
+        <view class="toolbar-btn {{formatStatus.bold ? 'toolbar-btn--active' : ''}}" bindtap="onFormatTap" data-format="bold">
+          <text class="toolbar-icon">B</text>
+        </view>
+        <view class="toolbar-btn {{formatStatus.italic ? 'toolbar-btn--active' : ''}}" bindtap="onFormatTap" data-format="italic">
+          <text class="toolbar-icon">I</text>
+        </view>
+        <view class="toolbar-btn {{formatStatus.underline ? 'toolbar-btn--active' : ''}}" bindtap="onFormatTap" data-format="underline">
+          <text class="toolbar-icon">U</text>
+        </view>
+        <view class="toolbar-separator"></view>
+        <view class="toolbar-btn" bindtap="onFormatTap" data-format="header" data-value="2">
+          <text class="toolbar-icon">H2</text>
+        </view>
+        <view class="toolbar-btn" bindtap="onFormatTap" data-format="header" data-value="3">
+          <text class="toolbar-icon">H3</text>
+        </view>
+        <view class="toolbar-separator"></view>
+        <view class="toolbar-btn" bindtap="onFormatTap" data-format="list" data-value="ordered">
+          <text class="toolbar-icon">OL</text>
+        </view>
+        <view class="toolbar-btn" bindtap="onFormatTap" data-format="list" data-value="bullet">
+          <text class="toolbar-icon">UL</text>
+        </view>
+        <view class="toolbar-separator"></view>
+        <view class="toolbar-btn" bindtap="onFormatTap" data-format="align" data-value="left">
+          <text class="toolbar-icon">⫷</text>
+        </view>
+        <view class="toolbar-btn" bindtap="onFormatTap" data-format="align" data-value="center">
+          <text class="toolbar-icon">≡</text>
+        </view>
+        <view class="toolbar-separator"></view>
+        <view class="toolbar-btn" bindtap="onInsertImage">
+          <text class="toolbar-icon">🖼</text>
+        </view>
+      </view>
+      
+      <!-- 编辑器 -->
+      <editor id="editor" 
+              class="editor-body" 
+              placeholder="请输入文章正文" 
+              bindstatuschange="onEditorStatusChange"
+              bindinput="onEditorInput" />
     </view>
 
     <!-- 标签 -->
-    <view class="form-section">
+    <view class="form-group">
       <text class="form-label">标签（逗号分隔）</text>
-      <input class="form-input" placeholder="例如：跑步,训练,健康" value="{{formData.tags}}" bindinput="onTagsInput" />
+      <input class="form-input" 
+             placeholder="例如：跑步,训练,健康" 
+             value="{{tags}}" 
+             bindinput="onTagsInput" />
     </view>
 
     <!-- 是否上架 -->
-    <view class="form-section form-section--switch">
+    <view class="form-group form-switch">
       <text class="form-label">是否上架</text>
-      <switch checked="{{formData.isActive}}" bindchange="onActiveChange" color="#1565c0" />
+      <switch checked="{{isActive}}" bindchange="onActiveChange" color="#1565c0" />
     </view>
 
     <!-- 保存按钮 -->
-    <view class="save-btn" bindtap="onSave">
-      <text>保存文章</text>
+    <view class="save-btn {{saving ? 'save-btn--disabled' : ''}}" bindtap="onSave">
+      <text>{{saving ? '保存中...' : '保存文章'}}</text>
     </view>
   </view>
 

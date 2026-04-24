@@ -19,6 +19,9 @@ Page({
     this.setData({
       statusBarHeight: systemInfo.statusBarHeight
     });
+
+    // 加载频道文章统计
+    this.loadChannelStats();
   },
 
   onShow() {
@@ -41,5 +44,26 @@ Page({
     wx.navigateTo({
       url: `/pages/channel-detail/channel-detail?channel=${channel}&name=${name}`
     });
+  },
+
+  // 加载频道文章统计
+  async loadChannelStats() {
+    try {
+      const res = await wx.cloud.callFunction({
+        name: 'running-api',
+        data: { action: 'getChannelStats' }
+      });
+      if (res.result.code === 0) {
+        const stats = res.result.data;
+        const channels = this.data.channels.map(ch => ({
+          ...ch,
+          count: stats[ch.id] || ch.count
+        }));
+        this.setData({ channels });
+      }
+    } catch (err) {
+      console.error('加载频道统计失败:', err);
+      // 失败时保留原硬编码值
+    }
   }
 })

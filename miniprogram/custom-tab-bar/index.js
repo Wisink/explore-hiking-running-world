@@ -41,13 +41,13 @@ Component({
           pagePath: '/pages/running-home/running-home',
           text: '跑步知识',
           iconPath: '/images/tabbar/knowledge.png',
-          selectedIconPath: '/images/tabbar/knowledge-active.png'
+          selectedIconPath: '/images/running-tabbar/knowledge-active.png'
         },
         {
           pagePath: '/pages/running-profile/running-profile',
           text: '个人中心',
           iconPath: '/images/tabbar/profile.png',
-          selectedIconPath: '/images/tabbar/profile-active.png'
+          selectedIconPath: '/images/running-tabbar/profile-active.png'
         }
       ];
       
@@ -62,14 +62,14 @@ Component({
     switchWorld() {
       const newWorld = this.data.world === 'hiking' ? 'running' : 'hiking';
       wx.setStorageSync('world', newWorld);
-      
+
       // 更新全局状态
       const app = getApp();
       app.globalData.world = newWorld;
-      
+
       // 更新组件状态
       this._updateWorld();
-      
+
       // 切换到新世界的第一个tab
       if (this.data.list.length > 0) {
         this.setData({ selected: 0 });

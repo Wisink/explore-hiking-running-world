@@ -1,123 +1,112 @@
-<!--pages/running-search/running-search.wxml-->
+<!--pages/running-search/running-search.wxml - 蓝色系跑步主题-->
 <view class="search-page">
+
   <!-- 状态栏占位 -->
   <view class="page-statusbar" style="height: {{statusBarHeight}}px;"></view>
-  
-  <!-- 顶部固定栏 -->
-  <view class="page-header">
-    <view class="page-header__bg"></view>
-    <view class="page-header__content">
-      <view class="page-header__back" bindtap="onBackTap">
-        <text class="page-header__back-text">{{lt}}</text>
+
+  <!-- 固定顶部标题栏 -->
+  <view class="fixed-header" style="padding-top: {{statusBarHeight}}px;">
+    <view class="fixed-header__bg"></view>
+    <view class="fixed-header__content">
+      <view class="back-btn" bindtap="onBack">
+        <text class="back-btn__icon">‹</text>
+        <text class="back-btn__text">返回</text>
       </view>
-      <view class="search-input-wrap">
-        <view class="search-input-bg"></view>
-        <view class="search-input-inner">
-          <text class="search-input-icon">🔍</text>
-          <input 
-            class="search-input" 
-            placeholder="搜索跑步文章..." 
-            value="{{keyword}}"
-            bindinput="onInput"
-            bindconfirm="onSearch"
-            focus="{{autoFocus}}"
-            confirm-type="search"
-          />
-          <view class="search-clear" wx:if="{{keyword}}" bindtap="onClearInput">
-            <text class="search-clear-icon">✕</text>
-          </view>
+      <text class="header-title">文章搜索</text>
+      <view class="header-spacer"></view>
+    </view>
+  </view>
+
+  <!-- 固定头部占位 -->
+  <view class="fixed-header-spacer" style="height: {{headerHeight}}px;"></view>
+
+  <!-- 搜索栏 -->
+  <view class="search-bar-wrap">
+    <view class="search-bar">
+      <view class="search-bar__bg"></view>
+      <view class="search-bar__inner">
+        <text class="search-bar__icon">🔍</text>
+        <input class="search-bar__input" 
+               placeholder="搜索跑步知识..." 
+               value="{{keyword}}"
+               bindinput="onKeywordInput"
+               bindconfirm="onSearch"
+               confirm-type="search"
+               focus="{{autoFocus}}" />
+        <text class="search-bar__clear" wx:if="{{keyword}}" bindtap="onClearInput">✕</text>
+        <view class="search-bar__btn" bindtap="onSearch">
+          <text>搜索</text>
         </view>
       </view>
-      <view class="search-btn" bindtap="onSearch">
-        <text class="search-btn-text">搜索</text>
-      </view>
     </view>
   </view>
-
-  <view style="height: {{headerHeight}}px;"></view>
 
   <!-- 搜索历史 -->
-  <view class="history-section" wx:if="{{!searching && !searchDone && history.length > 0}}">
-    <view class="section-head">
-      <view class="section-title-wrap">
-        <text class="section-icon">🕐</text>
-        <text class="section-title">搜索历史</text>
-      </view>
-      <view class="section-clear" bindtap="onClearHistory">
-        <text class="section-clear-text">清除</text>
-      </view>
+  <view class="history-section" wx:if="{{!searched && history.length > 0}}">
+    <view class="section__head">
+      <text class="section__title">🕐 搜索历史</text>
+      <text class="section__clear" bindtap="onClearHistory">清空</text>
     </view>
-    
-    <view class="history-list">
-      <view 
-        class="history-item" 
-        wx:for="{{history}}" 
-        wx:key="index"
-        data-keyword="{{item}}"
-        bindtap="onHistoryTap"
-        hover-class="history-item--hover"
-        hover-stay-time="80"
-      >
-        <text class="history-item__text">{{item}}</text>
-        <text class="history-item__arrow">›</text>
+    <view class="history-tags">
+      <view class="history-tag" wx:for="{{history}}" wx:key="index"
+            data-keyword="{{item}}" bindtap="onHistoryTap">
+        <text>{{item}}</text>
       </view>
     </view>
   </view>
 
-  <!-- 搜索中 -->
-  <view class="loading-wrap" wx:if="{{searching}}">
-    <view class="loading-spinner"></view>
-    <text class="loading-text">正在搜索...</text>
+  <!-- 热门搜索 -->
+  <view class="hot-section" wx:if="{{!searched}}">
+    <view class="section__head">
+      <text class="section__title">🔥 热门搜索</text>
+    </view>
+    <view class="hot-tags">
+      <view class="hot-tag" wx:for="{{hotKeywords}}" wx:key="index"
+            data-keyword="{{item}}" bindtap="onHotTagTap">
+        <text>{{item}}</text>
+      </view>
+    </view>
   </view>
 
   <!-- 搜索结果 -->
-  <view class="result-section" wx:if="{{!searching && searchDone}}">
-    <view class="section-head" wx:if="{{results.length > 0}}">
-      <view class="section-title-wrap">
-        <text class="section-icon">📄</text>
-        <text class="section-title">搜索结果</text>
-      </view>
-      <view class="section-count">
-        <text>{{results.length}}篇文章</text>
-      </view>
+  <view class="results-section" wx:if="{{searched}}">
+    <view class="results-count" wx:if="{{results.length > 0}}">
+      <text>找到 {{results.length}} 篇相关文章</text>
     </view>
     
-    <!-- 结果列表 -->
-    <view class="result-list" wx:if="{{results.length > 0}}">
-      <view 
-        class="result-item" 
-        wx:for="{{results}}" 
-        wx:key="_id"
-        data-id="{{item._id}}"
-        bindtap="onResultTap"
-        hover-class="result-item--hover"
-        hover-stay-time="80"
-      >
-        <view class="result-item__icon">
-          <text>{{item.icon || '📄'}}</text>
-        </view>
-        <view class="result-item__body">
-          <text class="result-item__title">{{item.title}}</text>
-          <view class="result-item__meta">
-            <view class="result-item__tag" wx:if="{{item.difficulty}}">
-              <text class="result-item__tag-text">{{item.difficulty}}</text>
-            </view>
-            <text class="result-item__read-time" wx:if="{{item.readTime}}">{{item.readTime}}分钟</text>
-            <text class="result-item__read-count" wx:if="{{item.readCount}}">{{item.readCount}}人阅读</text>
+    <view class="results-list">
+      <view class="result-card" wx:for="{{results}}" wx:key="_id" 
+            data-id="{{item._id}}" bindtap="onArticleTap">
+        <view class="result-card__bg"></view>
+        <view class="result-card__inner">
+          <text class="result-card__title">{{item.title}}</text>
+          <text class="result-card__summary">{{item.summary || '暂无简介'}}</text>
+          <view class="result-card__meta">
+            <text class="result-card__category">{{item.categoryName || '未分类'}}</text>
+            <text class="result-card__reads">👁 {{item.readCount || 0}}</text>
           </view>
         </view>
-        <text class="result-item__arrow">›</text>
+        <text class="result-card__arrow">›</text>
       </view>
     </view>
-    
+
     <!-- 空状态 -->
-    <empty-state wx:if="{{results.length === 0}}" icon="📭" title="未找到相关文章" text="换个关键词试试吧"></empty-state>
+    <view class="empty-state" wx:if="{{results.length === 0 && !loading}}">
+      <text class="empty-state__icon">🔍</text>
+      <text class="empty-state__text">未找到相关文章</text>
+      <text class="empty-state__hint">换个关键词试试吧</text>
+    </view>
+  </view>
+
+  <!-- 加载状态 -->
+  <view class="loading-wrap" wx:if="{{loading}}">
+    <view class="loading-ring"></view>
+    <text class="loading-text">搜索中...</text>
   </view>
 
   <!-- 底部 -->
-  <view class="footer" wx:if="{{results.length > 0}}">
-    <text class="footer__icon">🔍</text>
-    <text class="footer__main">搜索更多跑步知识</text>
-    <text class="footer__sub">持续探索，持续进步</text>
+  <view class="page-footer" wx:if="{{!searched}}">
+    <text class="page-footer__icon">🏃‍♂️</text>
+    <text class="page-footer__text">科学跑步，从学习开始</text>
   </view>
 </view>

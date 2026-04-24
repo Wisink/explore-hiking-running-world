@@ -348,6 +348,114 @@
   font-size: 26rpx;
 }
 
+/* 数据导入 */
+.import-status {
+  margin-bottom: 20rpx;
+}
+
+.import-status__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12rpx 0;
+  border-bottom: 1px solid rgba(21,101,192,.06);
+}
+
+.import-status__label {
+  font-size: 26rpx;
+  color: #1565c0;
+}
+
+.import-status__value {
+  font-size: 26rpx;
+  color: #0d47a1;
+  font-weight: 600;
+}
+
+.import-status__value--idle {
+  color: #90caf9;
+}
+
+.import-status__value--uploading,
+.import-status__value--importing {
+  color: #f9a825;
+}
+
+.import-status__value--done {
+  color: #2e7d32;
+}
+
+.import-progress {
+  margin: 20rpx 0;
+}
+
+.import-progress__track {
+  height: 16rpx;
+  background: rgba(21,101,192,.1);
+  border-radius: 8rpx;
+  overflow: hidden;
+}
+
+.import-progress__fill {
+  height: 100%;
+  background: linear-gradient(90deg, #1565c0 0%, #42a5f5 100%);
+  border-radius: 8rpx;
+  transition: width 500ms ease;
+}
+
+.import-result {
+  background: rgba(227, 242, 253, 0.5);
+  border-radius: 12rpx;
+  padding: 16rpx 20rpx;
+  margin-bottom: 20rpx;
+  border: 1px solid rgba(21,101,192,.1);
+}
+
+.import-result__text {
+  font-size: 24rpx;
+  color: #0d47a1;
+  line-height: 1.5;
+}
+
+.import-actions {
+  margin-top: 8rpx;
+}
+
+.import-btn {
+  background: linear-gradient(135deg, #1565c0 0%, #42a5f5 100%);
+  padding: 20rpx 40rpx;
+  border-radius: 16rpx;
+  text-align: center;
+  box-shadow: 0 4rpx 16rpx rgba(21, 101, 192, 0.3);
+  border: 1px solid rgba(255,255,255,.2);
+  transition: transform 150ms ease;
+}
+
+.import-btn:active {
+  transform: scale(0.98);
+}
+
+.import-btn--disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.import-btn text {
+  font-size: 28rpx;
+  color: #FFFFFF;
+  font-weight: 600;
+}
+
+.import-tip {
+  margin-top: 16rpx;
+  text-align: center;
+}
+
+.import-tip text {
+  font-size: 22rpx;
+  color: #90caf9;
+}
+
 /* 文章管理 */
 .add-article-btn {
   background: linear-gradient(135deg, #1565c0 0%, #42a5f5 100%);

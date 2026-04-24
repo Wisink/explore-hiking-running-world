@@ -8,12 +8,6 @@ Page({
     this.setData({
       statusBarHeight: wx.getSystemInfoSync().statusBarHeight
     })
-
-    // 如果已有选择，直接跳转
-    const world = wx.getStorageSync('world')
-    if (world === 'hiking' || world === 'running') {
-      this._navigateToWorld(world)
-    }
   },
 
   selectWorld(e) {

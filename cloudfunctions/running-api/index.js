@@ -125,7 +125,27 @@ exports.main = async (event, context) => {
       // 获取个人统计
       case 'getMyStats':
         return await getMyStats(openid)
-      
+
+      // 检查收藏状态
+      case 'checkFavorite':
+        return await checkFavorite(params, openid)
+
+      // 获取我的感受（单篇文章）
+      case 'getMyReview':
+        return await getMyReview(params, openid)
+
+      // 删除感受
+      case 'deleteReview':
+        return await deleteReview(params, openid)
+
+      // 获取频道文章统计
+      case 'getChannelStats':
+        return await getChannelStats()
+
+      // 获取子分类文章统计
+      case 'getSubcategoryStats':
+        return await getSubcategoryStats(params)
+
       default:
         return fail('未知操作')
     }
@@ -280,35 +300,50 @@ async function saveReview(params, openid) {
   if (!articleId || !content) {
     return fail('缺少必要参数')
   }
-  
+
   // 检查是否已有感受
   const existing = await db.collection('running_reviews')
     .where({ _openid: openid, articleId })
     .limit(1)
     .get()
-  
+
   if (existing.data.length > 0) {
     // 更新感受
+    const updatedAt = db.serverDate()
     await db.collection('running_reviews').doc(existing.data[0]._id).update({
       data: {
         content,
-        updatedAt: db.serverDate()
+        updatedAt
       }
     })
+    // 返回数据库中已有的 createdAt，updatedAt 用当前时间
+    return success({
+      _id: existing.data[0]._id,
+      content,
+      createdAt: existing.data[0].createdAt,
+      updatedAt: new Date().toISOString()
+    }, '保存成功')
   } else {
     // 新增感受
-    await db.collection('running_reviews').add({
+    const createdAt = db.serverDate()
+    const res = await db.collection('running_reviews').add({
       data: {
         _openid: openid,
         articleId,
         content,
-        createdAt: db.serverDate(),
-        updatedAt: db.serverDate()
+        createdAt,
+        updatedAt: createdAt
       }
     })
+    // 返回当前时间（ISO字符串），数据库里已正确存储 serverDate
+    const nowStr = new Date().toISOString()
+    return success({
+      _id: res._id,
+      content,
+      createdAt: nowStr,
+      updatedAt: nowStr
+    }, '保存成功')
   }
-  
-  return success(null, '保存成功')
 }
 
 // 获取我的收藏列表
@@ -396,9 +431,110 @@ async function getMyStats(openid) {
     .count()
   
   return success({
-    readCount: readingHistoryRes.total,
+    readArticleCount: readingHistoryRes.total,
     visitCount: runningVisits,
-    favoriteCount: favoritesRes.total,
-    reviewCount: reviewsRes.total
+    favoritesCount: favoritesRes.total,
+    reviewsCount: reviewsRes.total
   })
+}
+
+// 检查收藏状态
+async function checkFavorite(params, openid) {
+  const { articleId } = params
+  if (!articleId) {
+    return fail('缺少文章ID')
+  }
+
+  const existing = await db.collection('running_favorites')
+    .where({ _openid: openid, articleId })
+    .count()
+
+  return success({ isFavorited: existing.total > 0 })
+}
+
+// 获取我的感受（单篇文章）
+async function getMyReview(params, openid) {
+  const { articleId } = params
+  if (!articleId) {
+    return fail('缺少文章ID')
+  }
+
+  const { data } = await db.collection('running_reviews')
+    .where({ _openid: openid, articleId })
+    .limit(1)
+    .get()
+
+  if (data.length === 0) {
+    return success(null)
+  }
+
+  return success(data[0])
+}
+
+// 删除感受
+async function deleteReview(params, openid) {
+  const { articleId } = params
+  if (!articleId) {
+    return fail('缺少文章ID')
+  }
+
+  const { data } = await db.collection('running_reviews')
+    .where({ _openid: openid, articleId })
+    .limit(1)
+    .get()
+
+  if (data.length === 0) {
+    return fail('感受不存在')
+  }
+
+  await db.collection('running_reviews').doc(data[0]._id).remove()
+  return success(null, '删除成功')
+}
+
+// 获取频道文章统计
+async function getChannelStats() {
+  const { data } = await db.collection('running_articles')
+    .aggregate()
+    .match({ isActive: true })
+    .group({
+      _id: '$channel',
+      count: db.command.aggregate.sum(1)
+    })
+    .end()
+
+  // 转换为 { 1: 29, 2: 18, ... } 格式
+  const stats = {}
+  data.forEach(item => {
+    stats[item._id] = item.count
+  })
+
+  return success(stats)
+}
+
+// 获取子分类文章统计
+async function getSubcategoryStats(params) {
+  const { channel } = params
+  if (!channel) {
+    return fail('缺少频道参数')
+  }
+
+  const { data } = await db.collection('running_articles')
+    .aggregate()
+    .match({
+      isActive: true,
+      channel: parseInt(channel)
+    })
+    .group({
+      _id: '$subcategory',
+      count: db.command.aggregate.sum(1)
+    })
+    .end()
+
+  // 转换为 { '1.1': 4, '1.2': 7, ... } 格式
+  const stats = {}
+  data.forEach(item => {
+    stats[item._id] = item.count
+  })
+
+  return success(stats)
 }

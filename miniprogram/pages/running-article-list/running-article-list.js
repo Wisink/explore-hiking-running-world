@@ -1,9 +1,11 @@
 // pages/running-article-list/running-article-list.js
 const db = wx.cloud.database()
+const _ = db.command
 
 Page({
   data: {
     statusBarHeight: 0,
+    headerHeight: 0,
     subcategory: '',
     subcategoryName: '',
     lt: '<',
@@ -19,7 +21,8 @@ Page({
     // 获取状态栏高度
     const systemInfo = wx.getSystemInfoSync();
     this.setData({
-      statusBarHeight: systemInfo.statusBarHeight
+      statusBarHeight: systemInfo.statusBarHeight,
+      headerHeight: systemInfo.statusBarHeight + 44
     });
 
     // 接收参数
@@ -53,7 +56,7 @@ Page({
       const result = await db.collection('running_articles')
         .where({ 
           subcategory: subcategory,
-          isActive: true 
+          isActive: _.neq(false)  // 不是false的都显示（包括true和未设置）
         })
         .orderBy('order', 'asc')
         .skip(page * pageSize)

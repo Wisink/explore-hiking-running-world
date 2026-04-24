@@ -37,6 +37,51 @@
     </view>
   </view>
 
+  <!-- 📦 数据导入 -->
+  <view class="dashboard-section">
+    <view class="section-title">📦 数据导入</view>
+    
+    <!-- 导入状态 -->
+    <view class="import-status">
+      <view class="import-status__row">
+        <text class="import-status__label">当前文章数</text>
+        <text class="import-status__value">{{dashboard.totalArticles}} 篇</text>
+      </view>
+      <view class="import-status__row" wx:if="{{importState.status}}">
+        <text class="import-status__label">导入状态</text>
+        <text class="import-status__value import-status__value--{{importState.status}}">
+          {{importState.status === 'idle' ? '待导入' : importState.status === 'uploading' ? '上传中...' : importState.status === 'importing' ? '导入中...' : '已完成'}}
+        </text>
+      </view>
+      <view class="import-status__row" wx:if="{{importState.progress}}">
+        <text class="import-status__label">导入进度</text>
+        <text class="import-status__value">{{importState.progress}}</text>
+      </view>
+    </view>
+
+    <!-- 进度条 -->
+    <view class="import-progress" wx:if="{{importState.status === 'uploading' || importState.status === 'importing'}}">
+      <view class="import-progress__track">
+        <view class="import-progress__fill" style="width: {{importState.progressPct || 0}}%"></view>
+      </view>
+    </view>
+
+    <!-- 导入结果 -->
+    <view class="import-result" wx:if="{{importState.result}}">
+      <text class="import-result__text">{{importState.result}}</text>
+    </view>
+
+    <!-- 操作按钮 -->
+    <view class="import-actions">
+      <view class="import-btn {{importState.status === 'uploading' || importState.status === 'importing' ? 'import-btn--disabled' : ''}}" bindtap="onImportArticles">
+        <text>📂 选择文件并导入</text>
+      </view>
+      <view class="import-tip">
+        <text>选择 .json 文件，文章将导入到 running_articles 集合（自动跳过重复）</text>
+      </view>
+    </view>
+  </view>
+
   <!-- 增长趋势 -->
   <view class="dashboard-section">
     <view class="section-title">📈 增长趋势</view>
@@ -49,6 +94,9 @@
       </view>
       <view class="trend-tab {{trendDimension === 'month' ? 'trend-tab--on' : ''}}" data-value="month" catchtap="onTrendDimensionChange">
         <text>按月</text>
+      </view>
+      <view class="trend-tab {{trendDimension === 'year' ? 'trend-tab--on' : ''}}" data-value="year" catchtap="onTrendDimensionChange">
+        <text>按年</text>
       </view>
     </view>
     

@@ -7,19 +7,24 @@ Page({
     statusBarHeight: 0,
     headerHeight: 0,
     lt: '<',
-    autoFocus: true,
     keyword: '',
     history: [],
     searching: false,
-    searchDone: false,
-    results: []
+    searched: false,
+    results: [],
+    loading: false,
+    hasMore: true,
+    hotKeywords: ['热身', '拉伸', '配速', '呼吸', '跑姿', '心率', '马拉松', '半马']
   },
 
   onLoad(options) {
     const systemInfo = wx.getSystemInfoSync()
+    const menuButton = wx.getMenuButtonBoundingClientRect()
+    // 标题栏高度需要超过胶囊按钮底部：statusBarHeight + 胶囊按钮高度 + 上下边距
+    const headerHeight = menuButton.bottom + (menuButton.top - systemInfo.statusBarHeight)
     this.setData({
       statusBarHeight: systemInfo.statusBarHeight,
-      headerHeight: systemInfo.statusBarHeight + 44
+      headerHeight: headerHeight
     })
     
     // 加载搜索历史
@@ -82,8 +87,8 @@ Page({
     })
   },
 
-  // 输入框输入
-  onInput(e) {
+  // 输入框输入（WXML 绑定 onKeywordInput）
+  onKeywordInput(e) {
     this.setData({ keyword: e.detail.value })
   },
 
@@ -91,7 +96,7 @@ Page({
   onClearInput() {
     this.setData({ 
       keyword: '',
-      searchDone: false,
+      searched: false,
       results: []
     })
   },
@@ -103,8 +108,8 @@ Page({
     
     this.setData({ 
       searching: true,
-      searchDone: false,
-      autoFocus: false
+      searched: false,
+      loading: true
     })
     
     // 保存到搜索历史
@@ -123,24 +128,23 @@ Page({
         if (res.result && res.result.code === 0) {
           this.setData({
             searching: false,
-            searchDone: true,
-            results: res.result.data || []
+            searched: true,
+            loading: false,
+            results: res.result.data || [],
+            hasMore: false
           })
         } else {
           console.warn('[search] 搜索失败:', res.result?.message)
           this.setData({
             searching: false,
-            searchDone: true,
-            results: []
+            searched: true,
+            loading: false,
+            results: [],
+            hasMore: false
           })
         }
       }).catch(err => {
         console.error('[search] 云函数调用失败:', err)
-        this.setData({
-          searching: false,
-          searchDone: true,
-          results: []
-        })
         // 如果云函数失败，尝试本地搜索
         this.localSearch(keyword)
       })
@@ -167,17 +171,28 @@ Page({
       
       this.setData({
         searching: false,
-        searchDone: true,
-        results: results
+        searched: true,
+        loading: false,
+        results: results,
+        hasMore: false
       })
     } catch (e) {
       console.error('本地搜索失败:', e)
       this.setData({
         searching: false,
-        searchDone: true,
-        results: []
+        searched: true,
+        loading: false,
+        results: [],
+        hasMore: false
       })
     }
+  },
+
+  // 点击热门搜索标签
+  onHotTagTap(e) {
+    const keyword = e.currentTarget.dataset.keyword
+    this.setData({ keyword })
+    this.onSearch()
   },
 
   // 点击搜索历史
@@ -187,16 +202,21 @@ Page({
     this.onSearch()
   },
 
-  // 点击搜索结果
-  onResultTap(e) {
+  // 点击搜索结果（WXML 绑定 onArticleTap）
+  onArticleTap(e) {
     const id = e.currentTarget.dataset.id
     wx.navigateTo({
       url: `/pages/running-article/running-article?id=${id}`
     })
   },
 
-  // 返回
-  onBackTap() {
+  // 滚动到底部（加载更多，暂不实现分页）
+  onScrollToLower() {
+    // 当前不分页，直接返回
+  },
+
+  // 返回（WXML 绑定 onBack）
+  onBack() {
     wx.navigateBack()
   }
 })

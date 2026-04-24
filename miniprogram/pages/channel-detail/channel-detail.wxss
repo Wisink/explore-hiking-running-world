@@ -39,20 +39,17 @@
     linear-gradient(160deg, #e3f2fd 0%, #bbdefb 25%, #90caf9 50%, #64b5f6 75%, #42a5f5 100%);
 }
 
-/* 顶部固定栏 — 毛玻璃 */
-.page-header {
+/* ===== 固定顶部标题栏 ===== */
+.fixed-header {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   z-index: 100;
-  padding: 0 32rpx;
-  height: 88rpx;
-  display: flex;
-  align-items: center;
+  overflow: hidden;
 }
 
-.page-header__bg {
+.fixed-header__bg {
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
   background: linear-gradient(135deg, rgba(21,101,192,.5) 0%, rgba(66,165,245,.4) 100%);
@@ -61,39 +58,53 @@
   border-bottom: 1px solid rgba(255,255,255,.25);
 }
 
-.page-header__content {
+.fixed-header__content {
   position: relative;
   display: flex;
   align-items: center;
-  width: 100%;
-  gap: 20rpx;
+  justify-content: space-between;
+  height: 88rpx;
+  padding: 0 32rpx;
 }
 
-.page-header__back {
-  width: 60rpx;
-  height: 60rpx;
+.back-btn {
   display: flex;
   align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255,255,255,.2);
+  gap: 4rpx;
+  padding: 12rpx 8rpx 12rpx 0;
 }
 
-.page-header__back-text {
-  font-size: 36rpx;
+.back-btn__icon {
+  font-size: 44rpx;
   color: #0d47a1;
   font-weight: 300;
+  line-height: 1;
 }
 
-.page-header__title {
-  font-size: 36rpx;
+.back-btn__text {
+  font-size: 28rpx;
+  color: #0d47a1;
+}
+
+.header-title {
+  flex: 1;
+  text-align: center;
+  font-size: 34rpx;
   font-weight: 700;
   color: #0d47a1;
   letter-spacing: 1rpx;
-  text-shadow: 0 1rpx 6rpx rgba(255,255,255,.5);
+}
+
+.header-spacer {
+  width: 80rpx;
+}
+
+.fixed-header-spacer {
+  /* 占位，防止内容被固定头部遮挡 */
+}
+
+.page-header__spacer {
+  width: 80rpx;
 }
 
 /* 搜索框 — 毛玻璃 */

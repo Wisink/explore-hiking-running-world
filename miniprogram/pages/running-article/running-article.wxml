@@ -1,18 +1,23 @@
 <!--pages/running-article/running-article.wxml-->
 <view class="article-page">
-  <!-- 统一头部 -->
-  <view class="page-header">
-    <view class="page-header__statusbar" style="height: {{statusBarHeight}}px;"></view>
-    <view class="page-header__nav">
-      <view class="page-header__back" bindtap="onBack">
-        <text class="page-header__back-icon">{{lt}}</text>
-        <text class="page-header__back-text">返回</text>
+  <!-- 状态栏占位 -->
+  <view class="page-statusbar" style="height: {{statusBarHeight}}px;"></view>
+
+  <!-- 固定顶部标题栏 -->
+  <view class="fixed-header" style="padding-top: {{statusBarHeight}}px;">
+    <view class="fixed-header__bg"></view>
+    <view class="fixed-header__content">
+      <view class="back-btn" bindtap="onBack">
+        <text class="back-btn__icon">‹</text>
+        <text class="back-btn__text">返回</text>
       </view>
-      <text class="page-header__title">{{article.title}}</text>
-      <view class="page-header__spacer"></view>
+      <text class="header-title">{{article.title}}</text>
+      <view class="header-spacer"></view>
     </view>
   </view>
-  <view style="height: {{headerHeight}}px;"></view>
+
+  <!-- 固定头部占位 -->
+  <view class="fixed-header-spacer" style="height: {{headerHeight}}px;"></view>
 
   <!-- 加载 -->
   <view class="loading-wrap" wx:if="{{loading}}">
@@ -39,7 +44,9 @@
 
     <!-- 正文 -->
     <view class="article-body">
-      <rich-text nodes="{{article.content}}"></rich-text>
+      <view class="article-paragraph" wx:for="{{paragraphs}}" wx:key="index">
+        <text class="article-text">{{item}}</text>
+      </view>
     </view>
 
     <!-- 阅读感受区域 -->
@@ -56,8 +63,13 @@
         <view class="review-card">
           <view class="review-header">
             <text class="review-label">我的感受</text>
-            <view class="review-edit-btn" bindtap="onEditReview">
-              <text class="review-edit-text">编辑</text>
+            <view class="review-btn-group">
+              <view class="review-edit-btn" bindtap="onEditReview">
+                <text class="review-edit-text">编辑</text>
+              </view>
+              <view class="review-delete-btn" bindtap="onDeleteReview">
+                <text class="review-delete-text">删除</text>
+              </view>
             </view>
           </view>
           <text class="review-content">{{myReview.content}}</text>

@@ -2,6 +2,7 @@
 Page({
   data: {
     statusBarHeight: 0,
+    headerHeight: 0,
     channel: 1,
     channelName: '',
     lt: '<',
@@ -67,7 +68,8 @@ Page({
     // 获取状态栏高度
     const systemInfo = wx.getSystemInfoSync();
     this.setData({
-      statusBarHeight: systemInfo.statusBarHeight
+      statusBarHeight: systemInfo.statusBarHeight,
+      headerHeight: systemInfo.statusBarHeight + 44
     });
 
     // 接收参数
@@ -87,6 +89,9 @@ Page({
     wx.setNavigationBarTitle({
       title: channelName
     });
+
+    // 加载子分类文章统计
+    this.loadSubcategoryStats(channel);
   },
 
   onBackTap() {
@@ -104,5 +109,26 @@ Page({
     wx.navigateTo({
       url: `/pages/running-article-list/running-article-list?subcategory=${subcategory}&name=${name}`
     });
+  },
+
+  // 加载子分类文章统计
+  async loadSubcategoryStats(channel) {
+    try {
+      const res = await wx.cloud.callFunction({
+        name: 'running-api',
+        data: { action: 'getSubcategoryStats', channel }
+      });
+      if (res.result.code === 0) {
+        const stats = res.result.data;
+        const subcategories = this.subcategoryMap[channel].map(sub => ({
+          ...sub,
+          count: stats[sub.key] || sub.count
+        }));
+        this.setData({ subcategories });
+      }
+    } catch (err) {
+      console.error('加载子分类统计失败:', err);
+      // 失败时保留原硬编码值
+    }
   }
 })
