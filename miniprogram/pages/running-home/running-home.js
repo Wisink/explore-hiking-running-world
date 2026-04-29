@@ -31,6 +31,14 @@ Page({
         selected: 0
       });
     }
+
+    // 累加访问次数（非阻塞）
+    wx.cloud.callFunction({
+      name: 'running-api',
+      data: { action: 'incrementVisit' }
+    }).catch(err => {
+      console.warn('[incrementVisit] 失败:', err)
+    })
   },
 
   onSearchTap() {

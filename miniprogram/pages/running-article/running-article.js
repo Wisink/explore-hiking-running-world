@@ -20,7 +20,8 @@ Page({
     myReview: null,
     showReviewInput: false,
     reviewText: '',
-    paragraphs: []
+    paragraphs: [],
+    isHtmlContent: false
   },
 
   onLoad(options) {
@@ -50,17 +51,29 @@ Page({
     this.setData({ loading: true })
 
     if (wx.cloud) {
-      // 直连数据库读取文章详情（跟列表页一样的可靠方式）
-      const db = wx.cloud.database()
-      db.collection('running_articles').doc(id).get().then(res => {
-        this.processArticle(res.data)
-        // 非阻塞：尽力增加阅读数（失败不影响显示）
-        this.incrementViewCount(id)
-        // 加载收藏状态和感受
-        this.loadFavoriteStatus()
-        this.loadMyReview()
+      // 调用云函数获取文章详情（自动处理阅读历史、阅读数累加）
+      wx.cloud.callFunction({
+        name: 'running-api',
+        data: { action: 'getArticle', id }
+      }).then(res => {
+        if (res.result && res.result.code === 0) {
+          const data = res.result.data
+          this.processArticle(data)
+          // 云函数已自动记录阅读历史和累加阅读数
+          // 设置收藏状态和用户感受（云函数已返回）
+          this.setData({
+            isFavorited: data.isFavorited || false,
+            myReview: data.userReview ? this.formatReview(data.userReview) : null,
+            reviewText: data.userReview ? data.userReview.content : ''
+          })
+        } else {
+          console.warn('获取文章失败:', res.result?.message)
+          this.setData({ loading: false })
+          showNiceToast(this, res.result?.message || '文章加载失败', 'error', 2000)
+          setTimeout(() => wx.navigateBack(), 1500)
+        }
       }).catch(err => {
-        console.warn('获取文章详情失败:', err)
+        console.error('调用云函数失败:', err)
         this.setData({ loading: false })
         showNiceToast(this, '文章加载失败', 'error', 2000)
         setTimeout(() => wx.navigateBack(), 1500)
@@ -108,6 +121,8 @@ Page({
         viewCount: article.viewCount || 0
       },
       relatedArticles: related,
+      // 检测是否为HTML内容（富文本编辑器创建）
+      isHtmlContent: this.isHtmlContent(article.content || ''),
       paragraphs: (article.content || '').split('\n').filter(p => p.trim())
     })
 
@@ -116,62 +131,24 @@ Page({
     wx.setNavigationBarTitle({ title: article.title })
   },
 
-  // 增加阅读数（非阻塞，失败不影响页面）
-  incrementViewCount(id) {
-    wx.cloud.callFunction({
-      name: 'running-api',
-      data: { action: 'incrementView', articleId: id }
-    }).then(res => {
-      console.log('[incrementView] 结果:', res.result)
-    }).catch(err => {
-      console.warn('[incrementView] 失败（不影响显示）:', err)
-    })
+  // 检测内容是否为HTML格式
+  isHtmlContent(content) {
+    // 检查是否包含常见HTML标签
+    return /<[a-z][\s\S]*>/i.test(content)
   },
 
-  // 加载收藏状态
-  loadFavoriteStatus() {
-    if (!wx.cloud) return
-    
-    wx.cloud.callFunction({
-      name: 'running-api',
-      data: { action: 'checkFavorite', articleId: this.data.articleId }
-    }).then(res => {
-      if (res.result && res.result.code === 0) {
-        this.setData({ isFavorited: res.result.data.isFavorited })
+  // 格式化感受时间
+  formatReview(review) {
+    let formattedTime = ''
+    if (review.createdAt) {
+      if (typeof review.createdAt === 'string') {
+        formattedTime = review.createdAt.replace(/-/g, '.').substring(0, 16)
+      } else if (review.createdAt instanceof Date) {
+        const d = review.createdAt
+        formattedTime = `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`
       }
-    }).catch(err => {
-      console.warn('加载收藏状态失败:', err)
-    })
-  },
-
-  // 加载我的感受
-  loadMyReview() {
-    if (!wx.cloud) return
-
-    wx.cloud.callFunction({
-      name: 'running-api',
-      data: { action: 'getMyReview', articleId: this.data.articleId }
-    }).then(res => {
-      if (res.result && res.result.code === 0 && res.result.data) {
-        const review = res.result.data
-        // 兼容 Date 对象和字符串
-        let formattedTime = ''
-        if (review.createdAt) {
-          if (typeof review.createdAt === 'string') {
-            formattedTime = review.createdAt.replace(/-/g, '.').substring(0, 16)
-          } else if (review.createdAt instanceof Date) {
-            const d = review.createdAt
-            formattedTime = `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`
-          }
-        }
-        this.setData({
-          myReview: { ...review, formattedTime },
-          reviewText: review.content
-        })
-      }
-    }).catch(err => {
-      console.warn('加载感受失败:', err)
-    })
+    }
+    return { ...review, formattedTime }
   },
 
   // 切换收藏

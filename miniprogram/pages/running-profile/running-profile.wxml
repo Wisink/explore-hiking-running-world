@@ -16,7 +16,7 @@
       <text class="page-header__title">我的跑步世界！</text>
       <text class="page-header__sub">{{greetingText}}</text>
       <view class="page-header__visit" wx:if="{{userInfo}}">
-        <text class="page-header__visit-text">🌍 已访问 {{userInfo.visitCount}} 次</text>
+        <text class="page-header__visit-text">🌍 已访问 {{visitCount}} 次</text>
       </view>
     </view>
   </view>

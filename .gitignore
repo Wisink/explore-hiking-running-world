@@ -1,3 +1,6 @@
+# Cloud Functions (not published - contains secrets)
+cloudfunctions/
+
 # Dependencies
 node_modules/
 cloudfunctions/*/node_modules/

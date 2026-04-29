@@ -44,9 +44,14 @@
 
     <!-- 正文 -->
     <view class="article-body">
-      <view class="article-paragraph" wx:for="{{paragraphs}}" wx:key="index">
-        <text class="article-text">{{item}}</text>
-      </view>
+      <block wx:if="{{isHtmlContent}}">
+        <rich-text nodes="{{article.content}}"></rich-text>
+      </block>
+      <block wx:else>
+        <view class="article-paragraph" wx:for="{{paragraphs}}" wx:key="index">
+          <text class="article-text">{{item}}</text>
+        </view>
+      </block>
     </view>
 
     <!-- 阅读感受区域 -->
